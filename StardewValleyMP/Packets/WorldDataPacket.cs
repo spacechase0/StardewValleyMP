@@ -96,63 +96,7 @@ namespace StardewValleyMP.Packets
                 world.mine_permanentMineChanges = mine.mine_permanentMineChanges;
             //}
 
-            // Fix pet multiplication - only have our pet
-            Farm myFarm = null;
-            FarmHouse myHouse = null;
-            for (int i = 0; i < mine.locations.Count; ++i)
-            {
-                if (mine.locations[i].name.Equals("Farm"))
-                {
-                    myFarm = mine.locations[i] as Farm;
-                }
-                else if (mine.locations[i].name.Equals("FarmHouse"))
-                {
-                    myHouse = mine.locations[i] as FarmHouse;
-                }
-            }
-            Farm theirFarm = null;
-            FarmHouse theirHouse = null;
-            for (int i = 0; i < world.locations.Count; ++i )
-            {
-                if ( world.locations[ i ].name.Equals( "Farm" ) )
-                {
-                    theirFarm = world.locations[i] as Farm;
-                }
-                else if (world.locations[i].name.Equals("FarmHouse"))
-                {
-                    theirHouse = world.locations[i] as FarmHouse;
-                }
-            }
-            for (int i = 0; i < theirFarm.characters.Count; ++i)
-            {
-                NPC npc = theirFarm.characters[i];
-                if (npc is Pet)
-                {
-                    theirFarm.characters.Remove(npc);
-                    --i;
-                    continue;
-                }
-            }
-            for (int i = 0; i < theirHouse.characters.Count; ++i)
-            {
-                NPC npc = theirHouse.characters[i];
-                if (npc is Pet)
-                {
-                    theirHouse.characters.Remove(npc);
-                    --i;
-                    continue;
-                }
-            }
-            for (int i = 0; i < myFarm.characters.Count; ++i)
-            {
-                NPC npc = myFarm.characters[i];
-                if (npc is Pet)
-                {
-                    npc.currentLocation = theirFarm;
-                    theirFarm.characters.Add(npc);
-                    continue;
-                }
-            }
+            fixPetMultiplication(mine, world);
 
             Multiplayer.fixLocations(world.locations, null, debugStuff);
             foreach (GameLocation loc in world.locations)
@@ -230,6 +174,71 @@ namespace StardewValleyMP.Packets
             find[fi] = replace[ri];
             tmp.name = Multiplayer.processLocationNameForPlayerUnique(null, tmp.name);
             find.Add(tmp);
+        }
+
+
+
+        private void fixPetMultiplication(SaveGame mine, SaveGame world)
+        {
+            // Fix pet multiplication - only have our pet
+            // If our pet is in our farm, move it to their farm since we're using theirs later
+
+            Farm myFarm = null;
+            FarmHouse myHouse = null;
+            for (int i = 0; i < mine.locations.Count; ++i)
+            {
+                if (mine.locations[i].name.Equals("Farm"))
+                {
+                    myFarm = mine.locations[i] as Farm;
+                }
+                else if (mine.locations[i].name.Equals("FarmHouse"))
+                {
+                    myHouse = mine.locations[i] as FarmHouse;
+                }
+            }
+            Farm theirFarm = null;
+            FarmHouse theirHouse = null;
+            for (int i = 0; i < world.locations.Count; ++i)
+            {
+                if (world.locations[i].name.Equals("Farm"))
+                {
+                    theirFarm = world.locations[i] as Farm;
+                }
+                else if (world.locations[i].name.Equals("FarmHouse"))
+                {
+                    theirHouse = world.locations[i] as FarmHouse;
+                }
+            }
+            for (int i = 0; i < theirFarm.characters.Count; ++i)
+            {
+                NPC npc = theirFarm.characters[i];
+                if (npc is Pet)
+                {
+                    theirFarm.characters.Remove(npc);
+                    --i;
+                    continue;
+                }
+            }
+            for (int i = 0; i < theirHouse.characters.Count; ++i)
+            {
+                NPC npc = theirHouse.characters[i];
+                if (npc is Pet)
+                {
+                    theirHouse.characters.Remove(npc);
+                    --i;
+                    continue;
+                }
+            }
+            for (int i = 0; i < myFarm.characters.Count; ++i)
+            {
+                NPC npc = myFarm.characters[i];
+                if (npc is Pet)
+                {
+                    npc.currentLocation = theirFarm;
+                    theirFarm.characters.Add(npc);
+                    continue;
+                }
+            }
         }
     }
 }

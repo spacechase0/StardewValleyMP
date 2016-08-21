@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.IO;
 using StardewValley;
 using StardewValley.Locations;
+using StardewValley.Characters;
 using StardewModdingAPI;
 using StardewValleyMP.Vanilla;
 using Microsoft.Xna.Framework.Content;
@@ -85,6 +86,8 @@ namespace StardewValleyMP.Packets
                     NewSaveGame.FarmHouse_setMapForUpgradeLevel( theirLoc as FarmHouse );
             }
 
+            fixPetDuplicates(theirs);
+
             Multiplayer.fixLocations(theirs.locations, client.farmer, addFixedLocationToOurWorld);
 
             client.stage = Server.Client.NetStage.WaitingForStart;
@@ -136,6 +139,46 @@ namespace StardewValleyMP.Packets
                     }
                 }
                 if (!found) SaveGame.loaded.locations.Add(loc);
+            }
+        }
+        
+        private void fixPetDuplicates( SaveGame world )
+        {
+            // Remove all instances of their pets.
+            // Since we're the host, we don't need to move our pets over to their farm like the client does.
+
+            Farm theirFarm = null;
+            FarmHouse theirHouse = null;
+            for (int i = 0; i < world.locations.Count; ++i)
+            {
+                if (world.locations[i].name.Equals("Farm"))
+                {
+                    theirFarm = world.locations[i] as Farm;
+                }
+                else if (world.locations[i].name.Equals("FarmHouse"))
+                {
+                    theirHouse = world.locations[i] as FarmHouse;
+                }
+            }
+            for (int i = 0; i < theirFarm.characters.Count; ++i)
+            {
+                NPC npc = theirFarm.characters[i];
+                if (npc is Pet)
+                {
+                    theirFarm.characters.Remove(npc);
+                    --i;
+                    continue;
+                }
+            }
+            for (int i = 0; i < theirHouse.characters.Count; ++i)
+            {
+                NPC npc = theirHouse.characters[i];
+                if (npc is Pet)
+                {
+                    theirHouse.characters.Remove(npc);
+                    --i;
+                    continue;
+                }
             }
         }
     }
