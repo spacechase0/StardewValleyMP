@@ -383,14 +383,6 @@ namespace StardewValleyMP
         public static void update()
         {
             if (Multiplayer.mode == Mode.Singleplayer) return;
-            if ( prevDuhu != Game1.player.daysUntilHouseUpgrade || prevHul != Game1.player.houseUpgradeLevel || ( Game1.getLocationFromName( "FarmHouse" ) != null && prevLul != ( Game1.getLocationFromName( "FarmHouse" ) as FarmHouse ).upgradeLevel ) )
-            {
-                Log.Async("days til upgrade: " + Game1.player.daysUntilHouseUpgrade + " " + Game1.player.houseUpgradeLevel + " " + (Game1.getLocationFromName("FarmHouse") != null ? (Game1.getLocationFromName("FarmHouse") as FarmHouse).upgradeLevel : -999));
-                prevDuhu = Game1.player.daysUntilHouseUpgrade;
-                prevHul = Game1.player.houseUpgradeLevel;
-                if ( Game1.getLocationFromName( "FarmHouse" ) != null )
-                    prevLul = ( Game1.getLocationFromName( "FarmHouse" ) as FarmHouse ).upgradeLevel;
-            }
 
             //Log.Async("pos:" + Game1.player.position.X + " " + Game1.player.position.Y);
             // Clients sometimes get stuck in the top-right corner and can't move on second day+
