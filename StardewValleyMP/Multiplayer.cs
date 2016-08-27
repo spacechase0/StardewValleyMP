@@ -565,7 +565,7 @@ namespace StardewValleyMP
         {
             // Caused problems during weddings
             // (A week or so later) Might have been caused by something else - check if this is needed at some point
-            if ( Game1.eventUp && farmer.currentLocation != Game1.currentLocation )
+            if ( Game1.eventUp && ( farmer.currentLocation != Game1.currentLocation || Game1.currentLocation == null || Game1.currentLocation.currentEvent == null ) )
             {
                 return;
             }
