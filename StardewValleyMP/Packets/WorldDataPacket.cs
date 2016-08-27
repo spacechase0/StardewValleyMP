@@ -99,12 +99,16 @@ namespace StardewValleyMP.Packets
             fixPetMultiplication(mine, world);
 
             Multiplayer.fixLocations(world.locations, null, debugStuff);
+            Woods woods = null;
             foreach (GameLocation loc in world.locations)
             {
                 if (loc.name == "FarmHouse")
                 {
                     world.locations.Remove(loc);
-                    break;
+                }
+                else if (loc.name == "Woods")
+                {
+                    woods = (Woods) loc;
                 }
             }
             foreach (GameLocation loc in mine.locations)
@@ -112,7 +116,12 @@ namespace StardewValleyMP.Packets
                 if (loc.name == "FarmHouse")
                 {
                     world.locations.Add(loc);
-                    break;
+                }
+                else if (loc.name == "Woods" && woods != null)
+                {
+                    Woods myWoods = ( Woods ) loc;
+                    woods.hasUnlockedStatue = myWoods.hasUnlockedStatue;
+                    woods.hasFoundStardrop = myWoods.hasFoundStardrop;
                 }
             }
 
