@@ -300,7 +300,11 @@ namespace StardewValleyMP.Vanilla
             {
                 Multiplayer.client.stage = Client.NetStage.Playing;
                 Multiplayer.client.tempStopUpdating = false;
-                //Game1.player.position = new Vector2(Game1.player.mostRecentBed.X - 10, Game1.player.mostRecentBed.Y);
+                Game1.player.position = Utility.PointToVector2((Game1.getLocationFromName("FarmHouse") as FarmHouse).getBedSpot()) * (float)Game1.tileSize;
+                Farmer expr_777_cp_0_ = Game1.player;
+                expr_777_cp_0.position.Y = expr_777_cp_0.position.Y + (float)(Game1.tileSize / 2);
+                Farmer expr_795_cp_0_ = Game1.player;
+                expr_795_cp_0.position.X = expr_795_cp_0.position.X - (float)Game1.tileSize;
             }
             if (Multiplayer.server != null)
                 Multiplayer.server.playing = true;

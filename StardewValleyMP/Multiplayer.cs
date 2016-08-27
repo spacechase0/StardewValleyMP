@@ -400,14 +400,6 @@ namespace StardewValleyMP
                 Game1.player.currentLocation = Game1.getLocationFromName( Game1.player.currentLocation.name );
                 Game1.currentLocation = Game1.player.currentLocation;
                 Game1.currentLocation.resetForPlayerEntry();
-
-                // Copied from SaveGame
-                Game1.player.position = Utility.PointToVector2((Game1.getLocationFromName("FarmHouse") as StardewValley.Locations.FarmHouse).getBedSpot()) * (float)Game1.tileSize;
-                Farmer expr_777_cp_0 = Game1.player;
-                expr_777_cp_0.position.Y = expr_777_cp_0.position.Y + (float)(Game1.tileSize / 2);
-                Farmer expr_795_cp_0 = Game1.player;
-                expr_795_cp_0.position.X = expr_795_cp_0.position.X - (float)Game1.tileSize;
-                Game1.player.faceDirection(1);
             }
 
             // Really don't understand why it breaks without this
