@@ -50,7 +50,13 @@ namespace StardewValleyMP.Packets
         {
             Log.Async("Got farmer data for other players.");
 
+            foreach (Farmer farmer in client.others.Values)
+            {
+                if (farmer.currentLocation != null)
+                    farmer.currentLocation.farmers.Remove(farmer);
+            }
             client.others.Clear();
+
             foreach (KeyValuePair<byte, string> other in others)
             {
                 Farmer farmer = (Farmer)SaveGame.farmerSerializer.Deserialize(Util.stringStream(other.Value));
