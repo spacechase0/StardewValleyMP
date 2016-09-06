@@ -100,16 +100,21 @@ namespace StardewValleyMP.Packets
 
             Multiplayer.fixLocations(world.locations, null, debugStuff);
             Woods woods = null;
+            GameLocation toRemove = null;
             foreach (GameLocation loc in world.locations)
             {
                 if (loc.name == "FarmHouse")
                 {
-                    world.locations.Remove(loc);
+                    toRemove = loc;
                 }
                 else if (loc.name == "Woods")
                 {
                     woods = (Woods) loc;
                 }
+            }
+            if (toRemove != null)
+            {
+                world.locations.Remove(toRemove);
             }
             foreach (GameLocation loc in mine.locations)
             {
