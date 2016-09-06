@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.IO;
 using StardewValley;
+using StardewModdingAPI;
 
 namespace StardewValleyMP.Packets
 {
@@ -64,6 +65,23 @@ namespace StardewValleyMP.Packets
             Farmer farmer = client.others[clientId];
             if (farmer == null) return;
 
+            //Log.Async("Movement " + flags + " " + x + " " + y);
+            doFarmer(farmer);
+
+        }
+
+        public override void process( Server server, Server.Client client )
+        {
+            if (clientId != client.id) return;
+
+            //Log.Async("Movement " + flags + " " + x + " " + y);
+            doFarmer(client.farmer);
+
+            server.broadcast( this, clientId );
+        }
+
+        private void doFarmer( Farmer farmer )
+        {
             farmer.SetMovingLeft((flags & (byte)MovementFlags.Left) != 0);
             farmer.SetMovingRight((flags & (byte)MovementFlags.Right) != 0);
             farmer.SetMovingUp((flags & (byte)MovementFlags.Up) != 0);
@@ -71,21 +89,6 @@ namespace StardewValleyMP.Packets
             farmer.setRunning((flags & (byte)MovementFlags.Running) != 0, true);
             farmer.position.X = x;
             farmer.position.Y = y;
-        }
-
-        public override void process( Server server, Server.Client client )
-        {
-            if ( clientId != client.id ) return;
-
-            client.farmer.SetMovingLeft((flags & (byte)MovementFlags.Left) != 0);
-            client.farmer.SetMovingRight((flags & (byte)MovementFlags.Right) != 0);
-            client.farmer.SetMovingUp((flags & (byte)MovementFlags.Up) != 0);
-            client.farmer.SetMovingDown((flags & (byte)MovementFlags.Down) != 0);
-            client.farmer.setRunning((flags & (byte)MovementFlags.Running) != 0, true);
-            client.farmer.position.X = x;
-            client.farmer.position.Y = y;
-
-            server.broadcast( this, clientId );
         }
     }
 }
