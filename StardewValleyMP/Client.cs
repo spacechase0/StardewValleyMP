@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Concurrent;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Net;
 using System.Net.Sockets;
@@ -25,6 +27,8 @@ namespace StardewValleyMP
 
         private TcpClient socket;
         private NetworkStream stream;
+        private Thread receiver;
+        private BlockingCollection<Packet> toReceive = new BlockingCollection<Packet>(new ConcurrentQueue<Packet>());
         public byte id;
         public NetStage stage = NetStage.WaitingForID;
 
@@ -36,6 +40,8 @@ namespace StardewValleyMP
         {
             socket = theSocket;
             stream = socket.GetStream();
+            receiver = new Thread(receiveAndQueue);
+            receiver.Start();
 
             new VersionPacket().writeTo(stream);
 
@@ -46,6 +52,7 @@ namespace StardewValleyMP
         {
             if ( stream != null ) stream.Close();
             if ( socket != null ) socket.Close();
+            receiver.Join();
         }
 
         private Queue<Packet> packetDelay = new Queue<Packet>();
@@ -84,29 +91,23 @@ namespace StardewValleyMP
             {
                 Multiplayer.doMyPlayerUpdates(id);
             }
-            
-            while ( true )
+
+            try
             {
-                try
+                while (toReceive.Count > 0)
                 {
-                    Packet packet = checkPacket();
-                    if (packet == null)
-                    {
-                        break;
-                    }
+                    Packet packet;
+                    bool success = toReceive.TryTake(out packet);
+                    if (!success) continue;
 
                     if (stage == NetStage.Waiting && packet.id != ID.NextDay && packet.id != ID.Chat)
-                    {
-                        if ( packet.id == ID.OtherFarmerData || packet.id == ID.WorldData )
-                            packetDelay.Enqueue(packet);
-                    }
-                    else
-                        packet.process(this);
+                        packetDelay.Enqueue(packet);
+                    else packet.process(this);
                 }
-                catch ( Exception e )
-                {
-                    Log.Async("Exception processing packet: " + e);
-                }
+            }
+            catch ( Exception e )
+            {
+                Log.Async("Exception receiving: " + e);
             }
         }
 
@@ -143,14 +144,20 @@ namespace StardewValleyMP
             packet.writeTo(stream);
         }
 
-        private Packet checkPacket()
+        private void receiveAndQueue()
         {
-            if (!stream.DataAvailable)
+            try
             {
-                return null;
+                while (socket.Connected)
+                {
+                    Packet packet = Packet.readFrom(stream);
+                    toReceive.Add(packet);
+                }
             }
-
-            return Packet.readFrom(stream);
+            catch (Exception e)
+            {
+                Log.Async("Exception while receiving: " + e);
+            }
         }
     }
 }
