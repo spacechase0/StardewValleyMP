@@ -66,11 +66,20 @@ namespace StardewValleyMP.Packets
             }
             world.player = mine.player;
 
-            string[] checkMail = new string[] { "ccCraftsRoom", "ccBoilerRoom", "ccVault", "ccFishTank", "ccBulletin", "ccPantry", "JojaMember" };
-            foreach (string mail in checkMail)
+            foreach (string mail in Multiplayer.checkMail)
             {
                 if (world.mailbox.Contains(mail) && !mine.mailbox.Contains(mail))
                     mine.mailbox.Add(mail);
+                if (world.player.mailForTomorrow.Contains(mail) && !mine.player.mailForTomorrow.Contains(mail))
+                    mine.player.mailForTomorrow.Add(mail);
+                if (world.player.mailReceived.Contains(mail) && !mine.player.mailReceived.Contains(mail))
+                    mine.player.mailReceived.Add(mail);
+                if (world.mailbox.Contains(mail + "%&NL&%") && !mine.mailbox.Contains(mail + "%&NL&%"))
+                    mine.mailbox.Add(mail + "%&NL&%");
+                if (world.player.mailForTomorrow.Contains(mail + "%&NL&%") && !mine.player.mailForTomorrow.Contains(mail + "%&NL&%"))
+                    mine.player.mailForTomorrow.Add(mail + "%&NL&%");
+                if (world.player.mailReceived.Contains(mail + "%&NL&%") && !mine.player.mailReceived.Contains(mail + "%&NL&%"))
+                    mine.player.mailReceived.Add(mail + "%&NL&%");
             }
 
             world.mailbox = mine.mailbox;

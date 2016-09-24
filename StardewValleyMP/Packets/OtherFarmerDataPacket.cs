@@ -70,11 +70,16 @@ namespace StardewValleyMP.Packets
 
                 if ( other.Key == 0 )
                 {
-                    string[] checkMail = new string[] { "ccCraftsRoom", "ccBoilerRoom", "ccVault", "ccFishTank", "ccBulletin", "ccPantry", "JojaMember" };
-                    foreach ( string mail in checkMail )
+                    foreach ( string mail in Multiplayer.checkMail )
                     {
                         if (farmer.mailReceived.Contains(mail) && !SaveGame.loaded.player.mailReceived.Contains(mail))
                             SaveGame.loaded.player.mailReceived.Add(mail);
+                        if (farmer.mailForTomorrow.Contains(mail) && !SaveGame.loaded.player.mailForTomorrow.Contains(mail))
+                            SaveGame.loaded.player.mailForTomorrow.Add(mail);
+                        if (farmer.mailReceived.Contains(mail + "%&NL&%") && !SaveGame.loaded.player.mailReceived.Contains(mail + "%&NL&%"))
+                            SaveGame.loaded.player.mailReceived.Add(mail + "%&NL&%");
+                        if (farmer.mailForTomorrow.Contains(mail + "%&NL&%") && !SaveGame.loaded.player.mailForTomorrow.Contains(mail + "%&NL&%"))
+                            SaveGame.loaded.player.mailForTomorrow.Add(mail + "%&NL&%");
                     }
                     // Maybe more
                 }

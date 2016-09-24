@@ -59,6 +59,7 @@ namespace StardewValleyMP
         public static Action<Packet> sendFunc;
 
         public static Dictionary<string, LocationCache> locations = new Dictionary< string, LocationCache >();
+        public static string[] checkMail = new string[] { "ccCraftsRoom", "ccBoilerRoom", "ccVault", "ccFishTank", "ccBulletin", "ccPantry", "JojaMember"  };
 
         public static byte getMyId()
         {
