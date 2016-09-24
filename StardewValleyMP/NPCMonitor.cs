@@ -214,6 +214,7 @@ namespace StardewValleyMP
                             if (animal.Key == id)
                             {
                                 updateAnimal(farm, animal.Value, state);
+                                return;
                             }
                         }
                     }

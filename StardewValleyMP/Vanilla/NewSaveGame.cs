@@ -278,6 +278,7 @@ namespace StardewValleyMP.Vanilla
                 Game1.footstepCategory.SetVolume(Game1.options.footstepVolumeLevel);
             }
             MultiplayerUtility.latestID = SaveGame.loaded.latestID;
+            Multiplayer.prevLatestId = MultiplayerUtility.latestID; // MINE
             if (Game1.isRaining)
             {
                 Game1.changeMusicTrack("rain");

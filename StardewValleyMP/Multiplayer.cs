@@ -49,7 +49,7 @@ namespace StardewValleyMP
     class Multiplayer
     {
         public const string DEFAULT_PORT = "24644";
-        public const byte PROTOCOL_VERSION = 1;
+        public const byte PROTOCOL_VERSION = 2;
         public const bool COOP = true;
 
         public static Mode mode = Mode.Singleplayer;
@@ -382,11 +382,18 @@ namespace StardewValleyMP
         private static bool didNewDay = false;
         public static bool prevFreezeControls = false;
         public static bool sentNextDayPacket = false;
+        public static long prevLatestId;
 
         private static int prevDuhu, prevHul, prevLul;
         public static void update()
         {
             if (Multiplayer.mode == Mode.Singleplayer) return;
+
+            if ( MultiplayerUtility.latestID > prevLatestId )
+            {
+                sendFunc(new LatestIdPacket());
+            }
+            prevLatestId = MultiplayerUtility.latestID;
 
             //Log.Async("pos:" + Game1.player.position.X + " " + Game1.player.position.Y);
             // Clients sometimes get stuck in the top-right corner and can't move on second day+

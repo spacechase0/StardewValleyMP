@@ -112,6 +112,7 @@
     <Compile Include="Packets\PauseTimePacket.cs" />
     <Compile Include="Packets\CoopUpdatePacket.cs" />
     <Compile Include="Packets\NextDayPacket.cs" />
+    <Compile Include="Packets\LatestIdPacket.cs" />
     <Compile Include="States\ChestMonitor.cs" />
     <Compile Include="States\ChestState.cs" />
     <Compile Include="States\FarmAnimalState.cs" />
