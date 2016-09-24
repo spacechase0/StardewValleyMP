@@ -372,6 +372,9 @@ namespace StardewValleyMP.Vanilla
 
         public static IEnumerator<int> getSaveEnumerator(bool skipToFile = false)
         {
+            if (Multiplayer.mode == Mode.Host)
+                Multiplayer.server.delayUpdates = true;
+
             yield return 1;
             SaveGame saveGame = new SaveGame();
             saveGame.player = Game1.player;
@@ -447,6 +450,9 @@ namespace StardewValleyMP.Vanilla
             }
             if (skipToFile)
             {
+                if (Multiplayer.mode == Mode.Host)
+                    Multiplayer.server.delayUpdates = false;
+
                 yield return 100;
                 yield break;
             }
@@ -573,6 +579,8 @@ namespace StardewValleyMP.Vanilla
             }
             yield return 100;
         IL_897:
+            if (Multiplayer.mode == Mode.Host)
+                Multiplayer.server.delayUpdates = false;
             yield break;
         }
 

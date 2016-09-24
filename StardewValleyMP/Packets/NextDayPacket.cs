@@ -61,6 +61,8 @@ namespace StardewValleyMP.Packets
             // weirder with the receiving being on another thread.)
             //
             // Hopefully only setting this in the latter packet will fix this.
+            //
+            // Actually, that^ might be completely wrong.
 
             //client.stage = Server.Client.NetStage.WaitingForStart;
             if (client.farmer.currentLocation != null)

@@ -17,6 +17,7 @@ namespace StardewValleyMP
     public class Server
     {
         public bool playing = false;
+        public bool delayUpdates = false;
 
         public Server()
         {
@@ -26,7 +27,7 @@ namespace StardewValleyMP
         private DateTime lastTimeSync;
         public void update()
         {
-            for (int i = 0; i < clients.Count; ++i )
+            for (int i = 0; !delayUpdates && i < clients.Count; ++i )
             {
                 clients[i].update();
                 if ( !clients[ i ].connected() )
