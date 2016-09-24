@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Forms;
+using System.Net;
 using System.Net.Sockets;
 using StardewModdingAPI;
 using StardewValley;
@@ -336,7 +337,9 @@ namespace StardewValleyMP
             if (!Util.stringDialog("Listen on port", ref portStr)) return false;
 
             int port = Int32.Parse(portStr);
-            TcpListener listener = new TcpListener( port );
+            // http://stackoverflow.com/questions/1777629/how-to-listen-on-multiple-ip-addresses
+            TcpListener listener = new TcpListener(IPAddress.IPv6Any, port);
+            listener.Server.SetSocketOption(SocketOptionLevel.IPv6, SocketOptionName.IPv6Only, false);
             listener.Start();
 
             client = null;
