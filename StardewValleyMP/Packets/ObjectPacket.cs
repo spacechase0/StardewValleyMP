@@ -94,9 +94,11 @@ namespace StardewValleyMP.Packets
 
         private void process()
         {
+            if ( !Multiplayer.locations.ContainsKey( location ) )
+                return;
+
             if ( !create )
             {
-                if (!Multiplayer.locations.ContainsKey(location)) return;
                 Multiplayer.locations[location].destroyObject(new Vector2(posX, posY));
                 return;
             }
