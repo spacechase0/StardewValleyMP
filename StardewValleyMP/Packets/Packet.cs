@@ -131,11 +131,22 @@ namespace StardewValleyMP.Packets
             return packet;
         }
 
-        public void writeTo( Stream s )
+        /// <summary>
+        /// Writes this packet to the specified stream and returns the amount of bytes written.
+        /// </summary>
+        public int writeTo( Stream s )
         {
-            BinaryWriter writer = new BinaryWriter(s);
-            writer.Write((byte)id);
-            write(writer);
+            // Wrapped into a memory stream in order to figure out how many data was sent.
+            using (MemoryStream ms = new MemoryStream())
+            {
+                BinaryWriter writer = new BinaryWriter(ms);
+                writer.Write((byte)id);
+                write(writer);
+
+                byte[] data = ms.ToArray();
+                s.Write(data, 0, data.Length);
+                return data.Length;
+            }
         }
     }
 }

@@ -30,12 +30,20 @@ namespace StardewValleyMP.Packets
 
         protected override void read(BinaryReader reader)
         {
-            xml = reader.ReadString();
+            //xml = reader.ReadString();
+            int len = reader.ReadInt32();
+            byte[] data = reader.ReadBytes(len);
+
+            xml = Encoding.ASCII.GetString(Util.Decompress(data));
         }
 
         protected override void write(BinaryWriter writer)
         {
-            writer.Write(xml);
+            byte[] data = Util.Compress(Encoding.ASCII.GetBytes(xml));
+
+            writer.Write(data.Length);
+            writer.Write(data, 0, data.Length);
+            // writer.Write(xml);
         }
 
         public override void process(Client client)

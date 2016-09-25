@@ -294,8 +294,15 @@ namespace StardewValleyMP
                 {
                     Log.Async("Exception sending " + packet + " to client " + (farmer != null ? farmer.name : ("Client " + id)) + ": " + e);
                 }
+
 #endif
+#if NETWORKING_BENCHMARK
+                int bytes = packet.writeTo(stream);
+                Interlocked.Add(ref Multiplayer.serverToClientBytesTransferred, bytes);
+                Log.Async("Sent packet " + packet + " ( " + bytes + " bytes)");
+#else
                 packet.writeTo(stream);
+#endif
             }
 
             private void receiveAndQueue()
@@ -306,6 +313,15 @@ namespace StardewValleyMP
                     {
                         Packet packet = Packet.readFrom(stream);
                         toReceive.Add(packet);
+
+#if NETWORKING_BENCHMARK
+                        using (MemoryStream tmpMs = new MemoryStream())
+                        {
+                            int bytes = packet.writeTo(tmpMs);
+                            Interlocked.Add(ref Multiplayer.clientToServerBytesTransferred, bytes);
+                            Log.Async("Received packet " + packet + " ( " + bytes + " bytes)");
+                        }
+#endif
                     }
                 }
                 catch ( Exception e )

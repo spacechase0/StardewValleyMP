@@ -29,6 +29,7 @@ namespace StardewValleyMP
             GraphicsEvents.OnPreRenderHudEventNoCheck += onPreDraw;
             LocationEvents.CurrentLocationChanged += onCurrentLocationChange;
             ControlEvents.KeyboardChanged += onKeyboardChange;
+            GraphicsEvents.DrawDebug += Multiplayer.drawNetworkingDebug;
 
             if (DEBUG)
             {
