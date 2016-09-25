@@ -157,6 +157,8 @@ namespace StardewValleyMP
             catch (Exception e)
             {
                 Log.Async("Exception while receiving: " + e);
+                Multiplayer.mode = Mode.Singleplayer;
+                Multiplayer.client = null;
             }
         }
     }

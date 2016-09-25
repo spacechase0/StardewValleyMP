@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.IO;
 using StardewValley;
 using StardewModdingAPI;
+using StardewValleyMP.Vanilla;
 
 namespace StardewValleyMP.Packets
 {
@@ -40,7 +41,7 @@ namespace StardewValleyMP.Packets
         {
             client.id = clientId;
             
-            string text2 = SaveGame.loaded.player.Name;
+            string text2 = NewLoadMenu.pendingSelected.name;//SaveGame.loaded.player.Name;
             string text3 = text2;
             for (int i = 0; i < text3.Length; i++)
             {
@@ -51,7 +52,7 @@ namespace StardewValleyMP.Packets
                 }
             }
             string text4 = text2 + "_" + Game1.uniqueIDForThisGame;
-            String saveFile = text2 + "_" + SaveGame.loaded.uniqueIDForThisGame;
+            String saveFile = NewLoadMenu.pendingSelected.favoriteThing;//SaveGame.loaded.uniqueIDForThisGame;
             string savePath = Path.Combine(new string[]
 			    {
 				    Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),

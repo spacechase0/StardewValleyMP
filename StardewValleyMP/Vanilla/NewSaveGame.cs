@@ -31,32 +31,6 @@ namespace StardewValleyMP.Vanilla
         public static bool Load(string filename, bool skip = false)
         {
             if (skip) goto skipTo;
-            ////////////////////////////////////////
-
-            DialogResult res = MessageBox.Show("Host (yes) or client (no)? (Cancel for singleplayer.)", "Multiplayer", MessageBoxButtons.YesNoCancel);
-            if (res == DialogResult.Yes)
-            {
-                Multiplayer.mode = Mode.Host;
-                Log.Async("Host mode.");
-
-                if (!Multiplayer.startHost())
-                    return false;
-            }
-            else if (res == DialogResult.No)
-            {
-                Multiplayer.mode = Mode.Client;
-                Log.Async("Client mode.");
-
-                if (!Multiplayer.startClient())
-                    return false;
-            }
-            else
-            {
-                Multiplayer.mode = Mode.Singleplayer;
-                Log.Async("Singleplayer.");
-            }
-
-            ////////////////////////////////////////
 
             skipTo:
             Game1.currentLoader = NewSaveGame.getLoadEnumerator(filename, skip);
@@ -114,27 +88,32 @@ namespace StardewValleyMP.Vanilla
 
             ////////////////////////////////////////
         skipTo:
-            try
+            Log.Async("Initial loading done");
+            if (Multiplayer.mode == Mode.Host)
             {
-                Log.Async("Initial loading done");
-                if (Multiplayer.mode == Mode.Host)
+                Multiplayer.server.getPlayerInfo();
+                Multiplayer.server.broadcastInfo();
+            }
+            else if (Multiplayer.mode == Mode.Client)
+            {
+                while (Multiplayer.client.stage != Client.NetStage.Waiting)
                 {
-                    Multiplayer.server.getPlayerInfo();
-                    Multiplayer.server.broadcastInfo();
-                }
-                else if (Multiplayer.mode == Mode.Client)
-                {
-                    while (Multiplayer.client.stage != Client.NetStage.Waiting)
+                    try
                     {
                         Multiplayer.client.update();
-                        Thread.Sleep(10);
+                        if (Multiplayer.client == null)
+                        {
+                            Log.Async("Bad connection or something");
+                            yield break;
+                        }
                     }
+                    catch (Exception e) { Log.Async("Exception loading world: " + e); }
+                    yield return 20;
                 }
-                Multiplayer.locations.Clear();
-                NPCMonitor.reset();
-                Log.Async("MP loading done");
             }
-            catch (Exception e) { Log.Async("Exception loading world: " + e); }
+            Multiplayer.locations.Clear();
+            NPCMonitor.reset();
+            Log.Async("MP loading done");
             ////////////////////////////////////////
 
             Game1.stats = SaveGame.loaded.stats;

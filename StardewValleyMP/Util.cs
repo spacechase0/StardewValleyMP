@@ -10,11 +10,32 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Xml;
 using System.Xml.Serialization;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using StardewValley;
 
 namespace StardewValleyMP
 {
     class Util
     {
+        public static void drawStr(string str, float x, float y, Color col, float alpha = 1)
+        {
+            /*SpriteBatch b = Game1.spriteBatch;
+            
+            b.DrawString(Game1.smallFont, str, new Vector2((float)(x + Game1.tileSize / 4), (float)(y + Game1.tileSize / 4 + 4)) + new Vector2(2f, 2f), Game1.textShadowColor * alpha);
+            b.DrawString(Game1.smallFont, str, new Vector2((float)(x + Game1.tileSize / 4), (float)(y + Game1.tileSize / 4 + 4)) + new Vector2(0f, 2f), Game1.textShadowColor * alpha);
+            b.DrawString(Game1.smallFont, str, new Vector2((float)(x + Game1.tileSize / 4), (float)(y + Game1.tileSize / 4 + 4)) + new Vector2(2f, 0f), Game1.textShadowColor * alpha);
+            b.DrawString(Game1.smallFont, str, new Vector2((float)(x + Game1.tileSize / 4), (float)(y + Game1.tileSize / 4 + 4)), col * 0.9f * alpha);*/
+            SpriteBatch b = Game1.spriteBatch;
+            Color inverted = new Color(255 - col.R, 255 - col.G, 255 - col.B);
+
+            b.DrawString(Game1.smallFont, str, new Vector2((float)(x + Game1.tileSize / 4), (float)(y + Game1.tileSize / 4 + 4)) + new Vector2(-2f, 0f), inverted * alpha * 0.8f);
+            b.DrawString(Game1.smallFont, str, new Vector2((float)(x + Game1.tileSize / 4), (float)(y + Game1.tileSize / 4 + 4)) + new Vector2(2f, 0f), inverted * alpha * 0.8f);
+            b.DrawString(Game1.smallFont, str, new Vector2((float)(x + Game1.tileSize / 4), (float)(y + Game1.tileSize / 4 + 4)) + new Vector2(0f, 2f), inverted * alpha * 0.8f);
+            b.DrawString(Game1.smallFont, str, new Vector2((float)(x + Game1.tileSize / 4), (float)(y + Game1.tileSize / 4 + 4)) + new Vector2(0f, -2f), inverted * alpha * 0.8f);
+            b.DrawString(Game1.smallFont, str, new Vector2((float)(x + Game1.tileSize / 4), (float)(y + Game1.tileSize / 4 + 4)), col * 0.9f * alpha);
+        }
+
         // http://stackoverflow.com/a/17546909
         public static bool stringDialog( string title, ref string input )
         {

@@ -110,7 +110,7 @@ namespace StardewValleyMP
             this.drawHorizontalPartition(b, yPositionOnScreen + height - 110, true);
 
             drawChat();
-            drawStr(typing, 75, Game1.viewport.Height - 140, Game1.textColor, 1);
+            Util.drawStr(typing, 75, Game1.viewport.Height - 140, Game1.textColor, 1);
 
             base.draw(b);
             this.drawMouse(b);
@@ -143,34 +143,16 @@ namespace StardewValleyMP
                     col = ( fade ? Color.Silver : Color.DimGray );
                 }
 
-                drawStr(str, x, y, col, alpha);
+                Util.drawStr(str, x, y, col, alpha);
                 if ( !fade )
                 {
-                    drawStr(entry.timestamp, Game1.viewport.Width - 75 - 95, y, Game1.textColor, alpha);
+                    Util.drawStr(entry.timestamp, Game1.viewport.Width - 75 - 95, y, Game1.textColor, alpha);
                 }
 
                 y -= 25;
 
                 if (y < 65) break;
             }
-        }
-
-        private static void drawStr(string str, float x, float y, Color col, float alpha)
-        {
-            /*SpriteBatch b = Game1.spriteBatch;
-            
-            b.DrawString(Game1.smallFont, str, new Vector2((float)(x + Game1.tileSize / 4), (float)(y + Game1.tileSize / 4 + 4)) + new Vector2(2f, 2f), Game1.textShadowColor * alpha);
-            b.DrawString(Game1.smallFont, str, new Vector2((float)(x + Game1.tileSize / 4), (float)(y + Game1.tileSize / 4 + 4)) + new Vector2(0f, 2f), Game1.textShadowColor * alpha);
-            b.DrawString(Game1.smallFont, str, new Vector2((float)(x + Game1.tileSize / 4), (float)(y + Game1.tileSize / 4 + 4)) + new Vector2(2f, 0f), Game1.textShadowColor * alpha);
-            b.DrawString(Game1.smallFont, str, new Vector2((float)(x + Game1.tileSize / 4), (float)(y + Game1.tileSize / 4 + 4)), col * 0.9f * alpha);*/
-            SpriteBatch b = Game1.spriteBatch;
-            Color inverted = new Color(255 - col.R, 255 - col.G, 255 - col.B);
-
-            b.DrawString(Game1.smallFont, str, new Vector2((float)(x + Game1.tileSize / 4), (float)(y + Game1.tileSize / 4 + 4)) + new Vector2(-2f, 0f), inverted * alpha * 0.8f);
-            b.DrawString(Game1.smallFont, str, new Vector2((float)(x + Game1.tileSize / 4), (float)(y + Game1.tileSize / 4 + 4)) + new Vector2(2f, 0f), inverted * alpha * 0.8f);
-            b.DrawString(Game1.smallFont, str, new Vector2((float)(x + Game1.tileSize / 4), (float)(y + Game1.tileSize / 4 + 4)) + new Vector2(0f, 2f), inverted * alpha * 0.8f);
-            b.DrawString(Game1.smallFont, str, new Vector2((float)(x + Game1.tileSize / 4), (float)(y + Game1.tileSize / 4 + 4)) + new Vector2(0f, -2f), inverted * alpha * 0.8f);
-            b.DrawString(Game1.smallFont, str, new Vector2((float)(x + Game1.tileSize / 4), (float)(y + Game1.tileSize / 4 + 4)), col * 0.9f * alpha);
         }
     }
 }
