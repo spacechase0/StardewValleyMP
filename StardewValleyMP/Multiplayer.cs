@@ -370,7 +370,9 @@ namespace StardewValleyMP
                     return;
 
                 Log.Async("Exception while listening: " + e);
-                ChatMenu.chat.Add( new ChatEntry( null, "Exception while listening for clients. Check your log files for more details" ) );
+                ChatMenu.chat.Add(new ChatEntry(null, "Exception while listening for clients: "));
+                ChatMenu.chat.Add(new ChatEntry(null, e.Message));
+                ChatMenu.chat.Add(new ChatEntry(null, "Check your log file for more details."));
                 problemStarting = true;
             }
             finally
@@ -400,7 +402,9 @@ namespace StardewValleyMP
             catch ( Exception e )
             {
                 Log.Async("Exception while connecting: " + e);
-                ChatMenu.chat.Add(new ChatEntry(null, "Exception while connecting to server. Check your log file for more details."));
+                ChatMenu.chat.Add(new ChatEntry(null, "Exception while connecting to server: "));
+                ChatMenu.chat.Add(new ChatEntry(null, e.Message));
+                ChatMenu.chat.Add(new ChatEntry(null, "Check your log file for more details."));
                 problemStarting = true;
             }
         }

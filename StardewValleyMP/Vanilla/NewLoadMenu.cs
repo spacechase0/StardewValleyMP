@@ -317,8 +317,9 @@ namespace StardewValleyMP.Vanilla
                         didModeSelect = true;
                     }
                 }
-                else if ( modeInit == null )
+                else if (modeInit == null)
                 {
+                    Multiplayer.problemStarting = false;
                     if (ipBox != null) ipBox.Update();
                     if (portBox != null) portBox.Update();
 
@@ -330,13 +331,28 @@ namespace StardewValleyMP.Vanilla
                         {
                             modeInit = new Thread(Multiplayer.startHost);
                         }
-                        else if ( Multiplayer.mode == Mode.Client )
+                        else if (Multiplayer.mode == Mode.Client)
                         {
                             Multiplayer.ipStr = ipBox.Text;
                             modeInit = new Thread(Multiplayer.startClient);
                         }
                         modeInit.Start();
+                        ChatMenu.chat.Clear();
                         ChatMenu.chat.Add(new ChatEntry(null, "NOTE: Chat doesn't work on the connection menu."));
+                    }
+                }
+                else if (Multiplayer.problemStarting)
+                {
+                    Rectangle r = new Rectangle(buttonX, buttonY3, buttonW, buttonH);
+                    if ( r.Contains( x, y ) )
+                    {
+                        Multiplayer.client = null;
+                        Multiplayer.server = null;
+                        readyToLoad = false;
+
+                        didModeSelect = false;
+                        modeInit = null;
+                        Multiplayer.problemStarting = false;
                     }
                 }
                 else if ( Multiplayer.mode == Mode.Host )
@@ -484,11 +500,12 @@ namespace StardewValleyMP.Vanilla
 
                     if (Multiplayer.problemStarting)
                     {
-                        didModeSelect = false;
+                        /*didModeSelect = false;
                         this.loading = false;
                         this.timerToLoad = 0;
                         this.selected = -1;
                         Util.SetInstanceField(typeof(TitleMenu), Game1.activeClickableMenu, "subMenu", new NewLoadMenu());
+                        */
                         return;
                     }
 
@@ -576,6 +593,20 @@ namespace StardewValleyMP.Vanilla
                         portBox.Draw(b);
                     }
 
+                    IClickableMenu.drawTextureBox(b, Game1.mouseCursors, new Rectangle(384, 373, 18, 18), x, y, w, h, new Rectangle(x, y, w, h).Contains(Game1.getOldMouseX(), Game1.getOldMouseY()) ? Color.Wheat : Color.White, (float)Game1.pixelZoom, true);
+                    SpriteText.drawString(b, str, x + w / 2 - SpriteText.getWidthOfString(str) / 2, y + h / 2 - SpriteText.getHeightOfString(str) / 2);
+                }
+                else if (Multiplayer.problemStarting)
+                {
+                    int x = buttonX, y = buttonY1, w = buttonW, h = buttonH;
+                    String str = "Error";
+                    SpriteText.drawString(b, str, x + w / 2 - SpriteText.getWidthOfString(str) / 2, y + h / 2 - SpriteText.getHeightOfString(str) / 2);
+
+                    y = buttonY2;
+                    //
+
+                    y = buttonY3;
+                    str = "Back";
                     IClickableMenu.drawTextureBox(b, Game1.mouseCursors, new Rectangle(384, 373, 18, 18), x, y, w, h, new Rectangle(x, y, w, h).Contains(Game1.getOldMouseX(), Game1.getOldMouseY()) ? Color.Wheat : Color.White, (float)Game1.pixelZoom, true);
                     SpriteText.drawString(b, str, x + w / 2 - SpriteText.getWidthOfString(str) / 2, y + h / 2 - SpriteText.getHeightOfString(str) / 2);
                 }
@@ -671,8 +702,10 @@ namespace StardewValleyMP.Vanilla
 			if (this.selected != -1 && this.timerToLoad < 1000)
 			{
 				b.Draw(Game1.staminaRect, new Rectangle(0, 0, Game1.viewport.Width, Game1.viewport.Height), Color.Black * (1f - (float)this.timerToLoad / 1000f));
-			}
-		}
+            }
+
+            ChatMenu.drawChat(true);
+        }
 
 		public override void receiveRightClick(int x, int y, bool playSound = true)
 		{
