@@ -462,12 +462,14 @@ namespace StardewValleyMP.Vanilla
                                 if (Multiplayer.mode == Mode.Client)
                                 {
                                     ipBox = new TextBox(Game1.content.Load<Texture2D>("LooseSprites\\textBox"), null, Game1.smallFont, Game1.textColor);
+                                    ipBox.Width *= 3;
                                     ipBox.X = buttonX + buttonW / 2 - (SpriteText.getWidthOfString("IP Address:") + ipBox.Width + 20) / 2 + SpriteText.getWidthOfString("IP Address:") + 20;
                                     ipBox.Y = buttonY1 + buttonH / 2 - ipBox.Height / 2;
                                     ipBox.Text = Multiplayer.ipStr;
                                 }
 
                                 portBox = new TextBox(Game1.content.Load<Texture2D>("LooseSprites\\textBox"), null, Game1.smallFont, Game1.textColor);
+                                portBox.Width *= 3;
                                 portBox.X = buttonX + buttonW / 2 - (SpriteText.getWidthOfString("IP Address:") + portBox.Width + 20) / 2 + SpriteText.getWidthOfString("IP Address:") + 20;
                                 portBox.Y = buttonY2 + buttonH / 2 - portBox.Height / 2;
                                 portBox.Text = Multiplayer.portStr;
