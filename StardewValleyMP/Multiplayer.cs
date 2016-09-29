@@ -728,7 +728,6 @@ namespace StardewValleyMP
             if (prevAnim != currSingleAnim || prevInterval != Game1.player.FarmerSprite.currentSingleAnimationInterval)
             {
                 AnimationPacket anim = new AnimationPacket(id, Game1.player);
-                Log.Async("anim:" + currSingleAnim + " " + Game1.player.FarmerSprite.currentSingleAnimationInterval + " " + anim.anim);
                 if (anim.anim != -1 &&
                     anim.anim != 0 && anim.anim != 8 && anim.anim != 16 && anim.anim != 24 && // Walking
                     anim.anim != 32 && anim.anim != 40 && anim.anim != 48 && anim.anim != 56 && // Running

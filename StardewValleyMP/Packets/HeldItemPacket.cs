@@ -77,26 +77,11 @@ namespace StardewValleyMP.Packets
 
         private void doFarmer( Farmer farmer )
         {
-            //Log.Async(farmer.Name + " holding " + tool);
-            /*if ( index == -1 )
-            {
-                farmer.showNotCarrying();
-                if ( farmer.ActiveObject != null )
-                {
-                    farmer.ActiveObject.actionWhenStopBeingHeld(farmer);
-                }
-                farmer.items[farmer.CurrentToolIndex] = null;
-            }
+            if (index == -1)
+                farmer.ActiveObject = null;
             else
-            {
-                farmer.showCarrying();
                 farmer.ActiveObject = ( big ? new StardewValley.Object(Vector2.Zero, index, false) : new StardewValley.Object(Vector2.Zero, index, 1));
-            }*/
-            farmer.CurrentToolIndex = tool;
-            /*if (farmer.CurrentTool != null)
-            {
-                farmer.FarmerSprite.CurrentToolIndex = farmer.CurrentTool.currentParentTileIndex;
-            }*/
+            //farmer.CurrentToolIndex = tool;
         }
     }
 }
