@@ -723,14 +723,20 @@ namespace StardewValleyMP
                 sendFunc(currMoving);
             }
             prevMoving = currMoving;
-
+            
             int currSingleAnim = (int)Util.GetInstanceField(typeof(FarmerSprite), Game1.player.FarmerSprite, "currentSingleAnimation");
             if (prevAnim != currSingleAnim || prevInterval != Game1.player.FarmerSprite.currentSingleAnimationInterval)
             {
                 AnimationPacket anim = new AnimationPacket(id, Game1.player);
-                if (anim.anim != -1 && anim.anim != 0 && anim.anim != 32 && anim.anim != 40 && anim.anim != 48 && anim.anim != 56 /*&&
-                    anim.anim == 128 && anim.anim != 136 && anim.anim != 144 && anim.anim != 152*/) // Walking animations
-                    sendFunc( anim );
+                Log.Async("anim:" + currSingleAnim + " " + Game1.player.FarmerSprite.currentSingleAnimationInterval + " " + anim.anim);
+                if (anim.anim != -1 &&
+                    anim.anim != 0 && anim.anim != 8 && anim.anim != 16 && anim.anim != 24 && // Walking
+                    anim.anim != 32 && anim.anim != 40 && anim.anim != 48 && anim.anim != 56 && // Running
+                    anim.anim != 112 && anim.anim != 104 && anim.anim != 96 && anim.anim != 120 && // Carrying item + walking
+                    anim.anim != 128 && anim.anim != 136 && anim.anim != 144 && anim.anim != 152) // Carrying item + running
+                {
+                    sendFunc(anim);
+                }
             }
             prevAnim = currSingleAnim;
             prevInterval = Game1.player.FarmerSprite.currentSingleAnimationInterval;
