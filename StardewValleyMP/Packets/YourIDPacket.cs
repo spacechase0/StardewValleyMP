@@ -40,32 +40,47 @@ namespace StardewValleyMP.Packets
         public override void process(Client client)
         {
             client.id = clientId;
-            
-            string text2 = NewLoadMenu.pendingSelected.name;//SaveGame.loaded.player.Name;
-            string text3 = text2;
-            for (int i = 0; i < text3.Length; i++)
+
+            for (int loopy = 0; loopy < 3; ++loopy)
             {
-                char c = text3[i];
-                if (!char.IsLetterOrDigit(c))
+                try
                 {
-                    text2 = text2.Replace(string.Concat(c), "");
+                    string text2 = NewLoadMenu.pendingSelected.name;//SaveGame.loaded.player.Name;
+                    string text3 = text2;
+                    for (int i = 0; i < text3.Length; i++)
+                    {
+                        char c = text3[i];
+                        if (!char.IsLetterOrDigit(c))
+                        {
+                            text2 = text2.Replace(string.Concat(c), "");
+                        }
+                    }
+                    string text4 = text2 + "_" + Game1.uniqueIDForThisGame;
+                    String saveFile = NewLoadMenu.pendingSelected.favoriteThing;//SaveGame.loaded.uniqueIDForThisGame;
+                    string savePath = Path.Combine(new string[]
+                        {
+                            Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+                            "StardewValley",
+                            "Saves",
+                            saveFile,
+                            saveFile,//"SaveGameInfo"
+			            });
+                    String xml = File.ReadAllText(savePath);
+                    ClientFarmerDataPacket farmerData = new ClientFarmerDataPacket(xml);
+                    client.send(farmerData);
+
+                    client.stage = Client.NetStage.WaitingForWorldData;
+                    return;
+                }
+                catch (Exception e)
+                {
+                    Log.Async("Error loading file: " + e);
+                    try { System.Threading.Thread.Sleep(1000); } catch (Exception e_) { }
                 }
             }
-            string text4 = text2 + "_" + Game1.uniqueIDForThisGame;
-            String saveFile = NewLoadMenu.pendingSelected.favoriteThing;//SaveGame.loaded.uniqueIDForThisGame;
-            string savePath = Path.Combine(new string[]
-			    {
-				    Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
-				    "StardewValley",
-				    "Saves",
-				    saveFile,
-				    saveFile,//"SaveGameInfo"
-			    });
-            String xml = File.ReadAllText(savePath);
-            ClientFarmerDataPacket farmerData = new ClientFarmerDataPacket(xml);
-            client.send(farmerData);
 
-            client.stage = Client.NetStage.WaitingForWorldData;
+            Log.Async("FAILED TO AVOID CRAZY ERROR THING "+ NewLoadMenu.pendingSelected.name);
+            Log.Async("SG:"+SaveGame.loaded+" "+((SaveGame.loaded!=null&&SaveGame.loaded.player!=null)?SaveGame.loaded.player.name:"null"));
         }
     }
 }
