@@ -81,6 +81,16 @@ namespace StardewValleyMP.Packets
 
             Log.Async("FAILED TO AVOID CRAZY ERROR THING "+ NewLoadMenu.pendingSelected.name);
             Log.Async("SG:"+SaveGame.loaded+" "+((SaveGame.loaded!=null&&SaveGame.loaded.player!=null)?SaveGame.loaded.player.name:"null"));
+            Log.Async("Going to use loaded save game if we can");
+            if ( SaveGame.loaded != null && SaveGame.loaded.player.name == NewLoadMenu.pendingSelected.name )
+            {
+                MemoryStream tmp = new MemoryStream();
+                SaveGame.serializer.Serialize(tmp, SaveGame.loaded);
+                ClientFarmerDataPacket farmerData = new ClientFarmerDataPacket(Encoding.UTF8.GetString(tmp.ToArray()));
+                client.send(farmerData);
+                client.stage = Client.NetStage.WaitingForWorldData;
+                Log.Async("Done, hope that works");
+            }
         }
     }
 }
