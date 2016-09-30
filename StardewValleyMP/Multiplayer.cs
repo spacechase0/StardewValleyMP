@@ -729,11 +729,15 @@ namespace StardewValleyMP
             {
                 AnimationPacket anim = new AnimationPacket(id, Game1.player);
                 if (anim.anim != -1 &&
-                    anim.anim != 0 && anim.anim != 8 && anim.anim != 16 && anim.anim != 24 && // Walking
-                    anim.anim != 32 && anim.anim != 40 && anim.anim != 48 && anim.anim != 56 && // Running
-                    anim.anim != 112 && anim.anim != 104 && anim.anim != 96 && anim.anim != 120 && // Carrying item + walking
-                    anim.anim != 128 && anim.anim != 136 && anim.anim != 144 && anim.anim != 152 && // Carrying item + running
-                    anim.anim != 216 && anim.anim != 304 ) // Eating
+                    anim.anim != FarmerSprite.walkLeft && anim.anim != FarmerSprite.walkDown &&
+                    anim.anim != FarmerSprite.walkRight && anim.anim != FarmerSprite.walkUp &&
+                    anim.anim != FarmerSprite.runLeft && anim.anim != FarmerSprite.runDown &&
+                    anim.anim != FarmerSprite.runRight && anim.anim != FarmerSprite.runUp &&
+                    anim.anim != FarmerSprite.carryWalkLeft && anim.anim != FarmerSprite.carryWalkDown &&
+                    anim.anim != FarmerSprite.carryWalkRight && anim.anim != FarmerSprite.carryWalkUp &&
+                    anim.anim != FarmerSprite.carryRunLeft && anim.anim != FarmerSprite.carryRunDown &&
+                    anim.anim != FarmerSprite.carryRunRight && anim.anim != FarmerSprite.carryRunUp &&
+                    anim.anim != FarmerSprite.showHoldingEdible && anim.anim != FarmerSprite.eat )
                 {
                     sendFunc(anim);
                 }
