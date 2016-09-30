@@ -732,7 +732,8 @@ namespace StardewValleyMP
                     anim.anim != 0 && anim.anim != 8 && anim.anim != 16 && anim.anim != 24 && // Walking
                     anim.anim != 32 && anim.anim != 40 && anim.anim != 48 && anim.anim != 56 && // Running
                     anim.anim != 112 && anim.anim != 104 && anim.anim != 96 && anim.anim != 120 && // Carrying item + walking
-                    anim.anim != 128 && anim.anim != 136 && anim.anim != 144 && anim.anim != 152) // Carrying item + running
+                    anim.anim != 128 && anim.anim != 136 && anim.anim != 144 && anim.anim != 152 && // Carrying item + running
+                    anim.anim != 216 && anim.anim != 304 ) // Eating
                 {
                     sendFunc(anim);
                 }
