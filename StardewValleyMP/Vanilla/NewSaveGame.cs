@@ -42,7 +42,6 @@ namespace StardewValleyMP.Vanilla
 
         public static IEnumerator<int> getLoadEnumerator(string file, bool skip = false)
         {
-            if (skip) goto skipTo;
             new SaveGame();
             yield return 1;
             string text = Path.Combine(new string[]
@@ -64,6 +63,7 @@ namespace StardewValleyMP.Vanilla
                 }
             }
             yield return 5;
+            if (skip) goto skipTo;
             Stream stream = null;
             try
             {
@@ -105,6 +105,14 @@ namespace StardewValleyMP.Vanilla
                         {
                             Log.Async("Bad connection or something");
                             yield break;
+                        }
+                        if ( Multiplayer.client.stage == Client.NetStage.WaitingForID && Multiplayer.client.id != 255 )
+                        {
+                            String xml = File.ReadAllText(text);
+                            ClientFarmerDataPacket farmerData = new ClientFarmerDataPacket(xml);
+                            Multiplayer.client.send(farmerData);
+
+                            Multiplayer.client.stage = Client.NetStage.WaitingForWorldData;
                         }
                     }
                     catch (Exception e) { Log.Async("Exception loading world: " + e); }

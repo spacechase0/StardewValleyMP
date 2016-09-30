@@ -29,7 +29,7 @@ namespace StardewValleyMP
         private NetworkStream stream;
         private Thread receiver;
         private BlockingCollection<Packet> toReceive = new BlockingCollection<Packet>(new ConcurrentQueue<Packet>());
-        public byte id;
+        public byte id = 255;
         public NetStage stage = NetStage.WaitingForID;
 
         public Dictionary< byte, Farmer > others = new Dictionary< byte, Farmer >();
