@@ -737,7 +737,7 @@ namespace StardewValleyMP
                     anim.anim != FarmerSprite.carryWalkRight && anim.anim != FarmerSprite.carryWalkUp &&
                     anim.anim != FarmerSprite.carryRunLeft && anim.anim != FarmerSprite.carryRunDown &&
                     anim.anim != FarmerSprite.carryRunRight && anim.anim != FarmerSprite.carryRunUp &&
-                    anim.anim != FarmerSprite.showHoldingEdible && anim.anim != FarmerSprite.eat )
+                    anim.anim != FarmerSprite.showHoldingEdible /*&& anim.anim != FarmerSprite.eat*/ )
                 {
                     sendFunc(anim);
                 }
