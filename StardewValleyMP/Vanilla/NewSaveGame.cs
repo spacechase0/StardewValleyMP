@@ -52,6 +52,8 @@ namespace StardewValleyMP.Vanilla
 				file,
 				file
 			});
+            if (skip) goto skipTo; // I had this one section lower, but since I use MEOW
+                                   // as the filename when changing days, things messed up.
             if (!File.Exists(text))
             {
                 text += ".xml";
@@ -63,7 +65,6 @@ namespace StardewValleyMP.Vanilla
                 }
             }
             yield return 5;
-            if (skip) goto skipTo;
             Stream stream = null;
             try
             {

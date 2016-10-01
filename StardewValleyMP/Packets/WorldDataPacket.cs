@@ -163,7 +163,7 @@ namespace StardewValleyMP.Packets
 
             SaveGame.loaded = world;
             client.stage = Client.NetStage.Waiting;
-            client.tempStopUpdating = true;
+            //client.tempStopUpdating = true;
         }
 
         private void debugStuff(GameLocation loc, string oldName)

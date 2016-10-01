@@ -59,7 +59,7 @@ namespace StardewValleyMP.Vanilla
                 else Game1.exitActiveMenu();
                 return;
             }
-
+            
             if (Multiplayer.mode == Mode.Client)
             {
                 Log.Async("Reloading world for next day");

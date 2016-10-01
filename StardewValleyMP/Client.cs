@@ -100,7 +100,7 @@ namespace StardewValleyMP
                     bool success = toReceive.TryTake(out packet);
                     if (!success) continue;
 
-                    if (stage == NetStage.Waiting && packet.id != ID.NextDay && packet.id != ID.Chat)
+                    if (stage == NetStage.Waiting && packet.id != ID.NextDay && packet.id != ID.Chat /*&& packet.id != ID.WorldData*/)
                         packetDelay.Enqueue(packet);
                     else packet.process(this);
                 }
