@@ -117,6 +117,12 @@ namespace StardewValleyMP.Packets
                 typeof( SwitchFloor ),
                 typeof( Wallpaper ),
                 typeof( WickedStatue ),
+                typeof( SpecialItem ),
+                typeof( TV ),
+                typeof( Cask ),
+                typeof( Boots ),
+                typeof( Hat ),
+                typeof( Ring ),
                 typeof( Object )
             };
 
