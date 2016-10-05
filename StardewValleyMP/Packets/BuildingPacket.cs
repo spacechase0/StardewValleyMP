@@ -110,6 +110,8 @@ namespace StardewValleyMP.Packets
                 typeof( Coop ),
                 typeof( Stable ),
                 typeof( Barn ),
+                typeof( JunimoHut ),
+                typeof( Mill ),
             };
 
             Building b = null;
