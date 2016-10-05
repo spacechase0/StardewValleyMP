@@ -52,6 +52,7 @@ namespace StardewValleyMP.Packets
         BuildingUpdate,
         FarmAnimal,
         LatestId,
+        LostBooks,
         // Stuff...
     };
 
@@ -116,6 +117,7 @@ namespace StardewValleyMP.Packets
                 case (byte)ID.BuildingUpdate: packet = new BuildingUpdatePacket(); break;
                 case (byte)ID.FarmAnimal: packet = new FarmAnimalPacket(); break;
                 case (byte)ID.LatestId: packet = new LatestIdPacket(); break;
+                case (byte)ID.LostBooks: packet = new LostBooksPacket(); break;
             }
 
             if (packet == null)

@@ -49,7 +49,7 @@ namespace StardewValleyMP
     class Multiplayer
     {
         public const string DEFAULT_PORT = "24644";
-        public const byte PROTOCOL_VERSION = 2;
+        public const byte PROTOCOL_VERSION = 3;
         public const bool COOP = true;
 
         public static Mode mode = Mode.Singleplayer;
@@ -716,6 +716,7 @@ namespace StardewValleyMP
         public static CoopUpdatePacket prevCoopState = null;
         public static bool hadDancePartner = false;
         public static string prevSpouse = null;
+        public static int prevBooks = 0;
         public static void doMyPlayerUpdates(byte id)
         {
             MovingStatePacket currMoving = new MovingStatePacket(id, Game1.player);
@@ -773,6 +774,12 @@ namespace StardewValleyMP
                 sendFunc(new SpousePacket((byte)(mode == Mode.Host ? 0 : client.id), prevSpouse));
             }
             prevSpouse = Game1.player.spouse;
+
+            if (Game1.player.archaeologyFound.ContainsKey(102) && Game1.player.archaeologyFound[102][0] != prevBooks)
+            {
+                sendFunc(new LostBooksPacket());
+            }
+            prevBooks = Game1.player.archaeologyFound.ContainsKey(102) ? Game1.player.archaeologyFound[102][0] : 0;
         }
     }
 }
