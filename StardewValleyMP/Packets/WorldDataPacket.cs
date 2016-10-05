@@ -170,7 +170,7 @@ namespace StardewValleyMP.Packets
             //client.tempStopUpdating = true;
         }
 
-        private void debugStuff(GameLocation loc, string oldName)
+        private void debugStuff(GameLocation loc, string oldName, object extra)
         {
             Log.Async("FIXED:" + oldName + "->" + loc.name);
         }

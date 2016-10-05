@@ -217,8 +217,15 @@ namespace StardewValleyMP
         {
             if (loc == null) return loc;
 
-            Farmer me = SaveGame.loaded.player;
-            if (me == null) me = Game1.player;
+            Farmer me = NewLoadMenu.pendingSelected;
+            if (SaveGame.loaded != null && SaveGame.loaded.player != null)
+                me = SaveGame.loaded.player;
+            if (me == null && Game1.player != null)
+                me = Game1.player;
+            if ( me == null )
+            {
+                Log.Async("WARNING: processLocationNameForPlayerUnique called without us having a player");
+            }
 
             if ( loc == "BathHouse_Entry" || loc == "BathHouse_MensLocker" ||
                  loc == "BathHouse_WomensLocker" || loc == "BathHouse_Pool" )
@@ -272,7 +279,7 @@ namespace StardewValleyMP
         }
 
         // loc oldName
-        public static void fixLocations( List< GameLocation > locations, Farmer from, Action<GameLocation, string> onceFixed = null )
+        public static void fixLocations( List< GameLocation > locations, Farmer from, Action<GameLocation, string, object> onceFixed = null, object extra = null )
         {
             if (mode == Mode.Client) from = client.others[0];
 
@@ -298,7 +305,7 @@ namespace StardewValleyMP
                     }
                 }
 
-                if ( isPlayerUnique( oldName ) && onceFixed != null ) onceFixed( loc, oldName );
+                if ( isPlayerUnique( oldName ) && onceFixed != null ) onceFixed( loc, oldName, extra );
             }
         }
 

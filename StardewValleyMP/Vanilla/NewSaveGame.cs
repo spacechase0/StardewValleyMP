@@ -88,6 +88,15 @@ namespace StardewValleyMP.Vanilla
             Log.Async("Initial loading done");
             if (Multiplayer.mode == Mode.Host)
             {
+                foreach ( Server.Client client in Multiplayer.server.clients )
+                {
+                    foreach ( KeyValuePair< string, GameLocation > pair in client.addDuringLoading )
+                    {
+                        ClientFarmerDataPacket.addFixedLocationToOurWorld(pair.Value, pair.Key, client);
+                    }
+                    client.addDuringLoading.Clear();
+                }
+
                 Multiplayer.server.getPlayerInfo();
                 Multiplayer.server.broadcastInfo();
             }

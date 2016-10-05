@@ -206,6 +206,8 @@ namespace StardewValleyMP
             public string farmerXml = null;
             public Farmer farmer = null;
 
+            public IDictionary<string, GameLocation> addDuringLoading = new Dictionary<string, GameLocation>();
+
             public Client(Server theServer, byte theId, Socket theSocket, NetworkStream theStream)
             {
                 server = theServer;

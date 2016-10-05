@@ -103,8 +103,8 @@ namespace StardewValleyMP.Packets
             }
 
             fixPetDuplicates(theirs);
-
-            Multiplayer.fixLocations(theirs.locations, client.farmer, addFixedLocationToOurWorld);
+            
+            Multiplayer.fixLocations(theirs.locations, client.farmer, addFixedLocationToOurWorld, client );
 
             foreach (string mail in Multiplayer.checkMail)
             {
@@ -126,9 +126,18 @@ namespace StardewValleyMP.Packets
 
             client.stage = Server.Client.NetStage.WaitingForStart;
         }
-
-        private void addFixedLocationToOurWorld( GameLocation loc, string oldName )
+        
+        public static void addFixedLocationToOurWorld( GameLocation loc, string oldName, object extra )
         {
+            if (!Multiplayer.isPlayerUnique(oldName))
+                return;
+
+            if (SaveGame.loaded == null)
+            {
+                ( ( Server.Client ) extra ).addDuringLoading.Add(oldName, loc);
+                return;
+            }
+
             Log.Async("Adding: " + oldName + " -> " + loc.name + " (" + loc + ")");
             if ( oldName != "FarmHouse" )
             {
@@ -136,44 +145,41 @@ namespace StardewValleyMP.Packets
                 return;
             }
 
-            if ( Multiplayer.isPlayerUnique( oldName ) )
+            bool found = false;
+            for ( int i = 0; i < Game1.locations.Count; ++i )
             {
-                bool found = false;
-                for ( int i = 0; i < Game1.locations.Count; ++i )
+                if ( Game1.locations[ i ].name.ToLower().Equals( loc.name.ToLower() ) )
                 {
-                    if ( Game1.locations[ i ].name.ToLower().Equals( loc.name.ToLower() ) )
+                    loc.farmers.AddRange(Game1.locations[i].farmers);
+                    Game1.locations[i].farmers.Clear();
+                    foreach (Farmer farmer in loc.farmers)
                     {
-                        loc.farmers.AddRange(Game1.locations[i].farmers);
-                        Game1.locations[i].farmers.Clear();
-                        foreach (Farmer farmer in loc.farmers)
-                        {
-                            farmer.currentLocation = loc;
-                        }
-                        Game1.locations[i] = loc;
-                        found = true;
-                        break;
+                        farmer.currentLocation = loc;
                     }
+                    Game1.locations[i] = loc;
+                    found = true;
+                    break;
                 }
-                if (!found) Game1.locations.Add(loc);
-
-                found = false;
-                for (int i = 0; i < SaveGame.loaded.locations.Count; ++i)
-                {
-                    if (SaveGame.loaded.locations[i].name.ToLower().Equals( loc.name.ToLower() ) )
-                    {
-                        loc.farmers.AddRange(SaveGame.loaded.locations[i].farmers);
-                        SaveGame.loaded.locations[i].farmers.Clear();
-                        foreach ( Farmer farmer in loc.farmers )
-                        {
-                            farmer.currentLocation = loc;
-                        }
-                        SaveGame.loaded.locations[i] = loc;
-                        found = true;
-                        break;
-                    }
-                }
-                if (!found) SaveGame.loaded.locations.Add(loc);
             }
+            if (!found) Game1.locations.Add(loc);
+
+            found = false;
+            for (int i = 0; i < SaveGame.loaded.locations.Count; ++i)
+            {
+                if (SaveGame.loaded.locations[i].name.ToLower().Equals( loc.name.ToLower() ) )
+                {
+                    loc.farmers.AddRange(SaveGame.loaded.locations[i].farmers);
+                    SaveGame.loaded.locations[i].farmers.Clear();
+                    foreach ( Farmer farmer in loc.farmers )
+                    {
+                        farmer.currentLocation = loc;
+                    }
+                    SaveGame.loaded.locations[i] = loc;
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) SaveGame.loaded.locations.Add(loc);
         }
         
         private void fixPetDuplicates( SaveGame world )
