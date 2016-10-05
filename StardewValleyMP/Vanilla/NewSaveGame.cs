@@ -924,7 +924,7 @@ namespace StardewValleyMP.Vanilla
                 house.setMapTileIndex(5, 25, 0, "Front", 0);
                 house.removeTile(4, 23, "Buildings");
                 house.removeTile(5, 23, "Buildings");
-                house.warps.Add(new Warp(4, 25, "Cellar", 3, 2, false)); todo make palyer specific
+                house.warps.Add(new Warp(4, 25, "Cellar", 3, 2, false));
                 house.warps.Add(new Warp(5, 25, "Cellar", 4, 2, false));
 				if (!Game1.player.craftingRecipes.ContainsKey("Cask"))
 				{
