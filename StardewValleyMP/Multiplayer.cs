@@ -649,6 +649,11 @@ namespace StardewValleyMP
         public static void locationChange( GameLocation oldLoc, GameLocation newLoc )
         {
             string newLocName = getUniqueLocationName( newLoc );
+            if ( newLocName == "" )
+            {
+                // Not sure how this happened... But it did
+                return;
+            }
 
             Log.Async("(Me) " + SaveGame.loaded.player.name + " moved to " + newLocName + " (" + newLoc + ")");
             LocationPacket loc = new LocationPacket(getMyId(), newLocName);
