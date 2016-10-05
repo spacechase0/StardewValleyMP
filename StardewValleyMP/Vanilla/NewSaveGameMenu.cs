@@ -21,13 +21,16 @@ namespace StardewValleyMP.Vanilla
 
         //public bool hasDrawn;
 
+        ////////////////////////////////////////
         private SparklingText waitingText;
+        ////////////////////////////////////////
         private SparklingText saveText;
 
         private int margin = 500;
 
         public NewSaveGameMenu()
         {
+            ////////////////////////////////////////
             //Log.Async("New save menu created");
             /*if ( Multiplayer.mode == Mode.Host )
             {
@@ -40,6 +43,7 @@ namespace StardewValleyMP.Vanilla
                 Multiplayer.sendFunc(new NextDayPacket());
             }*/
             this.waitingText = new SparklingText(Game1.dialogueFont, "Waiting on host", Color.DodgerBlue, Color.Black * 0.001f, false, 0.1, 1500, Game1.tileSize / 2, 500);
+            ////////////////////////////////////////
             this.saveText = new SparklingText(Game1.dialogueFont, "Your progress has been saved.", Color.LimeGreen, Color.Black * 0.001f, false, 0.1, 1500, Game1.tileSize / 2, 500);
         }
 
@@ -47,19 +51,19 @@ namespace StardewValleyMP.Vanilla
         {
         }
 
-        private double dotTime = 0;
         public override void update(GameTime time)
         {
             if (this.quit)
             {
-                if (Game1.currentLoader.Current < 100)
+                if ( Game1.currentLoader.Current < 100 )
                 {
                     Game1.currentLoader.MoveNext();
                 }
                 else Game1.exitActiveMenu();
                 return;
             }
-            
+
+            ////////////////////////////////////////
             if (Multiplayer.mode == Mode.Client)
             {
                 Log.Async("Reloading world for next day");
@@ -78,12 +82,14 @@ namespace StardewValleyMP.Vanilla
                 quit = true;
                 return;
             }
-
+            ////////////////////////////////////////
+            
             if (!Game1.saveOnNewDay)
             {
                 this.quit = true;
                 if (Game1.activeClickableMenu.Equals(this))
                 {
+                    Game1.player.checkForLevelTenStatus();
                     Game1.exitActiveMenu();
                 }
                 return;
@@ -104,16 +110,18 @@ namespace StardewValleyMP.Vanilla
             }
             else if (this.hasDrawn && this.completePause == -1)
             {
+                ////////////////////////////////////////
                 if (Multiplayer.mode == Mode.Host)
                 {
-                    foreach ( Server.Client client in Multiplayer.server.clients )
+                    foreach (Server.Client client in Multiplayer.server.clients)
                     {
                         // They should have sent their farmer data again.
                         // We can update their stuff before the new day.
                         client.processDelayedPackets();
                     }
                 }
-                this.loader = NewSaveGame.Save();
+                ////////////////////////////////////////
+                this.loader = NewSaveGame.Save(); // SaveGame -> NewSaveGame
             }
             if (this.completePause >= 0)
             {
@@ -125,6 +133,7 @@ namespace StardewValleyMP.Vanilla
                     this.completePause = -9999;
                     if (Game1.activeClickableMenu.Equals(this))
                     {
+                        Game1.player.checkForLevelTenStatus();
                         Game1.exitActiveMenu();
                     }
                     Game1.currentLocation.resetForPlayerEntry();
@@ -134,10 +143,7 @@ namespace StardewValleyMP.Vanilla
 
         public override void draw(SpriteBatch b)
         {
-            if (this.upperRightCloseButton != null)
-            {
-                this.upperRightCloseButton.draw(b);
-            }
+            ////////////////////////////////////////
             /*
             if ( Multiplayer.waitingOnOthers() )
             {
@@ -145,7 +151,7 @@ namespace StardewValleyMP.Vanilla
                 this.hasDrawn = true;
                 return;
             }*/
-
+            ////////////////////////////////////////
             if (this.completePause >= 0)
             {
                 this.saveText.draw(b, new Vector2((float)Game1.tileSize, (float)(Game1.viewport.Height - Game1.tileSize)));
