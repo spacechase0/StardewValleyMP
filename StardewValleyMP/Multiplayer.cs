@@ -179,6 +179,7 @@ namespace StardewValleyMP
         public static bool isPlayerUnique( string location )
         {
             if (location == "FarmHouse") return true;
+            if (location == "Cellar") return true;
             if (!Multiplayer.COOP)
             {
                 if (location == "Farm") return true;
