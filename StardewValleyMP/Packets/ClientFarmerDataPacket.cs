@@ -11,6 +11,7 @@ using StardewModdingAPI;
 using StardewValleyMP.Vanilla;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
+using xTile;
 
 namespace StardewValleyMP.Packets
 {
@@ -139,7 +140,7 @@ namespace StardewValleyMP.Packets
             }
 
             Log.Async("Adding: " + oldName + " -> " + loc.name + " (" + loc + ")");
-            if ( oldName != "FarmHouse" )
+            if ( oldName != "FarmHouse" && oldName != "Cellar" )
             {
                 Log.Async("READ THE BLOCK OF COMMENTS IN THE ABOVE FUNCTION");
                 return;
@@ -161,7 +162,28 @@ namespace StardewValleyMP.Packets
                     break;
                 }
             }
-            if (!found) Game1.locations.Add(loc);
+            if (!found)
+            {
+                // Here, we're using new instances instead of the one that is a parameter.
+                // The reason for this is because a new one has the (Map, string) constructor called.
+                // While I could just load the map and set loc.map, the ^ constructor does some 
+                // other things as well (and who knows what else, depending on the GameLocation).
+                // I believe the default constructor is mainly used for supporting de/serialization.
+                // This also might be the reason that loadDataToLocations exists. It transfers the
+                // loaded data to a 'working' instance of GameLocation.
+                // Note that we don't need to do that here, since loadDataToLocations will be called
+                // later anyways.
+                if ( oldName == "FarmHouse" )
+                {
+                    Map expr_214 = Game1.content.Load<Map>("Maps\\FarmHouse");
+                    expr_214.LoadTileSheets(Game1.mapDisplayDevice);
+                    Game1.currentLocation = new FarmHouse(expr_214, loc.name);
+                }
+                else if (oldName == "Cellar")
+                {
+                    Game1.locations.Add(new Cellar(Game1.content.Load<Map>("Maps\\Cellar"), "Cellar"));
+                }
+            }
 
             found = false;
             for (int i = 0; i < SaveGame.loaded.locations.Count; ++i)
@@ -179,7 +201,12 @@ namespace StardewValleyMP.Packets
                     break;
                 }
             }
-            if (!found) SaveGame.loaded.locations.Add(loc);
+            if (!found)
+            {
+                // This doesn't need the shenanigans the one in Game1.locations needs.
+                // Read the comments above for explanation.
+                SaveGame.loaded.locations.Add(loc);
+            }
         }
         
         private void fixPetDuplicates( SaveGame world )
