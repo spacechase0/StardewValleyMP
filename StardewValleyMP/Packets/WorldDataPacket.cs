@@ -99,6 +99,8 @@ namespace StardewValleyMP.Packets
                 world.stats = mine.stats;
                 world.incubatingEgg = mine.incubatingEgg;
                 world.dailyLuck = mine.dailyLuck;
+                world.whichFarm = mine.whichFarm;
+                world.shouldSpawnMonsters = mine.shouldSpawnMonsters;
             }
                 world.mine_mineLevel = mine.mine_mineLevel;
                 world.mine_nextLevel = mine.mine_nextLevel;

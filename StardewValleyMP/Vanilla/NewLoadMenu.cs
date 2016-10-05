@@ -94,7 +94,7 @@ namespace StardewValleyMP.Vanilla
                             if (stream != null)
                             {
                                 Farmer farmer = (Farmer)SaveGame.farmerSerializer.Deserialize(stream);
-                                SaveGame.loadDataToFarmer(farmer, farmer);
+                                NewSaveGame.loadDataToFarmer(farmer, farmer);
                                 farmer.favoriteThing = text2.Split(new char[]
                                 {
                                     Path.DirectorySeparatorChar
@@ -522,7 +522,7 @@ namespace StardewValleyMP.Vanilla
                     this.timerToLoad = 0;
 
                     ////////////////////////////////////////
-                    SaveGame.Load(this.saveGames[this.selected].favoriteThing);
+                    NewSaveGame.Load(this.saveGames[this.selected].favoriteThing);
                     for (int i = 0; i < this.saveGames.Count; i++)
                     {
                         if (i != this.selected)
