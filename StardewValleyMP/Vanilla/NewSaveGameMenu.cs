@@ -143,6 +143,10 @@ namespace StardewValleyMP.Vanilla
 
         public override void draw(SpriteBatch b)
         {
+            if (this.upperRightCloseButton != null)
+            {
+                this.upperRightCloseButton.draw(b);
+            }
             ////////////////////////////////////////
             /*
             if ( Multiplayer.waitingOnOthers() )
