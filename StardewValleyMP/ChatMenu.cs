@@ -42,7 +42,7 @@ namespace StardewValleyMP
 
         public ChatMenu() : base( 50, 50, Game1.viewport.Width - 100, Game1.viewport.Height - 100, true )
         {
-            //chat.Add(new ChatEntry(Game1.player, "~!@#$%^&*()_+|}{POIUYTREWQASFDDGHJKL:\"?><MNBVCXZ"));
+            //chat.Add(new ChatEntry(Game1.player, "~!@#$%^&*()_+|}{POIUYTREWQASDFGHJKL:\"?><MNBVCXZ"));
             //chat.Add(new ChatEntry(Game1.player, "`1234567890-=\\][poiuytrewqasdfghjkl;'/.,mnbvcxz"));
             KeyboardInput.CharEntered += gotChar;
             exitFunction = destruct;
@@ -72,11 +72,18 @@ namespace StardewValleyMP
 
                 if (MultiplayerMod.DEBUG)
                 {
-                    if (typing.StartsWith("/instance ") && typing.Length > 10 && Game1.player.currentLocation is StardewValley.Locations.FarmHouse)
+                    if (typing.StartsWith("/instance ") && typing.Length > 10 )
                     {
-                        Log.Async("Looking for " + "FarmHouse_" + typing.Substring(10) );
-                        if (Game1.getLocationFromName("FarmHouse_" + typing.Substring(10)) != null)
-                            Game1.warpFarmer("FarmHouse_" + typing.Substring(10), (int)Game1.player.position.X / Game1.tileSize, (int)Game1.player.position.Y / Game1.tileSize, false);
+                        string baseLoc = null;
+                        if (Game1.player.currentLocation is StardewValley.Locations.FarmHouse) baseLoc = "FarmHouse";
+                        if (Game1.player.currentLocation is StardewValley.Locations.Cellar) baseLoc = "Cellar";
+
+                        if (baseLoc != null)
+                        {
+                            Log.Async("Looking for " + baseLoc + "_" + typing.Substring(10));
+                            if (Game1.getLocationFromName(baseLoc + "_" + typing.Substring(10)) != null)
+                                Game1.warpFarmer(baseLoc + "_" + typing.Substring(10), (int)Game1.player.position.X / Game1.tileSize, (int)Game1.player.position.Y / Game1.tileSize, false);
+                        }
                     }
                 }
 
