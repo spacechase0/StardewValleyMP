@@ -1,0 +1,14 @@
+{
+  "Name": "Makeshift Multiplayer",
+  "Authour": "spacechase0",
+  "Version": {
+    "MajorVersion": 0,
+    "MinorVersion": 2,
+    "PatchVersion": 3,
+    "Build": ""
+  },
+  "Description": "Multiplayer test",
+  "UniqueID": "StardewValleyMP",
+  "PerSaveConfigs": false,
+  "EntryDll": "StardewValleyMP.dll"
+}
