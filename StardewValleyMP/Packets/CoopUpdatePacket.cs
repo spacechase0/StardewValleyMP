@@ -13,7 +13,7 @@ namespace StardewValleyMP.Packets
     // Co-op, not coop :P
     public class CoopUpdatePacket : Packet
     {
-        public int money;
+        public int money, clubCoins;
         public uint moneyEarned;
         public bool rustyKey, skullKey, clubCard;
 
@@ -21,15 +21,18 @@ namespace StardewValleyMP.Packets
             : base(ID.CoopUpdate)
         {
             money = Game1.player.money;
+            clubCoins = Game1.player.clubCoins;
             moneyEarned = Game1.player.totalMoneyEarned;
             rustyKey = Game1.player.hasRustyKey;
             skullKey = Game1.player.hasSkullKey;
             clubCard = Game1.player.hasClubCard;
+            // Should I sync dark talisman / magic ink?
         }
 
         protected override void read(BinaryReader reader)
         {
             money = reader.ReadInt32();
+            clubCoins = reader.ReadInt32();
             moneyEarned = reader.ReadUInt32();
             rustyKey = reader.ReadBoolean();
             skullKey = reader.ReadBoolean();
@@ -39,6 +42,7 @@ namespace StardewValleyMP.Packets
         protected override void write(BinaryWriter writer)
         {
             writer.Write(money);
+            writer.Write(clubCoins);
             writer.Write(moneyEarned);
             writer.Write(rustyKey);
             writer.Write(skullKey);
@@ -62,6 +66,7 @@ namespace StardewValleyMP.Packets
             if (Multiplayer.mode == Mode.Host && Game1.activeClickableMenu is ShippingMenu) return;
 
             Game1.player.money = money;
+            Game1.player.clubCoins = clubCoins;
             Game1.player.totalMoneyEarned = moneyEarned;
             Game1.player.hasRustyKey = rustyKey;
             Game1.player.hasSkullKey = skullKey;
@@ -78,6 +83,7 @@ namespace StardewValleyMP.Packets
             CoopUpdatePacket other = ( CoopUpdatePacket ) obj;
 
             if (money != other.money) return false;
+            if (clubCoins != other.clubCoins) return false;
             if (moneyEarned != other.moneyEarned) return false;
             if (rustyKey != other.rustyKey) return false;
             if (skullKey != other.skullKey) return false;
