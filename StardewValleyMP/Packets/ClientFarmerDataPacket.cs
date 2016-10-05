@@ -104,6 +104,8 @@ namespace StardewValleyMP.Packets
 
             fixPetDuplicates(theirs);
 
+            Multiplayer.fixLocations(theirs.locations, client.farmer, addFixedLocationToOurWorld);
+
             foreach (string mail in Multiplayer.checkMail)
             {
                 if (client.farmer.mailForTomorrow.Contains(mail))
