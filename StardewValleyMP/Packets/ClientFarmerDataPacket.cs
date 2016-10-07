@@ -150,14 +150,14 @@ namespace StardewValleyMP.Packets
             for ( int i = 0; i < Game1.locations.Count; ++i )
             {
                 if ( Game1.locations[ i ].name.ToLower().Equals( loc.name.ToLower() ) )
-                {
+                {/*
                     loc.farmers.AddRange(Game1.locations[i].farmers);
                     Game1.locations[i].farmers.Clear();
                     foreach (Farmer farmer in loc.farmers)
                     {
                         farmer.currentLocation = loc;
                     }
-                    Game1.locations[i] = loc;
+                    Game1.locations[i] = loc;*/
                     found = true;
                     break;
                 }
@@ -177,11 +177,11 @@ namespace StardewValleyMP.Packets
                 {
                     Map expr_214 = Game1.content.Load<Map>("Maps\\FarmHouse");
                     expr_214.LoadTileSheets(Game1.mapDisplayDevice);
-                    Game1.currentLocation = new FarmHouse(expr_214, loc.name);
+                    Game1.locations.Add(new FarmHouse(expr_214, loc.name));
                 }
                 else if (oldName == "Cellar")
                 {
-                    Game1.locations.Add(new Cellar(Game1.content.Load<Map>("Maps\\Cellar"), "Cellar"));
+                    Game1.locations.Add(new Cellar(Game1.content.Load<Map>("Maps\\Cellar"), loc.name));
                 }
             }
 
