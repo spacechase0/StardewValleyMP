@@ -67,7 +67,7 @@
     </Reference>
     <Reference Include="Stardew Valley, Version=1.0.6120.34169, Culture=neutral, processorArchitecture=x86">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\1.1\Stardew Valley.exe</HintPath>
+      <HintPath>..\..\1.11\Stardew Valley.exe</HintPath>
     </Reference>
     <Reference Include="StardewModdingAPI, Version=0.40.0.0, Culture=neutral, processorArchitecture=x86">
       <SpecificVersion>False</SpecificVersion>
