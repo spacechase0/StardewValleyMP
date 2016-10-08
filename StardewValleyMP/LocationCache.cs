@@ -263,7 +263,7 @@ namespace StardewValleyMP
             }
             else if ( prevBinSize > farm.shippingBin.Count )
             {
-                for (int i = prevBinSize; i < farm.shippingBin.Count; ++i)
+                for (int i = farm.shippingBin.Count; i < prevBinSize; ++i)
                 {
                     Multiplayer.sendFunc(new ShippingBinPacket(loc));
                 }
