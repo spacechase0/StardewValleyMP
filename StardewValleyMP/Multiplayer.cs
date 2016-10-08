@@ -371,6 +371,7 @@ namespace StardewValleyMP
                 {
                     Log.Async("Waiting for connection...");
                     Socket socket = listener.AcceptSocket();
+                    socket.NoDelay = true;
                     NetworkStream stream = new NetworkStream(socket);
                     server.addClient(socket, stream);
                 }
@@ -407,6 +408,7 @@ namespace StardewValleyMP
             {
                 Log.Async("Connecting to " + ipStr + ":" + portStr);
                 TcpClient socket = new TcpClient(ipStr, Int32.Parse(portStr));
+                socket.NoDelay = true;
                 ChatMenu.chat.Add(new ChatEntry(null, "Connection established."));
 
                 client = new Client(socket);
