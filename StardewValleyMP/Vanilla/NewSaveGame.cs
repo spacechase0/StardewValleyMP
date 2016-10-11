@@ -353,11 +353,15 @@ namespace StardewValleyMP.Vanilla
                     Thread.Sleep(10);
                 }
             }
-            if (Game1.player.spouse != null)
+            if (Multiplayer.mode != Mode.Singleplayer)
             {
-                var npc = Game1.getCharacterFromName(Game1.player.spouse);
-                Multiplayer.sendFunc(new NPCUpdatePacket(npc));
-            };
+                if (Game1.player.spouse != null)
+                {
+                    var npc = Game1.getCharacterFromName(Game1.player.spouse);
+                    NPCUpdatePacket packet = new NPCUpdatePacket(npc);
+                    Multiplayer.sendFunc(packet);
+                }
+            }
             ////////////////////////////////////////
             yield return 100;
             yield break;
