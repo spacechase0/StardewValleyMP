@@ -357,9 +357,16 @@ namespace StardewValleyMP.Vanilla
             {
                 if (Game1.player.spouse != null)
                 {
-                    var npc = Game1.getCharacterFromName(Game1.player.spouse);
-                    NPCUpdatePacket packet = new NPCUpdatePacket(npc);
-                    Multiplayer.sendFunc(packet);
+                    string spouse = Game1.player.spouse;
+                    if (spouse.EndsWith("_engaged"))
+                        spouse = spouse.Substring(0, spouse.Length - "_engaged".Length);
+
+                    var npc = Game1.getCharacterFromName(spouse);
+                    if (npc != null)
+                    {
+                        NPCUpdatePacket packet = new NPCUpdatePacket(npc);
+                        Multiplayer.sendFunc(packet);
+                    }
                 }
             }
             ////////////////////////////////////////
