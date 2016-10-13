@@ -312,6 +312,10 @@ namespace StardewValleyMP
                     while (connected())
                     {
                         Packet packet = Packet.readFrom(stream);
+                        if (MultiplayerMod.FAKE_LATENCY)
+                        {
+                            Thread.Sleep(100);
+                        }
                         toReceive.Add(packet);
 
 #if NETWORKING_BENCHMARK

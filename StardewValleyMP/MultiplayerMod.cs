@@ -21,6 +21,7 @@ namespace StardewValleyMP
     public class MultiplayerMod : Mod
     {
         public const bool DEBUG = true;
+        public const bool FAKE_LATENCY = false;
 
         public static Assembly a;
         public override void Entry(params object[] objects)
