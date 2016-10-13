@@ -76,6 +76,7 @@ namespace StardewValleyMP.Packets
             client.farmer.uniqueMultiplayerID += 1 + client.id;
 
             NewSaveGame.loadDataToFarmer(client.farmer, client.farmer);
+            client.farmer.FarmerSprite.setOwner(client.farmer);
 
             //if(!server.playing)
             //if (server.playing) client.farmer = old;
