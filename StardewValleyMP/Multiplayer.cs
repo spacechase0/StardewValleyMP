@@ -686,8 +686,8 @@ namespace StardewValleyMP
             }
 
             Log.Async("(Me) " + SaveGame.loaded.player.name + " moved to " + newLocName + " (" + newLoc + ")");
-            LocationPacket loc = new LocationPacket(getMyId(), newLocName);
             MovingStatePacket move = new MovingStatePacket(getMyId(), Game1.player);
+            LocationPacket loc = new LocationPacket(getMyId(), newLocName);
             if (!goingToFestival) Multiplayer.sendFunc(loc);
             Multiplayer.sendFunc(move);
 

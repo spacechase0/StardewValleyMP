@@ -97,7 +97,7 @@ namespace StardewValleyMP.Packets
                         }
                     }
                 }*/
-                Game1.warpFarmer(name, 0, 0, false);
+                Game1.warpFarmer(name, (int)(target.position.X / Game1.tileSize), (int)(target.position.Y / Game1.tileSize), false);
             }
             
             if (name == "Temp")
