@@ -470,19 +470,33 @@ namespace StardewValleyMP
                     {
                         client.stage = Client.NetStage.Waiting;
 
-                        SaveGame oldLoaded = SaveGame.loaded;
-                        var it = NewSaveGame.Save(true);
-                        while ( it.Current < 100 )
+                        try
                         {
-                            it.MoveNext();
-                            Thread.Sleep(5);
-                        }
+                            SaveGame oldLoaded = SaveGame.loaded;
+                            var it = NewSaveGame.Save(true);
+                            while (it.Current < 100)
+                            {
+                                it.MoveNext();
+                                Thread.Sleep(5);
+                            }
 
-                        MemoryStream tmp = new MemoryStream();
-                        SaveGame.serializer.Serialize(tmp, SaveGame.loaded);
-                        sendFunc(new NextDayPacket());
-                        sendFunc(new ClientFarmerDataPacket(Encoding.UTF8.GetString(tmp.ToArray())));
-                        //SaveGame.loaded = oldLoaded;
+                            MemoryStream tmp = new MemoryStream();
+                            SaveGame.serializer.Serialize(tmp, SaveGame.loaded);
+                            sendFunc(new NextDayPacket());
+                            sendFunc(new ClientFarmerDataPacket(Encoding.UTF8.GetString(tmp.ToArray())));
+                            //SaveGame.loaded = oldLoaded;
+                        }
+                        catch ( Exception e )
+                        {
+                            Log.Async("Exception transitioning to next day: " + e);
+                            ChatMenu.chat.Add(new ChatEntry(null, "Something went wrong transitioning days."));
+                            ChatMenu.chat.Add(new ChatEntry(null, "Report this bug, providing the full log file."));
+                            ChatMenu.chat.Add(new ChatEntry(null, "You might be stuck in bed now. Attempting to unstuck you, more stuff might go wrong though."));
+                            Game1.freezeControls = prevFreezeControls = false;
+                            Game1.newDay = false;
+                            Game1.fadeToBlackAlpha = 0;
+                            client.stage = Client.NetStage.Playing;
+                        }
                     }
                     sentNextDayPacket = true;
                 }
