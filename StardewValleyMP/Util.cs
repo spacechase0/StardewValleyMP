@@ -21,6 +21,13 @@ namespace StardewValleyMP
     {
         public static void drawStr(string str, float x, float y, Color col, float alpha = 1)
         {
+            for ( int i = 0; i < str.Length; ++i )
+            {
+                if ( !Game1.smallFont.Characters.Contains( str[ i ] ) )
+                {
+                    str = str.Remove(i, 1).Insert(i, "?");
+                } 
+            }
             /*SpriteBatch b = Game1.spriteBatch;
             
             b.DrawString(Game1.smallFont, str, new Vector2((float)(x + Game1.tileSize / 4), (float)(y + Game1.tileSize / 4 + 4)) + new Vector2(2f, 2f), Game1.textShadowColor * alpha);
