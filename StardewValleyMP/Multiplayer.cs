@@ -480,6 +480,22 @@ namespace StardewValleyMP
                                 Thread.Sleep(5);
                             }
 
+                            foreach ( GameLocation loc in SaveGame.loaded.locations )
+                            {
+                                List<NPC> toRemove = new List<NPC>();
+                                foreach ( NPC npc in loc.characters )
+                                {
+                                    if ( npc is StardewValley.Monsters.RockGolem )
+                                    {
+                                        toRemove.Add(npc);
+                                    }
+                                }
+                                foreach ( NPC npc in toRemove )
+                                {
+                                    loc.characters.Remove(npc);
+                                }
+                            }
+
                             MemoryStream tmp = new MemoryStream();
                             SaveGame.serializer.Serialize(tmp, SaveGame.loaded);
                             sendFunc(new NextDayPacket());
