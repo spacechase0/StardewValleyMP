@@ -490,7 +490,7 @@ namespace StardewValleyMP
                                 List<NPC> toRemove = new List<NPC>();
                                 foreach ( NPC npc in loc.characters )
                                 {
-                                    if ( npc is StardewValley.Monsters.RockGolem )
+                                    if ( npc is StardewValley.Monsters.RockGolem || npc is StardewValley.Monsters.Bat )
                                     {
                                         toRemove.Add(npc);
                                     }
