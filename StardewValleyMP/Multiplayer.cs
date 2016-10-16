@@ -360,8 +360,7 @@ namespace StardewValleyMP
             {
                 int port = Int32.Parse(portStr);
                 // http://stackoverflow.com/questions/1777629/how-to-listen-on-multiple-ip-addresses
-                listener = new TcpListener(IPAddress.IPv6Any, port);
-                listener.Server.SetSocketOption(SocketOptionLevel.IPv6, SocketOptionName.IPv6Only, false);
+                listener = TcpListener.Create(port);
                 listener.Start();
 
                 client = null;
@@ -407,7 +406,13 @@ namespace StardewValleyMP
             try
             {
                 Log.Async("Connecting to " + ipStr + ":" + portStr);
-                TcpClient socket = new TcpClient(ipStr, Int32.Parse(portStr));
+                IPAddress ip;
+                IPAddress.TryParse(ipStr, out ip );
+                int port = Int32.Parse(portStr);
+
+                TcpClient socket = new TcpClient(AddressFamily.InterNetworkV6);
+                socket.Client.DualMode = true;
+                socket.Connect(ip, port);
                 socket.NoDelay = true;
                 ChatMenu.chat.Add(new ChatEntry(null, "Connection established."));
 
