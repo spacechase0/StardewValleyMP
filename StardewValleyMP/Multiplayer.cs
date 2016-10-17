@@ -436,7 +436,10 @@ namespace StardewValleyMP
 
         private static int prevDuhu, prevHul, prevLul;
         public static void update()
-        {
+        {// Really don't understand why it breaks without this
+            // But as soon as you get to the second day, it does. Ugh.
+            Game1.player.FarmerSprite.setOwner(Game1.player);
+
             if (Multiplayer.mode == Mode.Singleplayer) return;
 
             if ( MultiplayerUtility.latestID > prevLatestId )
@@ -454,10 +457,6 @@ namespace StardewValleyMP
                 Game1.currentLocation = Game1.player.currentLocation;
                 Game1.currentLocation.resetForPlayerEntry();
             }
-
-            // Really don't understand why it breaks without this
-            // But as soon as you get to the second day, it does. Ugh.
-            Game1.player.FarmerSprite.setOwner(Game1.player);
 
             if (Game1.newDay)
             {
@@ -634,6 +633,8 @@ namespace StardewValleyMP
                 }
                 NPCMonitor.endChecks();
             }
+            
+            Game1.player.FarmerSprite.setOwner(Game1.player);
         }
 
         private static void doUpdatePlayer(Farmer farmer)

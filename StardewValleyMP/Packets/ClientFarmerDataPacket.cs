@@ -75,10 +75,11 @@ namespace StardewValleyMP.Packets
 
             NewSaveGame.loadDataToFarmer(client.farmer, client.farmer);
             client.farmer.FarmerSprite.setOwner(client.farmer);
+            Game1.player.FarmerSprite.setOwner(Game1.player);
 
             //if(!server.playing)
             //if (server.playing) client.farmer = old;
-            
+
             // About second-day-sleeping crashes:
             // So just adding the location directly puts the raw deserialized one into the game.
             // The raw deserialized one doesn't have the tiles and stuff loaded. Just the game data.
