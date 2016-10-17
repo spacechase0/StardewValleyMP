@@ -92,6 +92,7 @@
     <Compile Include="ChatMenu.cs" />
     <Compile Include="Events.cs" />
     <Compile Include="LocationCache.cs" />
+    <Compile Include="MultiplayerConfig.cs" />
     <Compile Include="NPCMonitor.cs" />
     <Compile Include="Packets\FarmAnimalPacket.cs" />
     <Compile Include="Packets\BuildingUpdatePacket.cs" />

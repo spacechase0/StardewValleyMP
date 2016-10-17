@@ -23,9 +23,13 @@ namespace StardewValleyMP
         public const bool DEBUG = true;
         public const bool FAKE_LATENCY = false;
 
+        public static MultiplayerConfig ModConfig { get; private set; }
         public static Assembly a;
         public override void Entry(params object[] objects)
         {
+            Log.Async("Loading Config");
+            ModConfig = new MultiplayerConfig().InitializeConfig(BaseConfigPath);
+
             GameEvents.UpdateTick += onUpdate;
             GraphicsEvents.OnPreRenderHudEventNoCheck += onPreDraw;
             LocationEvents.CurrentLocationChanged += onCurrentLocationChange;
