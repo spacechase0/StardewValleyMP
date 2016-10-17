@@ -8,6 +8,7 @@ using System.Threading;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using StardewModdingAPI;
 
 namespace StardewValleyMP.Vanilla
 {
@@ -325,6 +326,7 @@ namespace StardewValleyMP.Vanilla
                     Rectangle r = new Rectangle(buttonX, buttonY3, buttonW, buttonH);
                     if (r.Contains(x, y))
                     {
+                        MultiplayerMod.ModConfig.DefaultPort = portBox.Text;
                         Multiplayer.portStr = portBox.Text;
                         if (Multiplayer.mode == Mode.Host)
                         {
@@ -332,9 +334,12 @@ namespace StardewValleyMP.Vanilla
                         }
                         else if (Multiplayer.mode == Mode.Client)
                         {
+                            MultiplayerMod.ModConfig.DefaultIP = ipBox.Text;
                             Multiplayer.ipStr = ipBox.Text;
                             modeInit = new Thread(Multiplayer.startClient);
                         }
+                        StardewModdingAPI.Log.Async("Saving Config file");
+                        MultiplayerMod.ModConfig.WriteConfig();
                         modeInit.Start();
                         ChatMenu.chat.Clear();
                         ChatMenu.chat.Add(new ChatEntry(null, "NOTE: Chat doesn't work on the connection menu."));
@@ -479,14 +484,14 @@ namespace StardewValleyMP.Vanilla
                                     ipBox.Width *= 3;
                                     ipBox.X = buttonX + buttonW / 2 - (SpriteText.getWidthOfString("IP Address:") + ipBox.Width + 20) / 2 + SpriteText.getWidthOfString("IP Address:") + 20;
                                     ipBox.Y = buttonY1 + buttonH / 2 - ipBox.Height / 2;
-                                    ipBox.Text = Multiplayer.ipStr;
+                                    ipBox.Text = MultiplayerMod.ModConfig.DefaultIP;
                                 }
 
                                 portBox = new TextBox(Game1.content.Load<Texture2D>("LooseSprites\\textBox"), null, Game1.smallFont, Game1.textColor);
                                 portBox.Width *= 3;
                                 portBox.X = buttonX + buttonW / 2 - (SpriteText.getWidthOfString("IP Address:") + portBox.Width + 20) / 2 + SpriteText.getWidthOfString("IP Address:") + 20;
                                 portBox.Y = buttonY2 + buttonH / 2 - portBox.Height / 2;
-                                portBox.Text = Multiplayer.portStr;
+                                portBox.Text = MultiplayerMod.ModConfig.DefaultPort;
                             }
                         }
                         else
