@@ -337,7 +337,7 @@ namespace StardewValleyMP
 
             foreach ( GameLocation loc in SaveGame.loaded.locations )
             {
-                if ( Game1.getLocationFromName( loc.name ) == null )
+                if ( loc.name.Contains( "_" ) && Game1.getLocationFromName( loc.name ) == null )
                 {
                     Log.Async(loc.name + " missing from game, copying from save");
                     Game1.locations.Add(loc);
