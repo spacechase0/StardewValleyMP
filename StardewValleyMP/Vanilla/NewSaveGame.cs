@@ -162,7 +162,8 @@ namespace StardewValleyMP.Vanilla
             Game1.isRaining = SaveGame.loaded.isRaining;
             Game1.isLightning = SaveGame.loaded.isLightning;
             Game1.isSnowing = SaveGame.loaded.isSnowing;
-            SaveGame.loadDataToFarmer(SaveGame.loaded.player, null);
+            NewSaveGame.loadDataToFarmer(SaveGame.loaded.player, null);
+            Game1.player = SaveGame.loaded.player;
             Game1.loadingMessage = "Loading Maps...";
             yield return 36;
             ////////////////////////////////////////
