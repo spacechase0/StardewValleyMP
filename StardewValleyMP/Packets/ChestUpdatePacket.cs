@@ -65,6 +65,8 @@ namespace StardewValleyMP.Packets
 
         public override void process(Server server, Server.Client client)
         {
+			//redirect the packet to all connected clients to avoid item/data loss
+			server.broadcast(this, client.id);
             location = Multiplayer.processLocationNameForPlayerUnique(client.farmer, location);
 
             process();
