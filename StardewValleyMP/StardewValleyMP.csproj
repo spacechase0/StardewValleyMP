@@ -114,6 +114,7 @@
     <Compile Include="Packets\BuildingPacket.cs" />
     <Compile Include="Packets\TimeSyncPacket.cs" />
     <Compile Include="Packets\PauseTimePacket.cs" />
+    <Compile Include="Packets\ResourceClumpsPacket.cs" />
     <Compile Include="Packets\CoopUpdatePacket.cs" />
     <Compile Include="Packets\NextDayPacket.cs" />
     <Compile Include="Packets\LatestIdPacket.cs" />
