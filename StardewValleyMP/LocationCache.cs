@@ -571,6 +571,8 @@ namespace StardewValleyMP
         private bool[] prevCompleted = null;
         private Dictionary<int, bool> prevRewards = null;
         private Dictionary<int, bool[]> prevBundles = null;
+        public List<int> prevClumps = null;
+        public bool prevForestLog = true;
         private void checkLocationSpecificStuff()
         {
             if ( loc is Farm )
@@ -581,6 +583,25 @@ namespace StardewValleyMP
                     Multiplayer.sendFunc(new FarmUpdatePacket(farm));
                 }
                 prevFarmHay = farm.piecesOfHay;
+
+                if ( prevClumps == null )
+                {
+                    updateClumpsCache( farm.resourceClumps );
+                    return;
+                }
+
+                if ( farm.resourceClumps.Count < prevClumps.Count )
+                {
+                    if ( !ignoreUpdates )
+                    {
+                        List< ResourceClump > missingClumps = farm.resourceClumps.FindAll( (clump) => !prevClumps.Contains( ResourceClumpsPacket.hashVec2( clump ) ) );
+                        foreach ( var clump in missingClumps )
+                        {
+                            Multiplayer.sendFunc(new ResourceClumpsPacket(loc, clump));
+                        }
+                    }
+                    updateClumpsCache( farm.resourceClumps );
+                }
             }
             else if ( loc is Beach )
             {
@@ -634,6 +655,35 @@ namespace StardewValleyMP
                 }
                 updateCommunityCenterCache();
             }
+            else if (loc is Forest)
+            {
+                Forest forest = loc as Forest;
+                if (forest.log == null && prevForestLog && !ignoreUpdates)
+                    Multiplayer.sendFunc(new ResourceClumpsPacket(forest, forest.log));
+                prevForestLog = (forest.log != null);
+            }
+            else if (loc is Woods)
+            {
+                Woods woods = loc as Woods;
+                if (prevClumps == null)
+                {
+                    updateClumpsCache(woods.stumps);
+                    return;
+                }
+
+                if (woods.stumps.Count < prevClumps.Count)
+                {
+                    if (!ignoreUpdates)
+                    {
+                        List<ResourceClump> missingClumps = woods.stumps.FindAll((clump) => !prevClumps.Contains(ResourceClumpsPacket.hashVec2(clump)));
+                        foreach (var clump in missingClumps)
+                        {
+                            Multiplayer.sendFunc(new ResourceClumpsPacket(loc, clump));
+                        }
+                    }
+                    updateClumpsCache(woods.stumps);
+                }
+            }
         }
 
         public void updateMuseumCache()
@@ -664,6 +714,13 @@ namespace StardewValleyMP
             {
                 prevBundles.Add(piece.Key, (bool[]) piece.Value.Clone());
             }
+        }
+
+        public void updateClumpsCache( List< ResourceClump > clumps )
+        {
+            prevClumps = new List< int >();
+            foreach ( var clump in clumps )
+                prevClumps.Add(ResourceClumpsPacket.hashVec2(clump));
         }
     }
 }

@@ -17,18 +17,24 @@ namespace StardewValleyMP.Packets
     // Synchronize the state of ResourceClumps (hardwood logs, meteorite, boulders, etc)
     public class ResourceClumpsPacket : Packet
     {
-        public byte map;
+        public string location;
         public int hash;
 
-        public const byte MAP_WOODS = 0;
-        public const byte MAP_FOREST = 1;
-        public const byte MAP_FARM = 2;
-
-        public ResourceClumpsPacket(byte map, int hash)
+        public ResourceClumpsPacket()
             : base(ID.ResourceClumps)
         {
-            this.map = map;
-            this.hash = hash;
+        }
+
+        public ResourceClumpsPacket(GameLocation loc, ResourceClump clump)
+            : base(ID.ResourceClumps)
+        {
+            this.location = loc.name;
+            this.hash = hashVec2( clump );
+        }
+
+        public static int hashVec2(ResourceClump clump)
+        {
+            return hashVec2((int)clump.tile.X, (int)clump.tile.Y);
         }
 
         public static int hashVec2(int x, int y)
@@ -41,68 +47,70 @@ namespace StardewValleyMP.Packets
 
         protected override void read(BinaryReader reader)
         {
-            map = reader.ReadByte();
+            location = reader.ReadString();
             hash = reader.ReadInt32();
         }
 
         protected override void write(BinaryWriter writer)
         {
-            writer.Write(map);
+            writer.Write(location);
             writer.Write(hash);
         }
 
         public override void process(Client client)
         {
+            location = Multiplayer.processLocationNameForPlayerUnique(null, location);
             process();
         }
 
         public override void process(Server server, Server.Client client)
         {
+            location = Multiplayer.processLocationNameForPlayerUnique(client.farmer, location);
+
             process();
             server.broadcast(this, client.id);
         }
 
         private void process()
         {
-
-            switch (map)
+            GameLocation loc = Game1.getLocationFromName(location);
+            LocationCache cache = Multiplayer.locations[location];
+            if ( loc is Forest )
             {
-                case MAP_FOREST:
                     //only the log here, sooo.
-                    ((Forest)Game1.getLocationFromName("Forest")).log = null;
-                    break;
-                case MAP_WOODS:
+                    ((Forest) loc).log = null;
+                    cache.prevForestLog = false;
+            }
+            else if ( loc is Woods )
+            {
                     //check the stumps in the woods
-                    Woods map_woods = (Woods)Game1.getLocationFromName("Woods");
-                    for (int i = 0; i <= map_woods.stumps.Count - 1; i++)
+                    Woods map_woods = (Woods)loc;
+                    foreach (var clump in map_woods.stumps)
                     {
-                        int vx = map_woods.stumps[i].getBoundingBox(map_woods.stumps[i].tile).X;
-                        int vy = map_woods.stumps[i].getBoundingBox(map_woods.stumps[i].tile).Y;
-                        if (hashVec2(vx, vy) == hash)
+                        if (hashVec2(clump) == hash)
                         {
                             //we have found a removed stump! let's kill it :D
-                            map_woods.stumps.RemoveAt(i);
+                            map_woods.stumps.Remove(clump);
+                            cache.updateClumpsCache( map_woods.stumps );
+                            break;
                         }
                     }
-                    break;
-                case MAP_FARM:
+            }
+            else if ( loc is Farm )
+            {
                     //check the resource clumps on the farm
-                    Farm map_farm = (Farm)Game1.getLocationFromName("Farm");
-                    for (int i = 0; i <= map_farm.resourceClumps.Count - 1; i++)
+                    Farm map_farm = (Farm)loc;
+                    foreach (var clump in map_farm.resourceClumps)
                     {
-                        int vx = map_farm.resourceClumps[i].getBoundingBox(map_farm.resourceClumps[i].tile).X;
-                        int vy = map_farm.resourceClumps[i].getBoundingBox(map_farm.resourceClumps[i].tile).Y;
-                        if (hashVec2(vx, vy) == hash)
+                        if (hashVec2(clump) == hash)
                         {
                             //we have found a removed resource clump! let's kill it :D
-                            map_farm.resourceClumps.RemoveAt(i);
+                            map_farm.resourceClumps.Remove(clump);
+                            cache.updateClumpsCache(map_farm.resourceClumps);
+                            break;
                         }
                     }
-                    break;
             }
-
-
-
         }
 
     }

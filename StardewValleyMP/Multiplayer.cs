@@ -849,59 +849,6 @@ namespace StardewValleyMP
                 sendFunc(new LostBooksPacket());
             }
             prevBooks = Game1.player.archaeologyFound.ContainsKey(102) ? Game1.player.archaeologyFound[102][0] : 0;
-			
-			//begin synchronize resource clump destruction
-			bool rcCurrLogState = (((Forest)Game1.getLocationFromName("Forest")).log != null);
-            if (!rcInit)
-            {
-                rcLastLogState = rcCurrLogState;
-                rcInit = true;
-            }
-            if(rcCurrLogState == false &&  rcLastLogState == true)
-            {
-                //hash doesn't matter for the forest map
-                sendFunc(new ResourceClumpsPacket(ResourceClumpsPacket.MAP_FOREST, 0));
-            }
-            rcLastLogState = rcCurrLogState;
-
-            //section B: woods stumps
-            Woods map_woods = (Woods)Game1.getLocationFromName("Woods");
-            List<int> woodsState = new List<int>();
-            for (int i = 0; i <= map_woods.stumps.Count - 1; i++)
-            {
-                int vx = map_woods.stumps[i].getBoundingBox(map_woods.stumps[i].tile).X;
-                int vy = map_woods.stumps[i].getBoundingBox(map_woods.stumps[i].tile).Y;
-                woodsState.Add(ResourceClumpsPacket.hashVec2(vx, vy));
-            }
-            foreach(int hash in rcLastWoodsState)
-            {
-                //we are looking for stumps that were there last frame but are not now
-                if (!woodsState.Contains(hash))
-                {
-                    sendFunc(new ResourceClumpsPacket(ResourceClumpsPacket.MAP_WOODS, hash));
-                }
-            }
-            rcLastWoodsState = woodsState;
-
-            //section C: farm resourceclumps
-            Farm map_farm = (Farm)Game1.getLocationFromName("Farm");
-            List<int> farmState = new List<int>();
-            for (int i = 0; i <= map_farm.resourceClumps.Count - 1; i++)
-            {
-                int vx = map_farm.resourceClumps[i].getBoundingBox(map_farm.resourceClumps[i].tile).X;
-                int vy = map_farm.resourceClumps[i].getBoundingBox(map_farm.resourceClumps[i].tile).Y;
-                farmState.Add(ResourceClumpsPacket.hashVec2(vx, vy));
-            }
-            foreach (int hash in rcLastFarmState)
-            {
-                //we are looking for resource clumps that were there last frame but are not now
-                if (!farmState.Contains(hash))
-                {
-                    sendFunc(new ResourceClumpsPacket(ResourceClumpsPacket.MAP_FARM, hash));
-                }
-            }
-            rcLastFarmState = farmState;
-			//end synchronize resource clump destruction
         }
     }
 }
