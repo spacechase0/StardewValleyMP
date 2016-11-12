@@ -572,7 +572,7 @@ namespace StardewValleyMP
         private Dictionary<int, bool> prevRewards = null;
         private Dictionary<int, bool[]> prevBundles = null;
         public List<int> prevClumps = null;
-        public bool prevForestLog = true;
+        public ResourceClump prevForestLog = null;
         private void checkLocationSpecificStuff()
         {
             if ( loc is Farm )
@@ -658,9 +658,9 @@ namespace StardewValleyMP
             else if (loc is Forest)
             {
                 Forest forest = loc as Forest;
-                if (forest.log == null && prevForestLog && !ignoreUpdates)
-                    Multiplayer.sendFunc(new ResourceClumpsPacket(forest, forest.log));
-                prevForestLog = (forest.log != null);
+                if (forest.log == null && prevForestLog != null && !ignoreUpdates)
+                    Multiplayer.sendFunc(new ResourceClumpsPacket(forest, prevForestLog));
+                prevForestLog = forest.log;
             }
             else if (loc is Woods)
             {

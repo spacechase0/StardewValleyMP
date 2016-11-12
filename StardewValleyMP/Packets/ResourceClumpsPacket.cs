@@ -79,7 +79,7 @@ namespace StardewValleyMP.Packets
             {
                     //only the log here, sooo.
                     ((Forest) loc).log = null;
-                    cache.prevForestLog = false;
+                    cache.prevForestLog = null;
             }
             else if ( loc is Woods )
             {
