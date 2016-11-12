@@ -575,6 +575,26 @@ namespace StardewValleyMP
         public ResourceClump prevForestLog = null;
         private void checkLocationSpecificStuff()
         {
+            if ( loc is Farm || loc is Woods )
+            {
+                List<ResourceClump> clumps = null;
+                if (loc is Farm) clumps = (loc as Farm).resourceClumps;
+                else if (loc is Woods) clumps = (loc as Woods).stumps;
+
+                if (prevClumps != null && clumps.Count < prevClumps.Count)
+                {
+                    if (!ignoreUpdates)
+                    {
+                        List<ResourceClump> missingClumps = clumps.FindAll((clump) => !prevClumps.Contains(ResourceClumpsPacket.hashVec2(clump)));
+                        foreach (var clump in missingClumps)
+                        {
+                            Multiplayer.sendFunc(new ResourceClumpsPacket(loc, clump));
+                        }
+                    }
+                }
+                updateClumpsCache(clumps);
+            }
+
             if ( loc is Farm )
             {
                 Farm farm = loc as Farm;
@@ -583,25 +603,6 @@ namespace StardewValleyMP
                     Multiplayer.sendFunc(new FarmUpdatePacket(farm));
                 }
                 prevFarmHay = farm.piecesOfHay;
-
-                if ( prevClumps == null )
-                {
-                    updateClumpsCache( farm.resourceClumps );
-                    return;
-                }
-
-                if ( farm.resourceClumps.Count < prevClumps.Count )
-                {
-                    if ( !ignoreUpdates )
-                    {
-                        List< ResourceClump > missingClumps = farm.resourceClumps.FindAll( (clump) => !prevClumps.Contains( ResourceClumpsPacket.hashVec2( clump ) ) );
-                        foreach ( var clump in missingClumps )
-                        {
-                            Multiplayer.sendFunc(new ResourceClumpsPacket(loc, clump));
-                        }
-                    }
-                    updateClumpsCache( farm.resourceClumps );
-                }
             }
             else if ( loc is Beach )
             {
@@ -661,28 +662,6 @@ namespace StardewValleyMP
                 if (forest.log == null && prevForestLog != null && !ignoreUpdates)
                     Multiplayer.sendFunc(new ResourceClumpsPacket(forest, prevForestLog));
                 prevForestLog = forest.log;
-            }
-            else if (loc is Woods)
-            {
-                Woods woods = loc as Woods;
-                if (prevClumps == null)
-                {
-                    updateClumpsCache(woods.stumps);
-                    return;
-                }
-
-                if (woods.stumps.Count < prevClumps.Count)
-                {
-                    if (!ignoreUpdates)
-                    {
-                        List<ResourceClump> missingClumps = woods.stumps.FindAll((clump) => !prevClumps.Contains(ResourceClumpsPacket.hashVec2(clump)));
-                        foreach (var clump in missingClumps)
-                        {
-                            Multiplayer.sendFunc(new ResourceClumpsPacket(loc, clump));
-                        }
-                    }
-                    updateClumpsCache(woods.stumps);
-                }
             }
         }
 
