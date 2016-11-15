@@ -360,6 +360,12 @@ namespace StardewValleyMP
             {
                 if ( b.nameOfIndoors == id )
                 {
+                    if ( state.x != b.tileX || state.y != b.tileY )
+                    {
+                        buildLoc.buildings.Remove(b);
+                        buildLoc.buildStructure(b, new Vector2(state.x, state.y), false, null);
+                    }
+
                     b.animalDoorOpen = state.door;
                     if (b.GetType() == typeof(Barn))
                         Util.SetInstanceField(typeof(Barn), b, "animalDoorMotion", (b.animalDoorOpen ? -3 : 2));
@@ -372,6 +378,8 @@ namespace StardewValleyMP
                         Game1.playSound("axe");
                         b.showUpgradeAnimation(buildLoc);
                     }
+
+                    break;
                 }
             }
         }
