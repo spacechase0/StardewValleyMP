@@ -56,7 +56,7 @@ namespace StardewValleyMP.Packets
         private void process()
         {
             Farm farm = Game1.getLocationFromName(name) as Farm;
-            if (farm == null) return;
+            if (farm == null || !Multiplayer.locations.ContainsKey(name)) return;
 
             farm.piecesOfHay = hay;
             Multiplayer.locations[name].prevFarmHay = hay;
