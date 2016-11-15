@@ -9,6 +9,7 @@ using StardewValley.Locations;
 using StardewValley.Characters;
 using StardewModdingAPI;
 using StardewValleyMP.Vanilla;
+using StardewValley.Buildings;
 
 namespace StardewValleyMP.Packets
 {
@@ -118,6 +119,7 @@ namespace StardewValleyMP.Packets
             //}
 
             fixPetMultiplication(mine, world);
+            fixRelationships(mine, world);
 
             Multiplayer.fixLocations(world.locations, null, debugStuff);
             Woods woods = null;
@@ -272,6 +274,45 @@ namespace StardewValleyMP.Packets
                     npc.currentLocation = theirFarm;
                     theirFarm.characters.Add(npc);
                     continue;
+                }
+            }
+        }
+
+        private void fixRelationships( SaveGame mine, SaveGame world )
+        {
+            // Fix dating status persisting to clients.
+
+            Dictionary<string, bool> dating = new Dictionary<string, bool>();
+            foreach ( GameLocation loc in mine.locations )
+            {
+                foreach (NPC npc in loc.characters)
+                    if (npc.isVillager())
+                        dating.Add(npc.name, npc.datingFarmer);
+                if ( loc is BuildableGameLocation )
+                {
+                    foreach ( Building building in ( loc as BuildableGameLocation ).buildings )
+                    {
+                        if (building.indoors == null) continue;
+                        foreach (NPC npc in building.indoors.characters)
+                            if (npc.isVillager())
+                                dating.Add(npc.name, npc.datingFarmer);
+                    }
+                }
+            }
+            foreach (GameLocation loc in world.locations)
+            {
+                foreach (NPC npc in loc.characters)
+                    if (npc.isVillager() && dating.ContainsKey(npc.name))
+                        npc.datingFarmer = dating[npc.name];
+                if (loc is BuildableGameLocation)
+                {
+                    foreach (Building building in (loc as BuildableGameLocation).buildings)
+                    {
+                        if (building.indoors == null) continue;
+                        foreach (NPC npc in building.indoors.characters)
+                            if (npc.isVillager() && dating.ContainsKey(npc.name))
+                                npc.datingFarmer = dating[npc.name];
+                    }
                 }
             }
         }
