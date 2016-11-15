@@ -585,10 +585,10 @@ namespace StardewValleyMP
                 {
                     if (!ignoreUpdates)
                     {
-                        List<ResourceClump> missingClumps = clumps.FindAll((clump) => !prevClumps.Contains(ResourceClumpsPacket.hashVec2(clump)));
-                        foreach (var clump in missingClumps)
+                        List<int> missingClumps = prevClumps.FindAll((prevClump) => clumps.Find((clump) => ResourceClumpsPacket.hashVec2(clump) == prevClump) == null);
+                        foreach (var hash in missingClumps)
                         {
-                            Multiplayer.sendFunc(new ResourceClumpsPacket(loc, clump));
+                            Multiplayer.sendFunc(new ResourceClumpsPacket(loc, hash));
                         }
                     }
                 }

@@ -29,7 +29,14 @@ namespace StardewValleyMP.Packets
             : base(ID.ResourceClumps)
         {
             this.location = loc.name;
-            this.hash = hashVec2( clump );
+            this.hash = hashVec2(clump);
+        }
+
+        public ResourceClumpsPacket(GameLocation loc, int hash)
+            : base(ID.ResourceClumps)
+        {
+            this.location = loc.name;
+            this.hash = hash;
         }
 
         public static int hashVec2(ResourceClump clump)
