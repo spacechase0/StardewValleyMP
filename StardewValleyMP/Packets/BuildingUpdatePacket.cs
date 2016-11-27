@@ -43,6 +43,8 @@ namespace StardewValleyMP.Packets
             buildingId = reader.ReadString();
             state.door = reader.ReadBoolean();
             state.upgrade = reader.ReadInt32();
+            state.x = reader.ReadInt32();
+            state.y = reader.ReadInt32();
         }
 
         protected override void write(BinaryWriter writer)
@@ -51,6 +53,8 @@ namespace StardewValleyMP.Packets
             writer.Write(buildingId);
             writer.Write(state.door);
             writer.Write(state.upgrade);
+            writer.Write(state.x);
+            writer.Write(state.y);
         }
 
         public override void process(Client client)
