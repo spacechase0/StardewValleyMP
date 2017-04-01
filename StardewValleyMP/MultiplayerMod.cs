@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using System.Reflection;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
-using StardewModdingAPI.Inheritance;
 using StardewValley;
 using StardewValley.Menus;
 using StardewValley.Objects;
@@ -31,10 +30,10 @@ namespace StardewValleyMP
             ModConfig = new MultiplayerConfig().InitializeConfig(BaseConfigPath);
 
             GameEvents.UpdateTick += onUpdate;
-            GraphicsEvents.OnPreRenderHudEventNoCheck += onPreDraw;
+            GraphicsEvents.OnPreRenderHudEvent += onPreDraw;
             LocationEvents.CurrentLocationChanged += onCurrentLocationChange;
             ControlEvents.KeyboardChanged += onKeyboardChange;
-            GraphicsEvents.DrawDebug += Multiplayer.drawNetworkingDebug;
+            //GraphicsEvents.DrawDebug += Multiplayer.drawNetworkingDebug;
 
             if (DEBUG)
             {

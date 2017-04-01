@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.IO;
 using StardewValley;
 using StardewModdingAPI;
+using SFarmer = StardewValley.Farmer;
 
 namespace StardewValleyMP.Packets
 {
@@ -26,7 +27,7 @@ namespace StardewValleyMP.Packets
         {
         }
 
-        public AnimationPacket(byte theId, Farmer farmer)
+        public AnimationPacket(byte theId, SFarmer farmer)
             : this()
         {
             clientId = theId;
@@ -59,21 +60,21 @@ namespace StardewValleyMP.Packets
 
         public override void process(Client client)
         {
-            Farmer farmer = client.others[clientId];
+            SFarmer farmer = client.others[clientId];
             if (farmer == null) return;
 
-            doFarmer(farmer);
+            doSFarmer(farmer);
         }
 
         public override void process(Server server, Server.Client client)
         {
             if (clientId != client.id) return;
 
-            doFarmer(client.farmer);
+            doSFarmer(client.farmer);
             server.broadcast(this, clientId);
         }
 
-        private void doFarmer( Farmer farmer )
+        private void doSFarmer( SFarmer farmer )
         {
             //Log.Async(farmer.Name + " animation " + anim + ", " + interval + ", " + frames + ", " + tool);
 

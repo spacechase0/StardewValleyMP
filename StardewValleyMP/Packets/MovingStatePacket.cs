@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.IO;
 using StardewValley;
 using StardewModdingAPI;
+using SFarmer = StardewValley.Farmer;
 
 namespace StardewValleyMP.Packets
 {
@@ -31,7 +32,7 @@ namespace StardewValleyMP.Packets
         {
         }
 
-        public MovingStatePacket( byte theId, Farmer player ) : this()
+        public MovingStatePacket( byte theId, SFarmer player ) : this()
         {
             clientId = theId;
             flags = 0;
@@ -62,11 +63,11 @@ namespace StardewValleyMP.Packets
 
         public override void process(Client client)
         {
-            Farmer farmer = client.others[clientId];
+            SFarmer farmer = client.others[clientId];
             if (farmer == null) return;
 
             //Log.Async("Movement " + flags + " " + x + " " + y);
-            doFarmer(farmer);
+            doSFarmer(farmer);
 
         }
 
@@ -75,12 +76,12 @@ namespace StardewValleyMP.Packets
             if (clientId != client.id) return;
 
             //Log.Async("Movement " + flags + " " + x + " " + y);
-            doFarmer(client.farmer);
+            doSFarmer(client.farmer);
 
             server.broadcast( this, clientId );
         }
 
-        private void doFarmer( Farmer farmer )
+        private void doSFarmer( SFarmer farmer )
         {
             farmer.SetMovingLeft((flags & (byte)MovementFlags.Left) != 0);
             farmer.SetMovingRight((flags & (byte)MovementFlags.Right) != 0);

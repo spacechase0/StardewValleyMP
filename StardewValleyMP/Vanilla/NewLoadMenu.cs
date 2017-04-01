@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using StardewModdingAPI;
+using SFarmer = StardewValley.Farmer;
 
 namespace StardewValleyMP.Vanilla
 {
@@ -44,7 +45,7 @@ namespace StardewValleyMP.Vanilla
 
         private bool deleteConfirmationScreen;
 
-        private List<Farmer> saveGames = new List<Farmer>();
+        private List<SFarmer> saveGames = new List<SFarmer>();
 
         private Rectangle scrollBarRunner;
 
@@ -94,8 +95,8 @@ namespace StardewValleyMP.Vanilla
                             }
                             if (stream != null)
                             {
-                                Farmer farmer = (Farmer)SaveGame.farmerSerializer.Deserialize(stream);
-                                NewSaveGame.loadDataToFarmer(farmer, farmer);
+                                SFarmer farmer = (SFarmer)SaveGame.farmerSerializer.Deserialize(stream);
+                                NewSaveGame.loadDataToSFarmer(farmer, farmer);
                                 farmer.favoriteThing = text2.Split(new char[]
                                 {
                                     Path.DirectorySeparatorChar
@@ -273,7 +274,7 @@ namespace StardewValleyMP.Vanilla
 
         public void deleteFile(int which)
         {
-            Farmer farmer = this.saveGames[which];
+            SFarmer farmer = this.saveGames[which];
             string favoriteThing = farmer.favoriteThing;
             string path = Path.Combine(new string[]
             {
@@ -458,7 +459,7 @@ namespace StardewValleyMP.Vanilla
         public bool readyToLoad = false;
         public bool didModeSelect = false;
         private Thread modeInit;
-        public static Farmer pendingSelected = null;
+        public static SFarmer pendingSelected = null;
         ////////////////////////////////////////
         public override void update(GameTime time)
         {
@@ -635,7 +636,7 @@ namespace StardewValleyMP.Vanilla
                     int x = buttonX, y = buttonY1, w = buttonW, h = buttonH;
 
                     /*Util.drawStr("Other players: ", x, buttonY1, Color.White);
-                    foreach (KeyValuePair< byte, Farmer > other in Multiplayer.client.others)
+                    foreach (KeyValuePair< byte, SFarmer > other in Multiplayer.client.others)
                     {
                         String str_ = "<Client " + (int)(other.Key) + ">";
                         if (other.Value != null)

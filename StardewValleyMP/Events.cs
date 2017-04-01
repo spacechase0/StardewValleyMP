@@ -8,6 +8,7 @@ using StardewValley;
 using StardewModdingAPI;
 using StardewValleyMP.Packets;
 using Microsoft.Xna.Framework;
+using SFarmer = StardewValley.Farmer;
 
 namespace StardewValleyMP
 {
@@ -70,7 +71,7 @@ namespace StardewValleyMP
                 }
                 else
                 {
-                    Farmer farmer = getFarmerFromFarmerNumberString(array[1]);
+                    SFarmer farmer = getSFarmerFromSFarmerNumberString(array[1]);
                     //if (farmer == Game1.player) return;
                     if (array.Count<string>() == 2)
                     {
@@ -103,13 +104,13 @@ namespace StardewValleyMP
                 }
                 if (array[1].Contains("farmer"))
                 {
-                    Farmer farmerFromFarmerNumberString6 = getFarmerFromFarmerNumberString(array[1]);
-                    //if (farmerFromFarmerNumberString6 == Game1.player) return;
-                    if (farmerFromFarmerNumberString6 != null)
+                    SFarmer farmerFromSFarmerNumberString6 = getSFarmerFromSFarmerNumberString(array[1]);
+                    //if (farmerFromSFarmerNumberString6 == Game1.player) return;
+                    if (farmerFromSFarmerNumberString6 != null)
                     {
-                        farmerFromFarmerNumberString6.FarmerSprite.setCurrentAnimation(list2.ToArray());
-                        farmerFromFarmerNumberString6.FarmerSprite.loopThisAnimation = flag2;
-                        farmerFromFarmerNumberString6.FarmerSprite.PauseForSingleAnimation = true;
+                        farmerFromSFarmerNumberString6.FarmerSprite.setCurrentAnimation(list2.ToArray());
+                        farmerFromSFarmerNumberString6.FarmerSprite.loopThisAnimation = flag2;
+                        farmerFromSFarmerNumberString6.FarmerSprite.PauseForSingleAnimation = true;
                     }
                 }
                 else
@@ -120,27 +121,27 @@ namespace StardewValleyMP
             {
                 if (array[1].Contains("farmer"))
                 {
-                    Farmer farmerFromFarmerNumberString7 = getFarmerFromFarmerNumberString(array[1]);
-                    //if (farmerFromFarmerNumberString7 == Game1.player) return;
-                    if (farmerFromFarmerNumberString7 != null)
+                    SFarmer farmerFromSFarmerNumberString7 = getSFarmerFromSFarmerNumberString(array[1]);
+                    //if (farmerFromSFarmerNumberString7 == Game1.player) return;
+                    if (farmerFromSFarmerNumberString7 != null)
                     {
-                        farmerFromFarmerNumberString7.completelyStopAnimatingOrDoingAction();
-                        farmerFromFarmerNumberString7.Halt();
-                        farmerFromFarmerNumberString7.FarmerSprite.currentAnimation = null;
-                        int num12 = farmerFromFarmerNumberString7.facingDirection;
+                        farmerFromSFarmerNumberString7.completelyStopAnimatingOrDoingAction();
+                        farmerFromSFarmerNumberString7.Halt();
+                        farmerFromSFarmerNumberString7.FarmerSprite.currentAnimation = null;
+                        int num12 = farmerFromSFarmerNumberString7.facingDirection;
                         switch (num12)
                         {
                             case 0:
-                                farmerFromFarmerNumberString7.FarmerSprite.setCurrentSingleFrame(12, 32000, false, false);
+                                farmerFromSFarmerNumberString7.FarmerSprite.setCurrentSingleFrame(12, 32000, false, false);
                                 break;
                             case 1:
-                                farmerFromFarmerNumberString7.FarmerSprite.setCurrentSingleFrame(6, 32000, false, false);
+                                farmerFromSFarmerNumberString7.FarmerSprite.setCurrentSingleFrame(6, 32000, false, false);
                                 break;
                             case 2:
-                                farmerFromFarmerNumberString7.FarmerSprite.setCurrentSingleFrame(0, 32000, false, false);
+                                farmerFromSFarmerNumberString7.FarmerSprite.setCurrentSingleFrame(0, 32000, false, false);
                                 break;
                             case 3:
-                                farmerFromFarmerNumberString7.FarmerSprite.setCurrentSingleFrame(6, 32000, false, true);
+                                farmerFromSFarmerNumberString7.FarmerSprite.setCurrentSingleFrame(6, 32000, false, true);
                                 break;
                         }
                     }
@@ -153,13 +154,13 @@ namespace StardewValleyMP
             {
                 if (array[1].Contains("farmer"))
                 {
-                    Farmer farmerFromFarmerNumberString8 = getFarmerFromFarmerNumberString(array[1]);
-                    //if (farmerFromFarmerNumberString8 == Game1.player) return;
-                    if (farmerFromFarmerNumberString8 != null)
+                    SFarmer farmerFromSFarmerNumberString8 = getSFarmerFromSFarmerNumberString(array[1]);
+                    //if (farmerFromSFarmerNumberString8 == Game1.player) return;
+                    if (farmerFromSFarmerNumberString8 != null)
                     {
-                        Farmer expr_46E6_cp_0 = farmerFromFarmerNumberString8;
+                        SFarmer expr_46E6_cp_0 = farmerFromSFarmerNumberString8;
                         expr_46E6_cp_0.position.X = expr_46E6_cp_0.position.X + (float)Convert.ToInt32(array[2]);
-                        Farmer expr_4702_cp_0 = farmerFromFarmerNumberString8;
+                        SFarmer expr_4702_cp_0 = farmerFromSFarmerNumberString8;
                         expr_4702_cp_0.position.Y = expr_4702_cp_0.position.Y + (float)Convert.ToInt32(array[3]);
                     }
                 }
@@ -174,14 +175,14 @@ namespace StardewValleyMP
                 {
                     if (array[num3].Contains("farmer") && !actorPositionsAfterMove.ContainsKey(array[num3]))
                     {
-                        Farmer farmerFromFarmerNumberString2 = Utility.getFarmerFromFarmerNumberString(array[num3]);
-                        //if (farmerFromFarmerNumberString2 == Game1.player) { num3 += 4; continue; }
-                        if (farmerFromFarmerNumberString2 != null)
+                        SFarmer farmerFromSFarmerNumberString2 = Utility.getFarmerFromFarmerNumberString(array[num3]);
+                        //if (farmerFromSFarmerNumberString2 == Game1.player) { num3 += 4; continue; }
+                        if (farmerFromSFarmerNumberString2 != null)
                         {
-                            farmerFromFarmerNumberString2.canOnlyWalk = false;
-                            farmerFromFarmerNumberString2.setRunning(false, true);
-                            farmerFromFarmerNumberString2.canOnlyWalk = true;
-                            farmerFromFarmerNumberString2.convertEventMotionCommandToMovement(new Vector2((float)Convert.ToInt32(array[num3 + 1]), (float)Convert.ToInt32(array[num3 + 2])));
+                            farmerFromSFarmerNumberString2.canOnlyWalk = false;
+                            farmerFromSFarmerNumberString2.setRunning(false, true);
+                            farmerFromSFarmerNumberString2.canOnlyWalk = true;
+                            farmerFromSFarmerNumberString2.convertEventMotionCommandToMovement(new Vector2((float)Convert.ToInt32(array[num3 + 1]), (float)Convert.ToInt32(array[num3 + 2])));
                             actorPositionsAfterMove.Add(array[num3], @event.getPositionAfterMove(Game1.player, Convert.ToInt32(array[num3 + 1]), Convert.ToInt32(array[num3 + 2]), Convert.ToInt32(array[num3 + 3])));
                         }
                     }
@@ -205,9 +206,9 @@ namespace StardewValleyMP
                 bool flag = array.Count<string>() > 3;
                 if (array[1].Contains("farmer"))
                 {
-                    Farmer farmerFromFarmerNumberString3 = getFarmerFromFarmerNumberString(array[1]);
-                    //if (farmerFromFarmerNumberString3 == Game1.player) return;
-                    if (farmerFromFarmerNumberString3 != null)
+                    SFarmer farmerFromSFarmerNumberString3 = getSFarmerFromSFarmerNumberString(array[1]);
+                    //if (farmerFromSFarmerNumberString3 == Game1.player) return;
+                    if (farmerFromSFarmerNumberString3 != null)
                     {
                         Game1.player.doEmote(Convert.ToInt32(array[2]), !flag);
                     }
@@ -220,14 +221,14 @@ namespace StardewValleyMP
             {
                 if (array[1].Contains("farmer"))
                 {
-                    Farmer farmerFromFarmerNumberString4 = getFarmerFromFarmerNumberString(array[1]);
-                    //if (farmerFromFarmerNumberString4 == Game1.player) return;
-                    if (farmerFromFarmerNumberString4 != null)
+                    SFarmer farmerFromSFarmerNumberString4 = getSFarmerFromSFarmerNumberString(array[1]);
+                    //if (farmerFromSFarmerNumberString4 == Game1.player) return;
+                    if (farmerFromSFarmerNumberString4 != null)
                     {
-                        farmerFromFarmerNumberString4.FarmerSprite.StopAnimation();
-                        farmerFromFarmerNumberString4.completelyStopAnimatingOrDoingAction();
-                        farmerFromFarmerNumberString4.faceDirection(Convert.ToInt32(array[2]));
-                        farmerFromFarmerNumberString4.FarmerSprite.StopAnimation();
+                        farmerFromSFarmerNumberString4.FarmerSprite.StopAnimation();
+                        farmerFromSFarmerNumberString4.completelyStopAnimatingOrDoingAction();
+                        farmerFromSFarmerNumberString4.faceDirection(Convert.ToInt32(array[2]));
+                        farmerFromSFarmerNumberString4.FarmerSprite.StopAnimation();
                     }
                 }
                 else if (array[1].Contains("spouse"))
@@ -247,15 +248,15 @@ namespace StardewValleyMP
             {
                 if (array[1].Contains("farmer"))
                 {
-                    Farmer farmerFromFarmerNumberString5 = getFarmerFromFarmerNumberString(array[1]);
-                    //if (farmerFromFarmerNumberString5 == Game1.player) return;
-                    if (farmerFromFarmerNumberString5 != null)
+                    SFarmer farmerFromSFarmerNumberString5 = getSFarmerFromSFarmerNumberString(array[1]);
+                    //if (farmerFromSFarmerNumberString5 == Game1.player) return;
+                    if (farmerFromSFarmerNumberString5 != null)
                     {
-                        farmerFromFarmerNumberString5.position.X = (float)(Convert.ToInt32(array[2]) * Game1.tileSize);
-                        farmerFromFarmerNumberString5.position.Y = (float)(Convert.ToInt32(array[3]) * Game1.tileSize);
+                        farmerFromSFarmerNumberString5.position.X = (float)(Convert.ToInt32(array[2]) * Game1.tileSize);
+                        farmerFromSFarmerNumberString5.position.Y = (float)(Convert.ToInt32(array[3]) * Game1.tileSize);
                         if (Game1.IsClient)
                         {
-                            farmerFromFarmerNumberString5.remotePosition = new Vector2(farmerFromFarmerNumberString5.position.X, farmerFromFarmerNumberString5.position.Y);
+                            farmerFromSFarmerNumberString5.remotePosition = new Vector2(farmerFromSFarmerNumberString5.position.X, farmerFromSFarmerNumberString5.position.Y);
                         }
                     }
                 }
@@ -283,13 +284,13 @@ namespace StardewValleyMP
                 // TODO: Fix this^ later
             }
         }
-        private static Farmer getFarmerFromFarmerNumberString(string s)
+        private static SFarmer getSFarmerFromSFarmerNumberString(string s)
         {
             if (s.Equals("farmer"))
             {
-                return Multiplayer.getFarmer(0);
+                return Multiplayer.getSFarmer(0);
             }
-            return Multiplayer.getFarmer((byte)(Convert.ToInt32(string.Concat(s[s.Count<char>() - 1])) - 1));
+            return Multiplayer.getSFarmer((byte)(Convert.ToInt32(string.Concat(s[s.Count<char>() - 1])) - 1));
         }
 
         private static bool didFixDance = false;
@@ -322,21 +323,21 @@ namespace StardewValleyMP
 				"Harvey",
 				"Alex"
 			};
-            for (int i = 0; i < Multiplayer.getFarmerCount(); i++)
+            for (int i = 0; i < Multiplayer.getSFarmerCount(); i++)
             {
-                Farmer farmerFromFarmerNumber = Multiplayer.getFarmer( ( byte ) i );
-                if (farmerFromFarmerNumber.dancePartner != null)
+                SFarmer farmerFromSFarmerNumber = Multiplayer.getSFarmer( ( byte ) i );
+                if (farmerFromSFarmerNumber.dancePartner != null)
                 {
-                    if (farmerFromFarmerNumber.dancePartner.gender == 1)
+                    if (farmerFromSFarmerNumber.dancePartner.gender == 1)
                     {
-                        list.Add(farmerFromFarmerNumber.dancePartner.name);
-                        list3.Remove(farmerFromFarmerNumber.dancePartner.name);
+                        list.Add(farmerFromSFarmerNumber.dancePartner.name);
+                        list3.Remove(farmerFromSFarmerNumber.dancePartner.name);
                         list2.Add("farmer" + (i + 1));
                     }
                     else
                     {
-                        list2.Add(farmerFromFarmerNumber.dancePartner.name);
-                        list4.Remove(farmerFromFarmerNumber.dancePartner.name);
+                        list2.Add(farmerFromSFarmerNumber.dancePartner.name);
+                        list4.Remove(farmerFromSFarmerNumber.dancePartner.name);
                         list.Add("farmer" + (i + 1));
                     }
                 }

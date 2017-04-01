@@ -8,6 +8,7 @@ using StardewValley;
 using StardewValley.Locations;
 using StardewModdingAPI;
 using Microsoft.Xna.Framework;
+using SFarmer = StardewValley.Farmer;
 
 namespace StardewValleyMP.Packets
 {
@@ -66,7 +67,7 @@ namespace StardewValleyMP.Packets
 
         private void beachMessage()
         {
-            Farmer fixer = Multiplayer.getFarmer(clientId);
+            SFarmer fixer = Multiplayer.getSFarmer(clientId);
             string fName = (fixer != null) ? fixer.name : null;
 
             ChatMenu.chat.Add(new ChatEntry(null, "The bridge at the " + name + " is was fixed" + (fName != null ? (" by " + fName) : "") + "."));

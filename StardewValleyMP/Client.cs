@@ -12,6 +12,7 @@ using System.Xml;
 using StardewValley;
 using StardewValleyMP.Packets;
 using StardewModdingAPI;
+using SFarmer = StardewValley.Farmer;
 
 namespace StardewValleyMP
 {
@@ -32,7 +33,7 @@ namespace StardewValleyMP
         public byte id = 255;
         public NetStage stage = NetStage.WaitingForID;
 
-        public Dictionary< byte, Farmer > others = new Dictionary< byte, Farmer >();
+        public Dictionary< byte, SFarmer > others = new Dictionary< byte, SFarmer >();
 
         public bool tempStopUpdating = false;
 

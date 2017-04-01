@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using StardewValley.Objects;
 using StardewValley;
 using StardewModdingAPI;
+using SFarmer = StardewValley.Farmer;
 
 namespace StardewValleyMP.States
 {
@@ -15,7 +16,7 @@ namespace StardewValleyMP.States
 
         public ChestState(Chest chest)
         {
-            Farmer farmer = ( Farmer ) Util.GetInstanceField( typeof( Chest ), chest, "opener" );
+            SFarmer farmer = ( SFarmer ) Util.GetInstanceField( typeof( Chest ), chest, "opener" );
             opener = farmer != null ? Multiplayer.getFarmerId(farmer) : -1;
 
             // TODO: Move this to a proper place

@@ -9,17 +9,18 @@ using StardewModdingAPI;
 using StardewValleyMP.Vanilla;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
+using SFarmer = StardewValley.Farmer;
 
 namespace StardewValleyMP.Packets
 {
     // Server -> Client
     // Tell the client about everyone else.
-    public class OtherFarmerDataPacket : Packet
+    public class OtherSFarmerDataPacket : Packet
     {
         public Dictionary< byte, string > others = new Dictionary< byte, string >();
 
-        public OtherFarmerDataPacket()
-            : base(ID.OtherFarmerData)
+        public OtherSFarmerDataPacket()
+            : base(ID.OtherSFarmerData)
         {
         }
 
@@ -50,7 +51,7 @@ namespace StardewValleyMP.Packets
         {
             Log.Async("Got farmer data for other players.");
 
-            foreach (Farmer farmer in client.others.Values)
+            foreach (SFarmer farmer in client.others.Values)
             {
                 if (farmer.currentLocation != null)
                     farmer.currentLocation.farmers.Remove(farmer);
@@ -59,11 +60,11 @@ namespace StardewValleyMP.Packets
 
             foreach (KeyValuePair<byte, string> other in others)
             {
-                Farmer farmer = (Farmer)SaveGame.farmerSerializer.Deserialize(Util.stringStream(other.Value));
+                SFarmer farmer = (SFarmer)SaveGame.farmerSerializer.Deserialize(Util.stringStream(other.Value));
                 farmer.uniqueMultiplayerID += 1 + client.id; // For IsMainPlayer
 
-                //Farmer oldPlayer = Game1.player;
-                NewSaveGame.loadDataToFarmer(farmer, farmer);
+                //SFarmer oldPlayer = Game1.player;
+                NewSaveGame.loadDataToSFarmer(farmer, farmer);
                 //Game1.player = oldPlayer; // Seriously, why does this get reassigned in there?
 
                 client.others.Add(other.Key, farmer);

@@ -35,7 +35,7 @@ namespace StardewValleyMP.Packets
         protected override void read(BinaryReader reader)
         {
             name = reader.ReadString();
-            state.datingFarmer = reader.ReadBoolean();
+            state.datingSFarmer = reader.ReadBoolean();
             state.married = reader.ReadBoolean();
             state.defaultMap = reader.ReadString();
             if (state.defaultMap == "") state.defaultMap = null;
@@ -52,7 +52,7 @@ namespace StardewValleyMP.Packets
                 Log.Async("! SENDING NPC UPDATE WITH NULL: " + name);
 
             writer.Write(name);
-            writer.Write(state.datingFarmer);
+            writer.Write(state.datingSFarmer);
             writer.Write(state.married);
             writer.Write(state.defaultMap != null ? state.defaultMap : "");
             writer.Write(state.defaultX);

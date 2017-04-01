@@ -23,6 +23,7 @@ using xTile.Tiles;
 using xTile.Format;
 using xTile.ObjectModel;
 using Object = StardewValley.Object;
+using SFarmer = StardewValley.Farmer;
 
 namespace StardewValleyMP.Vanilla
 {
@@ -92,7 +93,7 @@ namespace StardewValleyMP.Vanilla
                 {
                     foreach ( KeyValuePair< string, GameLocation > pair in client.addDuringLoading )
                     {
-                        ClientFarmerDataPacket.addFixedLocationToOurWorld(pair.Value, pair.Key, client);
+                        ClientSFarmerDataPacket.addFixedLocationToOurWorld(pair.Value, pair.Key, client);
                     }
                     client.addDuringLoading.Clear();
                 }
@@ -115,7 +116,7 @@ namespace StardewValleyMP.Vanilla
                         if (Multiplayer.client.stage == Client.NetStage.WaitingForID && Multiplayer.client.id != 255)
                         {
                             String xml = File.ReadAllText(str);
-                            ClientFarmerDataPacket farmerData = new ClientFarmerDataPacket(xml);
+                            ClientSFarmerDataPacket farmerData = new ClientSFarmerDataPacket(xml);
                             Multiplayer.client.send(farmerData);
 
                             Multiplayer.client.stage = Client.NetStage.WaitingForWorldData;
@@ -162,12 +163,12 @@ namespace StardewValleyMP.Vanilla
             Game1.isRaining = SaveGame.loaded.isRaining;
             Game1.isLightning = SaveGame.loaded.isLightning;
             Game1.isSnowing = SaveGame.loaded.isSnowing;
-            NewSaveGame.loadDataToFarmer(SaveGame.loaded.player, null);
+            NewSaveGame.loadDataToSFarmer(SaveGame.loaded.player, null);
             Game1.player = SaveGame.loaded.player;
             Game1.loadingMessage = "Loading Maps...";
             yield return 36;
             ////////////////////////////////////////
-            Farmer oldPlayer = Game1.player;
+            SFarmer oldPlayer = Game1.player;
             try
             {
                 /*SaveGame.*/
@@ -210,7 +211,7 @@ namespace StardewValleyMP.Vanilla
             yield return 58;
             Game1.mailbox = new Queue<string>(SaveGame.loaded.mailbox);
             yield return 60;
-            FurniturePlacer.addAllFurnitureOwnedByFarmer();
+            FurniturePlacer.addAllFurnitureOwnedBySFarmer();
             yield return 63;
             Game1.weddingToday = SaveGame.loaded.weddingToday;
             Game1.loadingMessage = "Loading Mines...";
@@ -304,9 +305,9 @@ namespace StardewValleyMP.Vanilla
                 Multiplayer.client.stage = Client.NetStage.Playing;
                 Multiplayer.client.tempStopUpdating = false;
                 Game1.player.position = Utility.PointToVector2((Game1.getLocationFromName("FarmHouse") as FarmHouse).getBedSpot()) * (float)Game1.tileSize;
-                Farmer expr_777_cp_0 = Game1.player;
+                SFarmer expr_777_cp_0 = Game1.player;
                 expr_777_cp_0.position.Y = expr_777_cp_0.position.Y + (float)(Game1.tileSize / 2);
-                Farmer expr_795_cp_0 = Game1.player;
+                SFarmer expr_795_cp_0 = Game1.player;
                 expr_795_cp_0.position.X = expr_795_cp_0.position.X - (float)Game1.tileSize;
             }
             if (Multiplayer.server != null)
@@ -340,7 +341,7 @@ namespace StardewValleyMP.Vanilla
             }
             else if (Multiplayer.mode == Mode.Client)
             {
-                foreach (KeyValuePair<byte, Farmer> other in Multiplayer.client.others)
+                foreach (KeyValuePair<byte, SFarmer> other in Multiplayer.client.others)
                 {
                     if (other.Value.spouse == null) continue;
                     NPC npc = Game1.getCharacterFromName(other.Value.spouse);
@@ -530,7 +531,7 @@ namespace StardewValleyMP.Vanilla
                 xmlWriter.WriteEndDocument();
                 xmlWriter.Flush();
             }
-            Farmer totalMinutes = Game1.player;
+            SFarmer totalMinutes = Game1.player;
             TimeSpan utcNow = DateTime.UtcNow - new DateTime(2012, 6, 22);
             totalMinutes.saveTime = (int)utcNow.TotalMinutes;
             try
@@ -614,15 +615,15 @@ namespace StardewValleyMP.Vanilla
         }
 
 
-        private static Farmer findOwnerOf( FarmHouse house )
+        private static SFarmer findOwnerOf( FarmHouse house )
         {
             if (!house.name.Contains('_')) return Game1.player;
 
             string name = house.name.Substring(house.name.LastIndexOf('_') + 1);
-            return Multiplayer.getFarmer(name);
+            return Multiplayer.getSFarmer(name);
         }
 
-        public static void loadDataToFarmer(Farmer tmp, Farmer target = null)
+        public static void loadDataToSFarmer(SFarmer tmp, SFarmer target = null)
         {
             if (target == null)
             {
@@ -682,7 +683,7 @@ namespace StardewValleyMP.Vanilla
             target.MaxStamina = tmp.MaxStamina;
             target.mostRecentBed = tmp.mostRecentBed;
             target.position = target.mostRecentBed;
-            Farmer expr_1E2_cp_0_cp_0 = target;
+            SFarmer expr_1E2_cp_0_cp_0 = target;
             expr_1E2_cp_0_cp_0.position.X = expr_1E2_cp_0_cp_0.position.X - (float)Game1.tileSize;
             //Game1.player = target;
             /*Game1.player*/target.checkForLevelTenStatus();
@@ -728,7 +729,7 @@ namespace StardewValleyMP.Vanilla
                     (locationFromName as FarmHouse).farmerNumberOfOwner = (current as FarmHouse).farmerNumberOfOwner;
                     //(locationFromName as FarmHouse).resetForPlayerEntry();
                     ////////////////////////////////////////
-                    Farmer oldPlayer = Game1.player;
+                    SFarmer oldPlayer = Game1.player;
                     Game1.player = findOwnerOf(current as FarmHouse);
                     try
                     {
@@ -900,15 +901,15 @@ namespace StardewValleyMP.Vanilla
 				house.upgradeLevel = level;
 			}
             Util.SetInstanceField(typeof(FarmHouse),house,"currentlyDisplayedUpgradeLevel", level);
-            Farmer tmp = findOwnerOf( house );
+            SFarmer tmp = findOwnerOf( house );
 			bool flag = ( tmp != null ) ? tmp.isMarried() : false;/*
-            if (Utility.getFarmerFromFarmerNumber(house.farmerNumberOfOwner) == null)
+            if (Utility.getSFarmerFromSFarmerNumber(house.farmerNumberOfOwner) == null)
 			{
 				flag = Game1.player.isMarried();
 			}
 			else
 			{
-                flag = Utility.getFarmerFromFarmerNumber(house.farmerNumberOfOwner).isMarried();
+                flag = Utility.getSFarmerFromSFarmerNumber(house.farmerNumberOfOwner).isMarried();
 			}*/
             if (level == 0) flag = false;
             Util.SetInstanceField(typeof(FarmHouse),house,"displayingSpouseRoom", flag);
@@ -1001,13 +1002,13 @@ namespace StardewValleyMP.Vanilla
         private static void FarmHouse_loadSpouseRoom( FarmHouse house )
 		{
 			NPC spouse = findOwnerOf( house ).getSpouse();/*
-			if (Utility.getFarmerFromFarmerNumber(this.farmerNumberOfOwner) == null)
+			if (Utility.getSFarmerFromSFarmerNumber(this.farmerNumberOfOwner) == null)
 			{
 				spouse = Game1.player.getSpouse();
 			}
 			else
 			{
-				spouse = Utility.getFarmerFromFarmerNumber(this.farmerNumberOfOwner).getSpouse();
+				spouse = Utility.getSFarmerFromSFarmerNumber(this.farmerNumberOfOwner).getSpouse();
 			}*/
 			if (spouse != null)
 			{

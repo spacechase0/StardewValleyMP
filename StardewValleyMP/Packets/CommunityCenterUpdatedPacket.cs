@@ -8,6 +8,7 @@ using StardewValley;
 using StardewValley.Locations;
 using StardewModdingAPI;
 using Microsoft.Xna.Framework;
+using SFarmer = StardewValley.Farmer;
 
 namespace StardewValleyMP.Packets
 {
@@ -148,7 +149,7 @@ namespace StardewValleyMP.Packets
 
         private void message()
         {
-            Farmer fixer = Multiplayer.getFarmer(clientId);
+            SFarmer fixer = Multiplayer.getSFarmer(clientId);
             string fName = (fixer != null) ? fixer.name : null;
 
             switch (reason)

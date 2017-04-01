@@ -18,6 +18,7 @@ using StardewValleyMP.Vanilla;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System.Threading;
+using SFarmer = StardewValley.Farmer;
 
 /*
 farmer pos
@@ -76,7 +77,7 @@ namespace StardewValleyMP
             return 0;
         }
 
-        public static int getFarmerCount()
+        public static int getSFarmerCount()
         {
             if (mode == Mode.Host && server != null)
                 return server.clients.Count + 1;
@@ -85,7 +86,7 @@ namespace StardewValleyMP
             else return 1;
         }
 
-        public static byte getFarmerId( Farmer target )
+        public static byte getFarmerId( SFarmer target )
         {
             if ( mode == Mode.Host && server != null )
             {
@@ -103,7 +104,7 @@ namespace StardewValleyMP
             {
                 if (target == Game1.player) return client.id;
 
-                foreach ( KeyValuePair< byte, Farmer > other in client.others )
+                foreach ( KeyValuePair< byte, SFarmer > other in client.others )
                 {
                     if ( other.Value == target )
                     {
@@ -115,7 +116,7 @@ namespace StardewValleyMP
             throw new ArgumentException("Invalid farmer?");
         }
 
-        public static Farmer getFarmer(byte target)
+        public static SFarmer getSFarmer(byte target)
         {
             if (mode == Mode.Host && server != null)
             {
@@ -133,7 +134,7 @@ namespace StardewValleyMP
             {
                 if (target == client.id) return Game1.player;
 
-                foreach (KeyValuePair<byte, Farmer> other in client.others)
+                foreach (KeyValuePair<byte, SFarmer> other in client.others)
                 {
                     if (other.Key == target)
                     {
@@ -145,7 +146,7 @@ namespace StardewValleyMP
             return null;
         }
 
-        public static Farmer getFarmer(string target)
+        public static SFarmer getSFarmer(string target)
         {
             // Weird bug where Game1.player is always a different save of mine for some reason
             // SaveGame.loaded.player is correct, so just give that priority
@@ -166,7 +167,7 @@ namespace StardewValleyMP
             }
             else if (mode == Mode.Client && client != null)
             {
-                foreach (KeyValuePair<byte, Farmer> other in client.others)
+                foreach (KeyValuePair<byte, SFarmer> other in client.others)
                 {
                     if (other.Value.name == target)
                     {
@@ -218,11 +219,11 @@ namespace StardewValleyMP
         }
 
         // Changes generic player locations into their specific versions
-        public static string processLocationNameForPlayerUnique( Farmer from, string loc )
+        public static string processLocationNameForPlayerUnique( SFarmer from, string loc )
         {
             if (loc == null) return loc;
 
-            Farmer me = NewLoadMenu.pendingSelected;
+            SFarmer me = NewLoadMenu.pendingSelected;
             if (SaveGame.loaded != null && SaveGame.loaded.player != null)
                 me = SaveGame.loaded.player;
             if (me == null && Game1.player != null)
@@ -284,7 +285,7 @@ namespace StardewValleyMP
         }
 
         // loc oldName
-        public static void fixLocations( List< GameLocation > locations, Farmer from, Action<GameLocation, string, object> onceFixed = null, object extra = null )
+        public static void fixLocations( List< GameLocation > locations, SFarmer from, Action<GameLocation, string, object> onceFixed = null, object extra = null )
         {
             if (mode == Mode.Client) from = client.others[0];
 
@@ -323,9 +324,9 @@ namespace StardewValleyMP
                 if ( loc.name.Contains( '_' ) && isPlayerUnique( loc.name.Substring( 0, loc.name.IndexOf( '_' ) ) ) )
                 {
                     string other = loc.name.Substring(loc.name.IndexOf('_') + 1);
-                    if ( getFarmer( other ) == null )
+                    if ( getSFarmer( other ) == null )
                     {
-                        Log.Async("Farmer " + other + " is not online, removing his " + loc.name);
+                        Log.Async("SFarmer " + other + " is not online, removing his " + loc.name);
                         toRemove.Add(loc);
                     }
                 }
@@ -503,7 +504,7 @@ namespace StardewValleyMP
                             MemoryStream tmp = new MemoryStream();
                             SaveGame.serializer.Serialize(tmp, SaveGame.loaded);
                             sendFunc(new NextDayPacket());
-                            sendFunc(new ClientFarmerDataPacket(Encoding.UTF8.GetString(tmp.ToArray())));
+                            sendFunc(new ClientSFarmerDataPacket(Encoding.UTF8.GetString(tmp.ToArray())));
                             //SaveGame.loaded = oldLoaded;
                         }
                         catch ( Exception e )
@@ -578,7 +579,7 @@ namespace StardewValleyMP
                 if (client == null) return;
 
                 if (client.others == null) return;
-                foreach (KeyValuePair<byte, Farmer> other in client.others)
+                foreach (KeyValuePair<byte, SFarmer> other in client.others)
                 {
                     if (other.Value == null) continue;
                     doUpdatePlayer(other.Value);
@@ -637,7 +638,7 @@ namespace StardewValleyMP
             Game1.player.FarmerSprite.setOwner(Game1.player);
         }
 
-        private static void doUpdatePlayer(Farmer farmer)
+        private static void doUpdatePlayer(SFarmer farmer)
         {
             // Caused problems during weddings
             // (A week or so later) Might have been caused by something else - check if this is needed at some point
@@ -677,7 +678,7 @@ namespace StardewValleyMP
             else if (Multiplayer.mode == Mode.Client)
             {
                 if (client.others == null) return;
-                foreach ( KeyValuePair< byte, Farmer > other in client.others )
+                foreach ( KeyValuePair< byte, SFarmer > other in client.others )
                 {
                     //other.Value.draw(sb);
                 }
@@ -746,7 +747,7 @@ namespace StardewValleyMP
             {
                 if (newLocName == "Temp" && Game1.player.currentLocation.currentEvent != null)
                 {
-                    foreach (KeyValuePair< byte, Farmer > other in client.others)
+                    foreach (KeyValuePair< byte, SFarmer > other in client.others)
                     {
                         if (other.Value.currentLocation != null)
                             other.Value.currentLocation.farmers.Remove(other.Value);
@@ -758,7 +759,7 @@ namespace StardewValleyMP
                 }
                 else if (oldLoc.Name == "Temp")
                 {
-                    foreach (KeyValuePair< byte, Farmer > other in client.others)
+                    foreach (KeyValuePair< byte, SFarmer > other in client.others)
                     {
                         if (other.Value.currentLocation != oldLoc)
                             continue;

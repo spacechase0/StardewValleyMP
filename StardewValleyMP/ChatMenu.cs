@@ -11,6 +11,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using StardewValleyMP.Packets;
+using SFarmer = StardewValley.Farmer;
 
 namespace StardewValleyMP
 {
@@ -22,7 +23,7 @@ namespace StardewValleyMP
 
         public int screenTime = 60 * 6;
 
-        public ChatEntry(Farmer farmer, string theMessage)
+        public ChatEntry(SFarmer farmer, string theMessage)
         {
             timestamp = DateTime.Now.ToShortTimeString();
             player = ( farmer != null ) ? farmer.name : "";

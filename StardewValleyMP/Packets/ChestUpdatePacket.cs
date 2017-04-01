@@ -10,6 +10,7 @@ using StardewModdingAPI;
 using Microsoft.Xna.Framework;
 using Object = StardewValley.Object;
 using StardewValleyMP.States;
+using SFarmer = StardewValley.Farmer;
 
 namespace StardewValleyMP.Packets
 {
@@ -91,7 +92,7 @@ namespace StardewValleyMP.Packets
                 // but shows open even though nobody has it open, and nobody can open it. Clients 
                 // MIGHT be able  to open it the next day (which would fix the issue), but I haven't
                 // tested that.
-                Farmer farmer = (Farmer ) Util.GetInstanceField(typeof(Chest), obj, "opener" );
+                SFarmer farmer = (SFarmer ) Util.GetInstanceField(typeof(Chest), obj, "opener" );
                 if (farmer != null)
                 {
                     // Somebody already has it open. Normally you can't open a chest if someone
@@ -110,7 +111,7 @@ namespace StardewValleyMP.Packets
                 }
 
                 // When opener is set, nobody can open the chest (vanilla).
-                Util.SetInstanceField(typeof(Chest), obj, "opener", Multiplayer.getFarmer((byte)opener));
+                Util.SetInstanceField(typeof(Chest), obj, "opener", Multiplayer.getSFarmer((byte)opener));
 
                 // Do the animation manually. It pops open instead of being smooth, but fixing
                 // that would probably be a lot more work.

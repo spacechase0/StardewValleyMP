@@ -7,6 +7,7 @@ using System.IO;
 using StardewValley;
 using StardewModdingAPI;
 using Microsoft.Xna.Framework;
+using SFarmer = StardewValley.Farmer;
 
 namespace StardewValleyMP.Packets
 {
@@ -44,21 +45,21 @@ namespace StardewValleyMP.Packets
 
         public override void process(Client client)
         {
-            Farmer farmer = client.others[clientId];
+            SFarmer farmer = client.others[clientId];
             if (farmer == null) return;
 
-            doFarmer(farmer);
+            doSFarmer(farmer);
         }
 
         public override void process(Server server, Server.Client client)
         {
             if (clientId != client.id) return;
 
-            doFarmer(client.farmer);
+            doSFarmer(client.farmer);
             server.broadcast(this, client.id);
         }
 
-        private void doFarmer( Farmer farmer )
+        private void doSFarmer( SFarmer farmer )
         {
             NPC npc = Game1.currentLocation.currentEvent.getActorByName(partner);
             if (npc == null) return;
@@ -70,7 +71,7 @@ namespace StardewValleyMP.Packets
 
         private void danceMessage()
         {
-            Farmer farmer = Multiplayer.getFarmer(clientId);
+            SFarmer farmer = Multiplayer.getSFarmer(clientId);
             //ChatMenu.chat.Add(new ChatEntry(null, farmer.name + " will be dancing with " + partner + "."));
         }
     }

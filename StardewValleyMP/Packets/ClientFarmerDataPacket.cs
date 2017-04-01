@@ -12,20 +12,21 @@ using StardewValleyMP.Vanilla;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using xTile;
+using SFarmer = StardewValley.Farmer;
 
 namespace StardewValleyMP.Packets
 {
     // Client -> Server
     // Send the server info about yourself.
-    public class ClientFarmerDataPacket : Packet
+    public class ClientSFarmerDataPacket : Packet
     {
         public string xml;
 
-        public ClientFarmerDataPacket() : base( ID.ClientFarmerData )
+        public ClientSFarmerDataPacket() : base( ID.ClientSFarmerData )
         {
         }
 
-        public ClientFarmerDataPacket(string theXml)
+        public ClientSFarmerDataPacket(string theXml)
             : this()
         {
             xml = theXml;
@@ -51,7 +52,7 @@ namespace StardewValleyMP.Packets
         {
             Log.Async("Got farmer data for client " + client.id);
 
-            //Farmer old = client.farmer;
+            //SFarmer old = client.farmer;
             SaveGame theirs = (SaveGame)SaveGame.serializer.Deserialize(Util.stringStream(xml));
 
             if (client.farmer == null)
@@ -69,11 +70,11 @@ namespace StardewValleyMP.Packets
                 client.send(new ChatPacket(255, str));
             }
 
-            client.farmerXml = Util.serialize<Farmer>(theirs.player);
+            client.farmerXml = Util.serialize<SFarmer>(theirs.player);
             client.farmer = theirs.player;
             client.farmer.uniqueMultiplayerID += 1 + client.id;
 
-            NewSaveGame.loadDataToFarmer(client.farmer, client.farmer);
+            NewSaveGame.loadDataToSFarmer(client.farmer, client.farmer);
             client.farmer.FarmerSprite.setOwner(client.farmer);
             Game1.player.FarmerSprite.setOwner(Game1.player);
 
@@ -86,14 +87,14 @@ namespace StardewValleyMP.Packets
             // I think this is why vanilla copies data over in loadDataToLocations instead of using
             // the loaded objects directly. Why not just postpone loading until later, I don't know.
             //
-            // So, when the second day begins, otherFarmer.currentLocation was still set to the
+            // So, when the second day begins, otherSFarmer.currentLocation was still set to the
             // previous day's farm house[*]. On day two, the 'good' one[**] was removed, so when they go
             // back in, the bad one is used. Basically, I need to make them all the 'good' one.
             // For now, I'm just going to reload the needed data for this client's farmhouse.
             // I'll figure out how to do it 'properly' later. Maybe. (My mind is muddled today.)
             // 
             // [*] Looking at addFixedLocationToOurWorld now you'll see that this isn't the case.
-            // I added the part about fixing Farmer.currentLocation as I was going through this 
+            // I added the part about fixing SFarmer.currentLocation as I was going through this 
             // thought process. So things will break more obviously if something like this happens
             // again.
             //
@@ -161,7 +162,7 @@ namespace StardewValleyMP.Packets
                 {/*
                     loc.farmers.AddRange(Game1.locations[i].farmers);
                     Game1.locations[i].farmers.Clear();
-                    foreach (Farmer farmer in loc.farmers)
+                    foreach (SFarmer farmer in loc.farmers)
                     {
                         farmer.currentLocation = loc;
                     }
@@ -200,7 +201,7 @@ namespace StardewValleyMP.Packets
                 {
                     loc.farmers.AddRange(SaveGame.loaded.locations[i].farmers);
                     SaveGame.loaded.locations[i].farmers.Clear();
-                    foreach ( Farmer farmer in loc.farmers )
+                    foreach ( SFarmer farmer in loc.farmers )
                     {
                         farmer.currentLocation = loc;
                     }

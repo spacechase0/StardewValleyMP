@@ -7,6 +7,7 @@ using System.IO;
 using StardewValley;
 using StardewModdingAPI;
 using Microsoft.Xna.Framework;
+using SFarmer = StardewValley.Farmer;
 
 namespace StardewValleyMP.Packets
 {
@@ -45,21 +46,21 @@ namespace StardewValleyMP.Packets
 
         public override void process(Client client)
         {
-            Farmer farmer = client.others[clientId];
+            SFarmer farmer = client.others[clientId];
             if (farmer == null) return;
 
-            doFarmer(farmer);
+            doSFarmer(farmer);
         }
 
         public override void process(Server server, Server.Client client)
         {
             if (clientId != client.id) return;
 
-            doFarmer(client.farmer);
+            doSFarmer(client.farmer);
             server.broadcast(this, client.id);
         }
 
-        private void doFarmer( Farmer farmer )
+        private void doSFarmer( SFarmer farmer )
         {
             farmer.spouse = spouse;
             spouseMessage();
@@ -69,7 +70,7 @@ namespace StardewValleyMP.Packets
         {
             return;
 
-            Farmer farmer = Multiplayer.getFarmer(clientId);
+            SFarmer farmer = Multiplayer.getSFarmer(clientId);
             if (farmer == null) return;
             if (spouse == null) return;
 

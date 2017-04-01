@@ -10,6 +10,7 @@ using StardewModdingAPI;
 using Microsoft.Xna.Framework;
 using Object = StardewValley.Object;
 using StardewValleyMP.States;
+using SFarmer = StardewValley.Farmer;
 
 namespace StardewValleyMP.Packets
 {

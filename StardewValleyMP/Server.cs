@@ -10,6 +10,7 @@ using System.Threading;
 using StardewValley;
 using StardewValleyMP.Packets;
 using StardewModdingAPI;
+using SFarmer = StardewValley.Farmer;
 
 namespace StardewValleyMP
 {
@@ -125,7 +126,7 @@ namespace StardewValleyMP
             foreach ( Client client in clients )
             {
                 // Send other farmers first
-                OtherFarmerDataPacket others = new OtherFarmerDataPacket();
+                OtherSFarmerDataPacket others = new OtherSFarmerDataPacket();
 
                 /*string savePath = Path.Combine(new string[]
 			    {
@@ -136,7 +137,7 @@ namespace StardewValleyMP
 				    "SaveGameInfo"
 			    });
                 String myXml = File.ReadAllText(savePath);*/
-                others.others.Add(0, Util.serialize<Farmer>(SaveGame.loaded.player));
+                others.others.Add(0, Util.serialize<SFarmer>(SaveGame.loaded.player));
 
                 foreach ( Client other in clients )
                 {
@@ -189,7 +190,7 @@ namespace StardewValleyMP
             public enum NetStage
             {
                 VerifyingVersion,
-                WaitingForFarmerInfo,
+                WaitingForSFarmerInfo,
                 WaitingForStart,
                 Playing,
             }
@@ -204,7 +205,7 @@ namespace StardewValleyMP
             public bool stageFailed = false;
 
             public string farmerXml = null;
-            public Farmer farmer = null;
+            public SFarmer farmer = null;
 
             public IDictionary<string, GameLocation> addDuringLoading = new Dictionary<string, GameLocation>();
 

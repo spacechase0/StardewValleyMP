@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.IO;
 using StardewValley;
 using StardewValley.Menus;
+using SFarmer = StardewValley.Farmer;
 
 namespace StardewValleyMP.Packets
 {

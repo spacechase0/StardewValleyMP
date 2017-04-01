@@ -11,7 +11,7 @@ namespace StardewValleyMP.Vanilla
 {
     public class FurniturePlacer
     {
-        public static void addAllFurnitureOwnedByFarmer()
+        public static void addAllFurnitureOwnedBySFarmer()
         {
             foreach (string current in Game1.player.furnitureOwned)
             {

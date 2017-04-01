@@ -94,12 +94,12 @@ namespace StardewValleyMP
             if ( npc == null ) return;
 
             Log.Async("Updating NPC " + name);
-            Log.Async("Dating: " + npc.datingFarmer + " -> " + state.datingFarmer);
+            Log.Async("Dating: " + npc.datingFarmer + " -> " + state.datingSFarmer);
             Log.Async("Married: " + npc.isMarried() + " -> " + state.married);
             Log.Async("Default Map: " + npc.defaultMap + " -> " + state.defaultMap);
             Log.Async("Default Pos: (" + npc.DefaultPosition.X + ", " + npc.DefaultPosition.Y + ") -> (" + state.defaultX + " , " + state.defaultY + ")");
 
-            npc.datingFarmer = state.datingFarmer;
+            npc.datingFarmer = state.datingSFarmer;
             npc.setMarried(state.married);
             npc.defaultMap = ( state.defaultMap != "" ) ? state.defaultMap : null;
             npc.DefaultPosition = new Microsoft.Xna.Framework.Vector2(state.defaultX, state.defaultY);
@@ -230,7 +230,7 @@ namespace StardewValleyMP
             Log.Async("Fullness: " + animal.fullness + " -> " + state.fullness);
             Log.Async("Product: " + animal.currentProduce + " -> " + state.product);
             Log.Async("Petted: " + animal.wasPet + " -> " + state.pet);
-            Log.Async("Affection: " + animal.friendshipTowardFarmer + " -> " + state.friendship);
+            Log.Async("Affection: " + animal.friendshipTowardSFarmer + " -> " + state.friendship);
             Log.Async("Home: (" + animal.homeLocation.X + ", " + animal.homeLocation.Y + ") -> (" + state.homeLoc.X + ", " + state.homeLoc.Y + ")");
             */
             animal.name = state.name;

@@ -10,7 +10,7 @@ namespace StardewValleyMP.States
 {
     public class NPCState : State
     {
-        public bool datingFarmer = false;
+        public bool datingSFarmer = false;
         public bool married = false;
         public string defaultMap = "";
         public float defaultX, defaultY;
@@ -21,7 +21,7 @@ namespace StardewValleyMP.States
 
         public NPCState(NPC npc)
         {
-            datingFarmer = npc.datingFarmer;
+            datingSFarmer = npc.datingFarmer;
             married = npc.isMarried();
             defaultMap = npc.defaultMap;
             defaultX = npc.DefaultPosition.X;
@@ -39,7 +39,7 @@ namespace StardewValleyMP.States
             // Let's ignore it and hope it goes away? :P
             if (defaultMap == null) return false;
 
-            if (datingFarmer != state.datingFarmer) return true;
+            if (datingSFarmer != state.datingSFarmer) return true;
             if (married != state.married) return true;
             if (defaultMap != state.defaultMap) return true;
             if (defaultX != state.defaultX) return true;

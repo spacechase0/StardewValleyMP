@@ -153,7 +153,7 @@ namespace StardewValleyMP.Packets
                 }
             }
 
-            // See the giant block of comments in ClientFarmerDataPacket
+            // See the giant block of comments in ClientSFarmerDataPacket
             foreach (GameLocation theirLoc in world.locations)
             {
                 if (theirLoc is FarmHouse)

@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.IO;
 using StardewValley;
 using StardewModdingAPI;
+using SFarmer = StardewValley.Farmer;
 
 namespace StardewValleyMP.Packets
 {
@@ -44,7 +45,7 @@ namespace StardewValleyMP.Packets
         {
             name = Multiplayer.processLocationNameForPlayerUnique(null, name);
 
-            Farmer farmer = client.others[clientId];
+            SFarmer farmer = client.others[clientId];
             if (farmer == null) return;
             Log.Async(farmer.name + " moved to " + name + " (" + Game1.getLocationFromName(name) + ")");
 
@@ -63,7 +64,7 @@ namespace StardewValleyMP.Packets
             server.broadcast(this, clientId);
         }
         
-        private void process( Farmer target )
+        private void process( SFarmer target )
         {
             if (target.currentLocation != null)
                 target.currentLocation.farmers.Remove(target);
