@@ -59,7 +59,7 @@ namespace StardewValleyMP.Vanilla
 
         private bool deleting;
 
-        private Task<List<SFarmer>> _initTask;
+        public Task<List<SFarmer>> _initTask;
 
         private Task _deleteTask;
 
@@ -130,15 +130,13 @@ namespace StardewValleyMP.Vanilla
             {
                 Path.Combine(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "StardewValley"), "Saves")
             });
+            /*
             this._initTask = new Task<List<SFarmer>>(() => {
                 Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
-                Log.trace("preload");
-                var m = MultiplayerMod.instance.Helper.Reflection.GetPrivateMethod(typeof(LoadGameMenu), "FindSaveGames");
-                var v= m.Invoke< List<SFarmer> >();
-                Log.trace("postload " + m + " " + v + " " + v.Count);
-                return v;
+                return MultiplayerMod.instance.Helper.Reflection.GetPrivateMethod(typeof(LoadGameMenu), "FindSaveGames").Invoke< List<SFarmer> >();
             });
             this._initTask.Start();
+            //*/
             if (Game1.options.snappyMenus && Game1.options.gamepadControls)
             {
                 base.populateClickableComponentList();

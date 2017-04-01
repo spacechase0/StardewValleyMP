@@ -5,7 +5,10 @@ using StardewValley;
 using StardewValley.Menus;
 using StardewValleyMP.Vanilla;
 using System;
+using System.Collections.Generic;
 using System.Reflection;
+using System.Threading.Tasks;
+using SFarmer = StardewValley.Farmer;
 
 namespace StardewValleyMP
 {
@@ -47,7 +50,13 @@ namespace StardewValleyMP
                 {
                     if (TitleMenu.subMenu != null && (TitleMenu.subMenu.GetType() == typeof(LoadGameMenu)))
                     {
-                        TitleMenu.subMenu = new NewLoadMenu();
+                        LoadGameMenu oldLoadMenu = ( LoadGameMenu ) TitleMenu.subMenu;
+                        NewLoadMenu newLoadMenu = new NewLoadMenu();
+
+                        IPrivateField< object > task = instance.Helper.Reflection.GetPrivateField< object >(oldLoadMenu, "_initTask");
+                        newLoadMenu._initTask = (Task<List<SFarmer>>)task.GetValue();
+
+                        TitleMenu.subMenu = newLoadMenu;
                     }
                 }
                 prevMenu = Game1.activeClickableMenu;
