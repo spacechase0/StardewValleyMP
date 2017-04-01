@@ -20,7 +20,6 @@ namespace StardewValleyMP
     public class MultiplayerMod : Mod
     {
         public static bool DEBUG { get { return ModConfig.Debug; } }
-        public const bool FAKE_LATENCY = false;
 
         public static MultiplayerMod instance;
         public static MultiplayerConfig ModConfig { get; private set; }
