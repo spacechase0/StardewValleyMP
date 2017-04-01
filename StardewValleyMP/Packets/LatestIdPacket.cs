@@ -32,13 +32,13 @@ namespace StardewValleyMP.Packets
 
         public override void process(Client client)
         {
-            Log.Async("Updated latest ID");
+            Log.trace("Updated latest ID");
             Multiplayer.prevLatestId = MultiplayerUtility.latestID = latest;
         }
 
         public override void process(Server server, Server.Client client)
         {
-            Log.Async("Updated latest ID");
+            Log.trace("Updated latest ID");
             Multiplayer.prevLatestId = MultiplayerUtility.latestID = latest;
         }
     }

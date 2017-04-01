@@ -53,7 +53,7 @@ namespace StardewValleyMP.States
         {
             if ( obj == null || obj.GetType() != typeof( TYPE ) )
             {
-                Log.Async("Bad object given to addCache: " + obj + " (wanted " + typeof( TYPE ) + ")");
+                Log.error("Bad object given to addCache: " + obj + " (wanted " + typeof( TYPE ) + ")");
                 return;
             }
 
@@ -87,7 +87,7 @@ namespace StardewValleyMP.States
                 // When I was working on this at first I had missed a couple spots and so it would
                 // detect this stuff during check() and yell at me for changing things during
                 // iteration.  So I'm leaving this here in case I break something again later on.
-                Log.Async("REMOVE SHOULDN'T HAPPEN " + new System.Diagnostics.StackTrace());
+                Log.error("REMOVE SHOULDN'T HAPPEN " + new System.Diagnostics.StackTrace());
                 cache.Remove(pos);
                 return;
             }
@@ -96,7 +96,7 @@ namespace StardewValleyMP.States
             STATE newState = makeState( dirt );
             if (state == null)
             {
-                Log.Async("ADD SHOULDN'T HAPPEN " + new System.Diagnostics.StackTrace());
+                Log.error("ADD SHOULDN'T HAPPEN " + new System.Diagnostics.StackTrace());
                 cache.Add(pos, newState);
             }
             else

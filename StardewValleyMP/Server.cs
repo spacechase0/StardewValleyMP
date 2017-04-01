@@ -86,7 +86,7 @@ namespace StardewValleyMP
 
         public void getPlayerInfo()
         {
-            Log.Async("Getting information on the clients.");
+            Log.debug("Getting information on the clients.");
             /*foreach ( Client client in clients )
             {
                 client.send(new YourIDPacket(client.id));
@@ -105,7 +105,7 @@ namespace StardewValleyMP
 
         public void broadcastInfo()
         {
-            Log.Async("Broadcasting world info.");
+            Log.debug("Broadcasting world info.");
 
             // World data packet is the same for everyone, so go ahead and prepare it
 
@@ -161,7 +161,7 @@ namespace StardewValleyMP
 
         public void addClient(Socket socket, NetworkStream stream)
         {
-            Log.Async("Got new client.");
+            Log.info("Got new client.");
 
             Client client = new Client(this, (byte)getPlayerCount(), socket, stream);
 
@@ -170,7 +170,7 @@ namespace StardewValleyMP
             {
                 if (client.stageFailed)
                 {
-                    Log.Async("\tBad protocol version.");
+                    Log.info("\tBad protocol version.");
                     return;
                 }
 
@@ -275,7 +275,7 @@ namespace StardewValleyMP
                 }
                 catch ( Exception e )
                 {
-                    Log.Async("Exception receiving: " + e);
+                    Log.error("Exception receiving: " + e);
                 }
             }
 
@@ -331,7 +331,7 @@ namespace StardewValleyMP
                 }
                 catch ( Exception e )
                 {
-                    Log.Async("Exception while receiving: " + e);
+                    Log.error("Exception while receiving: " + e);
                 }
             }
         }

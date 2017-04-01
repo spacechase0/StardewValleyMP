@@ -40,7 +40,7 @@ namespace StardewValleyMP.Packets
 
         public override void process(Client client)
         {
-            Log.Async("Ready to start next day");
+            Log.debug("Ready to start next day");
             client.stage = Client.NetStage.Playing;
             client.tempStopUpdating = true;
         }
@@ -50,9 +50,9 @@ namespace StardewValleyMP.Packets
             ChatMenu.chat.Add(new ChatEntry(null, client.farmer.name + " is in bed."));
             server.broadcast(new ChatPacket(255, client.farmer.name + " is in bed."), client.id);
 
-            // This is also set in ClientSFarmerDataPacket.
+            // This is also set in ClientFarmerDataPacket.
             // I think what's happening is this packet is received, and it goes to the next day.
-            // When the next day starts it sees the ClientSFarmerDataPacket, and resets this same thing.
+            // When the next day starts it sees the ClientFarmerDataPacket, and resets this same thing.
             // So the host is ignoring everything the clients do, and queueing their messages up until
             // whenever the stage is set back to Playing. Then all of the clients changes come out at once.
             // The clients are oblivious and still receiving the host updates though.

@@ -124,7 +124,7 @@ namespace StardewValleyMP.Packets
 
             if (packet == null)
             {
-                Log.Async("Bad packet?!?!?!?! ID = " + type);
+                Log.warn("Bad packet?!?!?!?! ID = " + type);
                 return null;
             }
             //Log.Async("Got packet " + type);

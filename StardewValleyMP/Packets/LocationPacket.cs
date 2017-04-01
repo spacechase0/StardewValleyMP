@@ -47,7 +47,7 @@ namespace StardewValleyMP.Packets
 
             SFarmer farmer = client.others[clientId];
             if (farmer == null) return;
-            Log.Async(farmer.name + " moved to " + name + " (" + Game1.getLocationFromName(name) + ")");
+            Log.debug(farmer.name + " moved to " + name + " (" + Game1.getLocationFromName(name) + ")");
 
             process(farmer);
         }
@@ -57,7 +57,7 @@ namespace StardewValleyMP.Packets
             name = Multiplayer.processLocationNameForPlayerUnique(client.farmer, name);
 
             if (clientId != client.id) return;
-            Log.Async(client.farmer.name + " moved to " + name + " (" + Game1.getLocationFromName(name) + ")");
+            Log.debug(client.farmer.name + " moved to " + name + " (" + Game1.getLocationFromName(name) + ")");
 
             process(client.farmer);
 

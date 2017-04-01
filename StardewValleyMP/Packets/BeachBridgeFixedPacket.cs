@@ -67,7 +67,7 @@ namespace StardewValleyMP.Packets
 
         private void beachMessage()
         {
-            SFarmer fixer = Multiplayer.getSFarmer(clientId);
+            SFarmer fixer = Multiplayer.getFarmer(clientId);
             string fName = (fixer != null) ? fixer.name : null;
 
             ChatMenu.chat.Add(new ChatEntry(null, "The bridge at the " + name + " is was fixed" + (fName != null ? (" by " + fName) : "") + "."));

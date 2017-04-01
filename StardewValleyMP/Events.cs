@@ -288,9 +288,9 @@ namespace StardewValleyMP
         {
             if (s.Equals("farmer"))
             {
-                return Multiplayer.getSFarmer(0);
+                return Multiplayer.getFarmer(0);
             }
-            return Multiplayer.getSFarmer((byte)(Convert.ToInt32(string.Concat(s[s.Count<char>() - 1])) - 1));
+            return Multiplayer.getFarmer((byte)(Convert.ToInt32(string.Concat(s[s.Count<char>() - 1])) - 1));
         }
 
         private static bool didFixDance = false;
@@ -300,7 +300,7 @@ namespace StardewValleyMP
                 return;
             if (dance.eventCommands[0] != "pause 500")
                 return;
-            Log.Async("Flower dance beginning, fixing");
+            Log.trace("Flower dance beginning, fixing");
             didFixDance = true;
 
             // Copied from Event.setupFestivalMainEvent
@@ -325,7 +325,7 @@ namespace StardewValleyMP
 			};
             for (int i = 0; i < Multiplayer.getSFarmerCount(); i++)
             {
-                SFarmer farmerFromSFarmerNumber = Multiplayer.getSFarmer( ( byte ) i );
+                SFarmer farmerFromSFarmerNumber = Multiplayer.getFarmer( ( byte ) i );
                 if (farmerFromSFarmerNumber.dancePartner != null)
                 {
                     if (farmerFromSFarmerNumber.dancePartner.gender == 1)

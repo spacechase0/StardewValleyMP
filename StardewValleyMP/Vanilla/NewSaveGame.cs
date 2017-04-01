@@ -86,7 +86,7 @@ namespace StardewValleyMP.Vanilla
 
         ////////////////////////////////////////
         skipTo:
-            Log.Async("Initial loading done");
+            Log.debug("Initial loading done");
             if (Multiplayer.mode == Mode.Host)
             {
                 foreach ( Server.Client client in Multiplayer.server.clients )
@@ -110,7 +110,7 @@ namespace StardewValleyMP.Vanilla
                         Multiplayer.client.update();
                         if (Multiplayer.client == null)
                         {
-                            Log.Async("Bad connection or something");
+                            Log.error("Bad connection or something");
                             yield break;
                         }
                         if (Multiplayer.client.stage == Client.NetStage.WaitingForID && Multiplayer.client.id != 255)
@@ -122,13 +122,13 @@ namespace StardewValleyMP.Vanilla
                             Multiplayer.client.stage = Client.NetStage.WaitingForWorldData;
                         }
                     }
-                    catch (Exception e) { Log.Async("Exception loading world: " + e); }
+                    catch (Exception e) { Log.error("Exception loading world: " + e); }
                     yield return 20;
                 }
             }
             Multiplayer.locations.Clear();
             NPCMonitor.reset();
-            Log.Async("MP loading done");
+            Log.info("MP loading done");
             ////////////////////////////////////////
 
 
@@ -178,7 +178,7 @@ namespace StardewValleyMP.Vanilla
             }
             catch (Exception e)
             {
-                Log.Async("Exception loading locations: " + e);
+                Log.error("Exception loading locations: " + e);
             }
             Game1.player = oldPlayer;
             ////////////////////////////////////////
@@ -202,7 +202,7 @@ namespace StardewValleyMP.Vanilla
                 Game1.bloomDay = SaveGame.loaded.bloomDay;
                 /*Game1.*/setGraphicsForSeason();
             }
-            catch (Exception e) { Log.Async("Exception doing seasonal graphics: " + e); }
+            catch (Exception e) { Log.error("Exception doing seasonal graphics: " + e); }
     yield return 56;
             Game1.samBandName = SaveGame.loaded.samBandName;
             Game1.elliottBookName = SaveGame.loaded.elliottBookName;
@@ -446,7 +446,7 @@ namespace StardewValleyMP.Vanilla
             if (skipToFile) NPCMonitor.reset();
             if (Multiplayer.mode == Mode.Host)
             {
-                Log.Async("Broadcasting on save.");
+                Log.info("Broadcasting on save.");
                 try
                 {
                     SaveGame.loaded = saveGame;
@@ -455,7 +455,7 @@ namespace StardewValleyMP.Vanilla
                 }
                 catch (Exception e)
                 {
-                    Log.Async("Exception during broadcast: " + e);
+                    Log.error("Exception during broadcast: " + e);
                 }
                 //yield return 100;
                 //yield break;
@@ -620,7 +620,7 @@ namespace StardewValleyMP.Vanilla
             if (!house.name.Contains('_')) return Game1.player;
 
             string name = house.name.Substring(house.name.LastIndexOf('_') + 1);
-            return Multiplayer.getSFarmer(name);
+            return Multiplayer.getFarmer(name);
         }
 
         public static void loadDataToSFarmer(SFarmer tmp, SFarmer target = null)
@@ -719,7 +719,7 @@ namespace StardewValleyMP.Vanilla
                     {
                         FarmHouse_setMapForUpgradeLevel((FarmHouse)locationFromName);
                     }
-                    catch (Exception e) { Log.Async("EXception setting farmhouse map for " + Game1.player.name + ": " + e); }
+                    catch (Exception e) { Log.error("Exception setting farmhouse map for " + Game1.player.name + ": " + e); }
                     ////////////////////////////////////////
                     (locationFromName as FarmHouse).wallPaper = (current as FarmHouse).wallPaper;
                     (locationFromName as FarmHouse).floor = (current as FarmHouse).floor;
@@ -735,7 +735,7 @@ namespace StardewValleyMP.Vanilla
                     {
                         (locationFromName as FarmHouse).resetForPlayerEntry();
                     }
-                    catch (Exception e) { Log.Async("Exception reseting " + Game1.player.name + "'s house: " + e); }
+                    catch (Exception e) { Log.error("Exception reseting " + Game1.player.name + "'s house: " + e); }
                     Game1.player = oldPlayer;
                     ////////////////////////////////////////
                     using (List<Furniture>.Enumerator enumerator2 = (locationFromName as FarmHouse).furniture.GetEnumerator())
@@ -1109,7 +1109,7 @@ namespace StardewValleyMP.Vanilla
                 }
                 catch ( Exception e )
                 {
-                    Log.Async("Exception fixing map for " + current.name + ": " + e);
+                    Log.error("Exception fixing map for " + current.name + ": " + e);
                 }
                 ////////////////////////////////////////
 

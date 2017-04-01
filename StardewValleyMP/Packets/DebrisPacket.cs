@@ -184,13 +184,13 @@ namespace StardewValleyMP.Packets
                     {
                         int begin = itemStr.IndexOf("<");
                         string type = itemStr.Substring(begin + 1, itemStr.IndexOf(" xmlns") - begin - 1);
-                        Log.Async("!!! An unknown item type (" + type + ") was dropped and received by us.");
+                        Log.warn("!!! An unknown item type (" + type + ") was dropped and received by us.");
                         return;
                     }
                 }
                 catch (Exception e)
                 {
-                    Log.Async("Exception deserializing item: " + e);
+                    Log.error("Exception deserializing item: " + e);
                 }
             }
 

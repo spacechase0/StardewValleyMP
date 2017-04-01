@@ -111,7 +111,7 @@ namespace StardewValleyMP.Packets
                 }
 
                 // When opener is set, nobody can open the chest (vanilla).
-                Util.SetInstanceField(typeof(Chest), obj, "opener", Multiplayer.getSFarmer((byte)opener));
+                Util.SetInstanceField(typeof(Chest), obj, "opener", Multiplayer.getFarmer((byte)opener));
 
                 // Do the animation manually. It pops open instead of being smooth, but fixing
                 // that would probably be a lot more work.

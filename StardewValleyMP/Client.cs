@@ -67,7 +67,7 @@ namespace StardewValleyMP
                 }
                 catch ( Exception e )
                 {
-                    Log.Async("Exception processing delayed packet: " + e);
+                    Log.error("Exception processing delayed packet: " + e);
                 }
             }
         }
@@ -108,7 +108,7 @@ namespace StardewValleyMP
             }
             catch ( Exception e )
             {
-                Log.Async("Exception receiving: " + e);
+                Log.error("Exception receiving: " + e);
             }
         }
 
@@ -121,7 +121,7 @@ namespace StardewValleyMP
             }
             catch (Exception e)
             {
-                Log.Async("Exception logging packet: " + e);
+                Log.error("Exception logging packet: " + e);
             }
         }
 
@@ -176,7 +176,7 @@ namespace StardewValleyMP
             }
             catch (Exception e)
             {
-                Log.Async("Exception while receiving: " + e);
+                Log.error("Exception while receiving: " + e);
                 Multiplayer.mode = Mode.Singleplayer;
                 Multiplayer.client = null;
             }

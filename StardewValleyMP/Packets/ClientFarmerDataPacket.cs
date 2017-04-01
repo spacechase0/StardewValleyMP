@@ -50,7 +50,7 @@ namespace StardewValleyMP.Packets
 
         public override void process( Server server, Server.Client client )
         {
-            Log.Async("Got farmer data for client " + client.id);
+            Log.debug("Got farmer data for client " + client.id);
 
             //SFarmer old = client.farmer;
             SaveGame theirs = (SaveGame)SaveGame.serializer.Deserialize(Util.stringStream(xml));
@@ -148,10 +148,10 @@ namespace StardewValleyMP.Packets
                 return;
             }
 
-            Log.Async("Adding: " + oldName + " -> " + loc.name + " (" + loc + ")");
+            Log.debug("Adding: " + oldName + " -> " + loc.name + " (" + loc + ")");
             if ( oldName != "FarmHouse" && oldName != "Cellar" )
             {
-                Log.Async("READ THE BLOCK OF COMMENTS IN THE ABOVE FUNCTION");
+                Log.error("READ THE BLOCK OF COMMENTS IN THE ABOVE FUNCTION");
                 return;
             }
 

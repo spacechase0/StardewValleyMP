@@ -49,7 +49,7 @@ namespace StardewValleyMP.Packets
 
         public override void process(Client client)
         {
-            Log.Async("Got world data");
+            Log.debug("Got world data");
             //Log.Async(xml);
 
             SaveGame mine = SaveGame.loaded;
@@ -153,12 +153,12 @@ namespace StardewValleyMP.Packets
                 }
             }
 
-            // See the giant block of comments in ClientSFarmerDataPacket
+            // See the giant block of comments in ClientFarmerDataPacket
             foreach (GameLocation theirLoc in world.locations)
             {
                 if (theirLoc is FarmHouse)
                 {
-                    Log.Async("FarmHouse: " + theirLoc.name);
+                    Log.debug("FarmHouse: " + theirLoc.name);
                     NewSaveGame.FarmHouse_setMapForUpgradeLevel(theirLoc as FarmHouse);
                 }
             }
@@ -182,7 +182,7 @@ namespace StardewValleyMP.Packets
 
         private void debugStuff(GameLocation loc, string oldName, object extra)
         {
-            Log.Async("FIXED:" + oldName + "->" + loc.name);
+            Log.debug("FIXED:" + oldName + "->" + loc.name);
         }
 
         private void findReplaceLocation( String name, List< GameLocation > find, List< GameLocation > replace )

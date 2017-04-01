@@ -22,11 +22,13 @@ namespace StardewValleyMP
         public const bool DEBUG = true;
         public const bool FAKE_LATENCY = false;
 
+        public static MultiplayerMod instance;
         public static MultiplayerConfig ModConfig { get; private set; }
         public static Assembly a;
         public override void Entry(params object[] objects)
         {
-            Log.Async("Loading Config");
+            instance = this;
+            Log.info("Loading Config");
             ModConfig = new MultiplayerConfig().InitializeConfig(BaseConfigPath);
 
             GameEvents.UpdateTick += onUpdate;
@@ -69,7 +71,7 @@ namespace StardewValleyMP
             }
             catch ( Exception e )
             {
-                Log.Async("Exception during update: " + e);
+                Log.error("Exception during update: " + e);
             }
         }
 
@@ -87,7 +89,7 @@ namespace StardewValleyMP
             }
             catch ( Exception e )
             {
-                Log.Async("Exception during predraw: " + e);
+                Log.error("Exception during predraw: " + e);
             }
         }
 
@@ -101,7 +103,7 @@ namespace StardewValleyMP
             }
             catch ( Exception e )
             {
-                Log.Async("Exception during location change: " + e);
+                Log.error("Exception during location change: " + e);
             }
         }
 
@@ -131,7 +133,7 @@ namespace StardewValleyMP
             }
             catch ( Exception e )
             {
-                Log.Async("Exception during keyboard change: " + e);
+                Log.error("Exception during keyboard change: " + e);
             }
         }
     }

@@ -109,7 +109,7 @@ namespace StardewValleyMP.Packets
             }
             catch ( Exception e)
             {
-                Log.Async("Exception deserializing farm animal: " + e);
+                Log.error("Exception deserializing farm animal: " + e);
             }
 
             NPCMonitor.addAnimal( location, a );

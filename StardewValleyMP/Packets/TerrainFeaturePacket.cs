@@ -137,13 +137,13 @@ namespace StardewValleyMP.Packets
                 {
                     int begin = featureStr.IndexOf("<");
                     string type = featureStr.Substring(begin + 1, featureStr.IndexOf(" xmlns") - begin - 1);
-                    Log.Async("!!! An unknown terrain feature type (" + type + ") was created and received by us.");
+                    Log.warn("!!! An unknown terrain feature type (" + type + ") was created and received by us.");
                     return;
                 }
             }
             catch ( Exception e )
             {
-                Log.Async("Exception deserializing terrain feature: " + e);
+                Log.error("Exception deserializing terrain feature: " + e);
             }
 
             tf.loadSprite();

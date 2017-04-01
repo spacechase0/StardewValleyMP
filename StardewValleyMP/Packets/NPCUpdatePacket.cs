@@ -43,13 +43,13 @@ namespace StardewValleyMP.Packets
             state.defaultY = reader.ReadSingle();
 
             if (state.defaultMap == null)
-                Log.Async("! RECEIVED NPC UPDATE WITH NULL: " + name);
+                Log.warn("! RECEIVED NPC UPDATE WITH NULL: " + name);
         }
 
         protected override void write(BinaryWriter writer)
         {
             if (state.defaultMap == "" || state.defaultMap == null)
-                Log.Async("! SENDING NPC UPDATE WITH NULL: " + name);
+                Log.warn("! SENDING NPC UPDATE WITH NULL: " + name);
 
             writer.Write(name);
             writer.Write(state.datingSFarmer);

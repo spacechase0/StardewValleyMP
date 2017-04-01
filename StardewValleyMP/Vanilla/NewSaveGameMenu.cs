@@ -66,7 +66,7 @@ namespace StardewValleyMP.Vanilla
             ////////////////////////////////////////
             if (Multiplayer.mode == Mode.Client)
             {
-                Log.Async("Reloading world for next day");
+                Log.info("Reloading world for next day");
 
                 // Yes, it is necessary to do this again (previously done when the next day packet was sent before the fade)
                 // This time newDayAfterFade has run, and so mail and stuff has changed

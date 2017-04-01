@@ -70,7 +70,7 @@ namespace StardewValleyMP.Packets
         {
             return;
 
-            SFarmer farmer = Multiplayer.getSFarmer(clientId);
+            SFarmer farmer = Multiplayer.getFarmer(clientId);
             if (farmer == null) return;
             if (spouse == null) return;
 

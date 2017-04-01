@@ -129,13 +129,13 @@ namespace StardewValleyMP.Packets
                 {
                     int begin = buildingStr.IndexOf("<");
                     string type = buildingStr.Substring(begin + 1, buildingStr.IndexOf(" xmlns") - begin - 1);
-                    Log.Async("!!! An unknown building type (" + type + ") was created and received by us.");
+                    Log.warn("!!! An unknown building type (" + type + ") was created and received by us.");
                     return;
                 }
             }
             catch ( Exception e )
             {
-                Log.Async("Exception deserializing building: " + e);
+                Log.error("Exception deserializing building: " + e);
             }
 
             Multiplayer.locations[location].addBuilding(b);

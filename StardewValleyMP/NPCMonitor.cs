@@ -31,7 +31,7 @@ namespace StardewValleyMP
             {
                 if ( !Multiplayer.COOP )
                 {
-                    Log.Async("NOT IMPLEMENTED:ANIMAL DELETION");
+                    Log.warn("NOT IMPLEMENTED:ANIMAL DELETION");
                     continue;
                 }
 
@@ -47,7 +47,7 @@ namespace StardewValleyMP
                 }
                 if (buildingAt != null)
                 {
-                    Log.Async("Sending animal deletion packet");
+                    Log.trace("Sending animal deletion packet");
                     animals.Remove(id);
                     Multiplayer.sendFunc(new FarmAnimalPacket(buildingAt, id));
                 }
@@ -93,11 +93,11 @@ namespace StardewValleyMP
             NPC npc = Game1.getCharacterFromName(name);
             if ( npc == null ) return;
 
-            Log.Async("Updating NPC " + name);
-            Log.Async("Dating: " + npc.datingFarmer + " -> " + state.datingSFarmer);
-            Log.Async("Married: " + npc.isMarried() + " -> " + state.married);
-            Log.Async("Default Map: " + npc.defaultMap + " -> " + state.defaultMap);
-            Log.Async("Default Pos: (" + npc.DefaultPosition.X + ", " + npc.DefaultPosition.Y + ") -> (" + state.defaultX + " , " + state.defaultY + ")");
+            Log.trace("Updating NPC " + name);
+            Log.trace("Dating: " + npc.datingFarmer + " -> " + state.datingSFarmer);
+            Log.trace("Married: " + npc.isMarried() + " -> " + state.married);
+            Log.trace("Default Map: " + npc.defaultMap + " -> " + state.defaultMap);
+            Log.trace("Default Pos: (" + npc.DefaultPosition.X + ", " + npc.DefaultPosition.Y + ") -> (" + state.defaultX + " , " + state.defaultY + ")");
 
             npc.datingFarmer = state.datingSFarmer;
             npc.setMarried(state.married);
@@ -109,14 +109,14 @@ namespace StardewValleyMP
 
         public static void addAnimal( string loc, FarmAnimal animal )
         {
-            Log.Async("DEBUG:Adding farm animal");
+            Log.debug("DEBUG:Adding farm animal");
             AnimalHouse home = (AnimalHouse) Game1.getLocationFromName(loc);
             (home as AnimalHouse).animals.Add(animal.myID, animal);
             (home as AnimalHouse).animalsThatLiveHere.Add(animal.myID);
 
             if ( !Multiplayer.COOP )
             {
-                Log.Async("NOT IMPLEMENTED:ANIMAL ADDITION");
+                Log.warn("NOT IMPLEMENTED:ANIMAL ADDITION");
                 return;
             }
 
@@ -140,7 +140,7 @@ namespace StardewValleyMP
 
         public static void destroyAnimal(long id)
         {
-            Log.Async("DEBUG:Removing farm animal");
+            Log.debug("DEBUG:Removing farm animal");
             foreach (GameLocation loc in Game1.locations)
             {
                 if (!(loc is Farm)) continue;
@@ -307,7 +307,7 @@ namespace StardewValleyMP
                 animals.Add(animal.myID, state);
                 if (!ignoreUpdates)
                 {
-                    Log.Async("Sending animal creation packet");
+                    Log.trace("Sending animal creation packet");
                     Multiplayer.sendFunc(new FarmAnimalPacket( animal ));
                 }
                 return;

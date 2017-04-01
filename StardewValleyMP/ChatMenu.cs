@@ -30,9 +30,9 @@ namespace StardewValleyMP
             message = theMessage;
 
             if ( farmer == null )
-                Log.Async("[] " + message);
+                Log.info("[] " + message);
             else
-                Log.Async("<" + farmer.name + "> " + message);
+                Log.info("<" + farmer.name + "> " + message);
         }
     }
 
@@ -81,7 +81,7 @@ namespace StardewValleyMP
 
                         if (baseLoc != null)
                         {
-                            Log.Async("Looking for " + baseLoc + "_" + typing.Substring(10));
+                            Log.debug("Looking for " + baseLoc + "_" + typing.Substring(10));
                             if (Game1.getLocationFromName(baseLoc + "_" + typing.Substring(10)) != null)
                                 Game1.warpFarmer(baseLoc + "_" + typing.Substring(10), (int)Game1.player.position.X / Game1.tileSize, (int)Game1.player.position.Y / Game1.tileSize, false);
                         }

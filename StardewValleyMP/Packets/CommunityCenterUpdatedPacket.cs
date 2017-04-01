@@ -149,7 +149,7 @@ namespace StardewValleyMP.Packets
 
         private void message()
         {
-            SFarmer fixer = Multiplayer.getSFarmer(clientId);
+            SFarmer fixer = Multiplayer.getFarmer(clientId);
             string fName = (fixer != null) ? fixer.name : null;
 
             switch (reason)

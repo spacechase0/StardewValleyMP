@@ -71,7 +71,7 @@ namespace StardewValleyMP.Packets
 
         private void danceMessage()
         {
-            SFarmer farmer = Multiplayer.getSFarmer(clientId);
+            SFarmer farmer = Multiplayer.getFarmer(clientId);
             //ChatMenu.chat.Add(new ChatEntry(null, farmer.name + " will be dancing with " + partner + "."));
         }
     }

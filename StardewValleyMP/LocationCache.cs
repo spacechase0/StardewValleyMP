@@ -489,7 +489,7 @@ namespace StardewValleyMP
             }
             catch ( Exception e )
             {
-                Log.Async("Exception changing (" + args.Action + ", " + args.NewItems + ", " + args.OldItems + ") terrain feature: " + e);
+                Log.error("Exception changing (" + args.Action + ", " + args.NewItems + ", " + args.OldItems + ") terrain feature: " + e);
             }
         }
 
@@ -558,7 +558,7 @@ namespace StardewValleyMP
             }
             catch (Exception e)
             {
-                Log.Async("Exception changing (" + args.Action + ", " + args.NewItems + ", " + args.OldItems + ") terrain feature: " + e);
+                Log.error("Exception changing (" + args.Action + ", " + args.NewItems + ", " + args.OldItems + ") terrain feature: " + e);
             }
         }
 

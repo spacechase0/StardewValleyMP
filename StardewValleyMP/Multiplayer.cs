@@ -116,7 +116,7 @@ namespace StardewValleyMP
             throw new ArgumentException("Invalid farmer?");
         }
 
-        public static SFarmer getSFarmer(byte target)
+        public static SFarmer getFarmer(byte target)
         {
             if (mode == Mode.Host && server != null)
             {
@@ -146,7 +146,7 @@ namespace StardewValleyMP
             return null;
         }
 
-        public static SFarmer getSFarmer(string target)
+        public static SFarmer getFarmer(string target)
         {
             // Weird bug where Game1.player is always a different save of mine for some reason
             // SaveGame.loaded.player is correct, so just give that priority
@@ -176,7 +176,7 @@ namespace StardewValleyMP
                 }
             }
 
-            Log.Async("WARNING: FAiled to find player " + target );
+            Log.error("WARNING: Failed to find player " + target );
             //Log.Async( Game1.player.name + " " + Game1.player.spouse + " " + Game1.player.dateStringForSaveGame);
             //Log.Async("Or is it " + SaveGame.loaded.player.name + "? " + SaveGame.loaded.player.spouse + " " + SaveGame.loaded.player.dateStringForSaveGame);
 
@@ -230,7 +230,7 @@ namespace StardewValleyMP
                 me = Game1.player;
             if ( me == null )
             {
-                Log.Async("WARNING: processLocationNameForPlayerUnique called without us having a player");
+                Log.warn("processLocationNameForPlayerUnique called without us having a player");
             }
 
             if ( loc == "BathHouse_Entry" || loc == "BathHouse_MensLocker" ||
@@ -280,7 +280,7 @@ namespace StardewValleyMP
             }
 
             // Hopefully won't happen?
-            Log.Async("Bad location or something");
+            Log.warn("Bad location or something");
             return null;
         }
 
@@ -324,9 +324,9 @@ namespace StardewValleyMP
                 if ( loc.name.Contains( '_' ) && isPlayerUnique( loc.name.Substring( 0, loc.name.IndexOf( '_' ) ) ) )
                 {
                     string other = loc.name.Substring(loc.name.IndexOf('_') + 1);
-                    if ( getSFarmer( other ) == null )
+                    if ( getFarmer( other ) == null )
                     {
-                        Log.Async("SFarmer " + other + " is not online, removing his " + loc.name);
+                        Log.debug("Farmer " + other + " is not online, removing his " + loc.name);
                         toRemove.Add(loc);
                     }
                 }
@@ -340,7 +340,7 @@ namespace StardewValleyMP
             {
                 if ( loc.name.Contains( "_" ) && Game1.getLocationFromName( loc.name ) == null )
                 {
-                    Log.Async(loc.name + " missing from game, copying from save");
+                    Log.debug(loc.name + " missing from game, copying from save");
                     Game1.locations.Add(loc);
                 }
             }
@@ -369,7 +369,7 @@ namespace StardewValleyMP
 
                 while (true)
                 {
-                    Log.Async("Waiting for connection...");
+                    Log.info("Waiting for connection...");
                     Socket socket = listener.AcceptSocket();
                     socket.NoDelay = true;
                     NetworkStream stream = new NetworkStream(socket);
@@ -383,7 +383,7 @@ namespace StardewValleyMP
                                               ( ( SocketException ) e ).Message.IndexOf( "WSACancelBlockingCall" ) != -1 ) )
                     return;
 
-                Log.Async("Exception while listening: " + e);
+                Log.error("Exception while listening: " + e);
                 ChatMenu.chat.Add(new ChatEntry(null, "Exception while listening for clients: "));
                 ChatMenu.chat.Add(new ChatEntry(null, e.Message));
                 ChatMenu.chat.Add(new ChatEntry(null, "Check your log file for more details."));
@@ -406,7 +406,7 @@ namespace StardewValleyMP
 
             try
             {
-                Log.Async("Connecting to " + ipStr + ":" + portStr);
+                Log.info("Connecting to " + ipStr + ":" + portStr);
                 IPAddress ip;
                 IPAddress.TryParse(ipStr, out ip );
                 int port = Int32.Parse(portStr);
@@ -422,7 +422,7 @@ namespace StardewValleyMP
             }
             catch ( Exception e )
             {
-                Log.Async("Exception while connecting: " + e);
+                Log.error("Exception while connecting: " + e);
                 ChatMenu.chat.Add(new ChatEntry(null, "Exception while connecting to server: "));
                 ChatMenu.chat.Add(new ChatEntry(null, e.Message));
                 ChatMenu.chat.Add(new ChatEntry(null, "Check your log file for more details."));
@@ -509,7 +509,7 @@ namespace StardewValleyMP
                         }
                         catch ( Exception e )
                         {
-                            Log.Async("Exception transitioning to next day: " + e);
+                            Log.error("Exception transitioning to next day: " + e);
                             ChatMenu.chat.Add(new ChatEntry(null, "Something went wrong transitioning days."));
                             ChatMenu.chat.Add(new ChatEntry(null, "Report this bug, providing the full log file."));
                             ChatMenu.chat.Add(new ChatEntry(null, "You might be stuck in bed now. Attempting to unstuck you, more stuff might go wrong though."));
@@ -708,7 +708,7 @@ namespace StardewValleyMP
                 return;
             }
 
-            Log.Async("(Me) " + SaveGame.loaded.player.name + " moved to " + newLocName + " (" + newLoc + ")");
+            Log.debug("(Me) " + SaveGame.loaded.player.name + " moved to " + newLocName + " (" + newLoc + ")");
             MovingStatePacket move = new MovingStatePacket(getMyId(), Game1.player);
             LocationPacket loc = new LocationPacket(getMyId(), newLocName);
             if (!goingToFestival) Multiplayer.sendFunc(loc);

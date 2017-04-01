@@ -135,13 +135,13 @@ namespace StardewValleyMP.Packets
                         {
                             int begin = xml.IndexOf("<");
                             string type = xml.Substring(begin + 1, xml.IndexOf(" xmlns") - begin - 1);
-                            Log.Async("!!! An unknown item type (" + type + ") was shipped and received by us.");
+                            Log.warn("!!! An unknown item type (" + type + ") was shipped and received by us.");
                             return;
                         }
                     }
                     catch (Exception e)
                     {
-                        Log.Async("Exception deserializing item: " + e);
+                        Log.error("Exception deserializing item: " + e);
                     }
                 }
                 if (item == null) return;

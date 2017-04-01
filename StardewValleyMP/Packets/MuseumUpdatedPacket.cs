@@ -71,7 +71,7 @@ namespace StardewValleyMP.Packets
 
         private void message()
         {
-            SFarmer fixer = Multiplayer.getSFarmer(clientId);
+            SFarmer fixer = Multiplayer.getFarmer(clientId);
             string fName = (fixer != null) ? fixer.name : null;
 
             ChatMenu.chat.Add(new ChatEntry(null, "The " + name + " has been changed" + (fName != null ? (" by " + fName) : "") + "."));

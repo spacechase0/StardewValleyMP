@@ -49,7 +49,7 @@ namespace StardewValleyMP.Packets
 
         public override void process( Client client )
         {
-            Log.Async("Got farmer data for other players.");
+            Log.debug("Got farmer data for other players.");
 
             foreach (SFarmer farmer in client.others.Values)
             {
