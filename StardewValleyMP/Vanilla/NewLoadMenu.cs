@@ -95,7 +95,7 @@ namespace StardewValleyMP.Vanilla
                             if (stream != null)
                             {
                                 SFarmer farmer = (SFarmer)SaveGame.farmerSerializer.Deserialize(stream);
-                                NewSaveGame.loadDataToFarmer(farmer, farmer);
+                                NewSaveGame.loadDataToFarmer(farmer);
                                 farmer.favoriteThing = text2.Split(new char[]
                                 {
                                     Path.DirectorySeparatorChar
