@@ -59,11 +59,10 @@ namespace StardewValleyMP
                         Util.SetInstanceField(typeof(TitleMenu), title, "logoFadeTimer", 0);
                         Util.SetInstanceField(typeof(TitleMenu), title, "fadeFromWhiteTimer", 0);
                     }
-
-                    IClickableMenu submenu = (IClickableMenu)Util.GetInstanceField(typeof(TitleMenu), title, "subMenu");
-                    if (submenu != null && submenu.GetType() == typeof(LoadGameMenu))
+                    
+                    if (TitleMenu.subMenu != null && (TitleMenu.subMenu.GetType() == typeof(LoadGameMenu)))
                     {
-                        Util.SetInstanceField(typeof(TitleMenu), title, "subMenu", new NewLoadMenu());
+                        TitleMenu.subMenu = new NewLoadMenu();
                     }
                 }
                 prevMenu = Game1.activeClickableMenu;
