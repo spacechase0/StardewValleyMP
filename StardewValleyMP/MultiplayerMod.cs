@@ -19,7 +19,7 @@ namespace StardewValleyMP
 {
     public class MultiplayerMod : Mod
     {
-        public const bool DEBUG = true;
+        public static bool DEBUG { get { return ModConfig.Debug; } }
         public const bool FAKE_LATENCY = false;
 
         public static MultiplayerMod instance;
@@ -29,7 +29,7 @@ namespace StardewValleyMP
         {
             instance = this;
             Log.info("Loading Config");
-            ModConfig = new MultiplayerConfig().InitializeConfig(BaseConfigPath);
+            ModConfig = Helper.ReadConfig<MultiplayerConfig>();
 
             GameEvents.UpdateTick += onUpdate;
             GraphicsEvents.OnPreRenderHudEvent += onPreDraw;

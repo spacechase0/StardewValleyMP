@@ -7,16 +7,10 @@ using System.Threading.Tasks;
 
 namespace StardewValleyMP
 {
-    public class MultiplayerConfig : Config
+    public class MultiplayerConfig
     {
-        public string DefaultIP { get; set; }
-        public string DefaultPort { get; set; }
-
-        public override T GenerateDefaultConfig<T>()
-        {
-            DefaultIP = "127.0.0.1";
-            DefaultPort = Multiplayer.DEFAULT_PORT;
-            return this as T;
-        }
+        public string DefaultIP { get; set; } = "127.0.0.1";
+        public string DefaultPort { get; set; } = Multiplayer.DEFAULT_PORT;
+        public bool Debug { get; set; } = false;
     }
 }

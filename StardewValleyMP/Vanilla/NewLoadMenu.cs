@@ -339,8 +339,6 @@ namespace StardewValleyMP.Vanilla
                             Multiplayer.ipStr = ipBox.Text;
                             modeInit = new Thread(Multiplayer.startClient);
                         }
-                        StardewModdingAPI.Log.Async("Saving Config file");
-                        MultiplayerMod.ModConfig.WriteConfig();
                         modeInit.Start();
                         ChatMenu.chat.Clear();
                         ChatMenu.chat.Add(new ChatEntry(null, "NOTE: Chat doesn't work on the connection menu."));
