@@ -588,7 +588,7 @@ namespace StardewValleyMP.Vanilla
                 {
                     if (this._initTask.IsCompleted)
                     {
-                        foreach (Farmer saveGame in this.saveGames)
+                        foreach (SFarmer saveGame in this.saveGames)
                         {
                             saveGame.unload();
                         }
@@ -839,6 +839,9 @@ namespace StardewValleyMP.Vanilla
             }
             if (this.saveGames.Count == 0)
             {
+                ////////////////////////////////////////
+                if ( _initTask == null || _initTask.Status != TaskStatus.Running)
+                ////////////////////////////////////////
                 SpriteText.drawStringHorizontallyCenteredAt(b, "No Saved Games Found", Game1.graphics.GraphicsDevice.Viewport.Bounds.Center.X, Game1.graphics.GraphicsDevice.Viewport.Bounds.Center.Y, 999999, -1, 999999, 1f, 0.88f, false, -1);
             }
             this.upArrow.draw(b);
