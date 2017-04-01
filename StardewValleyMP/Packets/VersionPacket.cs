@@ -26,7 +26,7 @@ namespace StardewValleyMP.Packets
         {
             if (version == Multiplayer.PROTOCOL_VERSION)
             {
-                client.stage = Server.Client.NetStage.WaitingForSFarmerInfo;
+                client.stage = Server.Client.NetStage.WaitingForFarmerInfo;
                 client.send(new YourIDPacket(client.id));
             }
             else

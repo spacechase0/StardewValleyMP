@@ -123,7 +123,7 @@ namespace StardewValleyMP
             foreach ( Client client in clients )
             {
                 // Send other farmers first
-                OtherSFarmerDataPacket others = new OtherSFarmerDataPacket();
+                OtherFarmerDataPacket others = new OtherFarmerDataPacket();
 
                 /*string savePath = Path.Combine(new string[]
 			    {
@@ -187,7 +187,7 @@ namespace StardewValleyMP
             public enum NetStage
             {
                 VerifyingVersion,
-                WaitingForSFarmerInfo,
+                WaitingForFarmerInfo,
                 WaitingForStart,
                 Playing,
             }

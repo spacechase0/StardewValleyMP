@@ -58,18 +58,18 @@ namespace StardewValleyMP.Packets
             SFarmer farmer = client.others[clientId];
             if (farmer == null) return;
 
-            doSFarmer(farmer);
+            doFarmer(farmer);
         }
 
         public override void process(Server server, Server.Client client)
         {
             if (clientId != client.id) return;
 
-            doSFarmer(client.farmer);
+            doFarmer(client.farmer);
             server.broadcast(this, clientId);
         }
 
-        private void doSFarmer( SFarmer farmer )
+        private void doFarmer( SFarmer farmer )
         {
             if (index == -1)
                 farmer.ActiveObject = null;

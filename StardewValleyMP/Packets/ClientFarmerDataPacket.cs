@@ -18,15 +18,15 @@ namespace StardewValleyMP.Packets
 {
     // Client -> Server
     // Send the server info about yourself.
-    public class ClientSFarmerDataPacket : Packet
+    public class ClientFarmerDataPacket : Packet
     {
         public string xml;
 
-        public ClientSFarmerDataPacket() : base( ID.ClientSFarmerData )
+        public ClientFarmerDataPacket() : base( ID.ClientFarmerData )
         {
         }
 
-        public ClientSFarmerDataPacket(string theXml)
+        public ClientFarmerDataPacket(string theXml)
             : this()
         {
             xml = theXml;
@@ -74,7 +74,7 @@ namespace StardewValleyMP.Packets
             client.farmer = theirs.player;
             client.farmer.uniqueMultiplayerID += 1 + client.id;
 
-            NewSaveGame.loadDataToSFarmer(client.farmer, client.farmer);
+            NewSaveGame.loadDataToFarmer(client.farmer, client.farmer);
             client.farmer.FarmerSprite.setOwner(client.farmer);
             Game1.player.FarmerSprite.setOwner(Game1.player);
 
@@ -87,7 +87,7 @@ namespace StardewValleyMP.Packets
             // I think this is why vanilla copies data over in loadDataToLocations instead of using
             // the loaded objects directly. Why not just postpone loading until later, I don't know.
             //
-            // So, when the second day begins, otherSFarmer.currentLocation was still set to the
+            // So, when the second day begins, otherFarmer.currentLocation was still set to the
             // previous day's farm house[*]. On day two, the 'good' one[**] was removed, so when they go
             // back in, the bad one is used. Basically, I need to make them all the 'good' one.
             // For now, I'm just going to reload the needed data for this client's farmhouse.

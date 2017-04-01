@@ -8,8 +8,8 @@ namespace StardewValleyMP.Packets
     {
         Version = 0,
         YourID,
-        ClientSFarmerData,
-        OtherSFarmerData,
+        ClientFarmerData,
+        OtherFarmerData,
         WorldData,
         MovingState,
         Location,
@@ -74,8 +74,8 @@ namespace StardewValleyMP.Packets
             {
                 case (byte)ID.Version: packet = new VersionPacket(); break;
                 case (byte)ID.YourID: packet = new YourIDPacket(); break;
-                case (byte)ID.ClientSFarmerData: packet = new ClientSFarmerDataPacket(); break;
-                case (byte)ID.OtherSFarmerData: packet = new OtherSFarmerDataPacket(); break;
+                case (byte)ID.ClientFarmerData: packet = new ClientFarmerDataPacket(); break;
+                case (byte)ID.OtherFarmerData: packet = new OtherFarmerDataPacket(); break;
                 case (byte)ID.WorldData: packet = new WorldDataPacket(); break;
                 case (byte)ID.MovingState: packet = new MovingStatePacket(); break;
                 case (byte)ID.Location: packet = new LocationPacket(); break;

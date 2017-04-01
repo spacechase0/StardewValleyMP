@@ -60,7 +60,7 @@ namespace StardewValleyMP.Packets
             if (farmer == null) return;
 
             //Log.Async("Movement " + flags + " " + x + " " + y);
-            doSFarmer(farmer);
+            doFarmer(farmer);
 
         }
 
@@ -69,12 +69,12 @@ namespace StardewValleyMP.Packets
             if (clientId != client.id) return;
 
             //Log.Async("Movement " + flags + " " + x + " " + y);
-            doSFarmer(client.farmer);
+            doFarmer(client.farmer);
 
             server.broadcast( this, clientId );
         }
 
-        private void doSFarmer( SFarmer farmer )
+        private void doFarmer( SFarmer farmer )
         {
             farmer.SetMovingLeft((flags & (byte)MovementFlags.Left) != 0);
             farmer.SetMovingRight((flags & (byte)MovementFlags.Right) != 0);

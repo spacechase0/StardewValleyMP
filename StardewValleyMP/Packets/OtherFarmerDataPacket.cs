@@ -8,12 +8,12 @@ namespace StardewValleyMP.Packets
 {
     // Server -> Client
     // Tell the client about everyone else.
-    public class OtherSFarmerDataPacket : Packet
+    public class OtherFarmerDataPacket : Packet
     {
         public Dictionary< byte, string > others = new Dictionary< byte, string >();
 
-        public OtherSFarmerDataPacket()
-            : base(ID.OtherSFarmerData)
+        public OtherFarmerDataPacket()
+            : base(ID.OtherFarmerData)
         {
         }
 
@@ -57,7 +57,7 @@ namespace StardewValleyMP.Packets
                 farmer.uniqueMultiplayerID += 1 + client.id; // For IsMainPlayer
 
                 //SFarmer oldPlayer = Game1.player;
-                NewSaveGame.loadDataToSFarmer(farmer, farmer);
+                NewSaveGame.loadDataToFarmer(farmer, farmer);
                 //Game1.player = oldPlayer; // Seriously, why does this get reassigned in there?
 
                 client.others.Add(other.Key, farmer);

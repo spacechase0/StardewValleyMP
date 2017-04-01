@@ -38,31 +38,31 @@ namespace StardewValleyMP.Packets
         {
             if (clientId == 255)
             {
-                doSFarmer(null);
+                doFarmer(null);
                 return;
             }
 
             SFarmer farmer = client.others[clientId];
             if (farmer == null) return;
 
-            doSFarmer(farmer);
+            doFarmer(farmer);
         }
 
         public override void process(Server server, Server.Client client)
         {
             if (clientId == 255)
             {
-                doSFarmer(null);
+                doFarmer(null);
                 return;
             }
 
             if (clientId != client.id) return;
 
-            doSFarmer(client.farmer);
+            doFarmer(client.farmer);
             server.broadcast(this, client.id);
         }
 
-        private void doSFarmer( SFarmer farmer )
+        private void doFarmer( SFarmer farmer )
         {
             ChatMenu.chat.Add(new ChatEntry(farmer, message));
         }

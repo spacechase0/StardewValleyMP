@@ -41,18 +41,18 @@ namespace StardewValleyMP.Packets
             SFarmer farmer = client.others[clientId];
             if (farmer == null) return;
 
-            doSFarmer(farmer);
+            doFarmer(farmer);
         }
 
         public override void process(Server server, Server.Client client)
         {
             if (clientId != client.id) return;
 
-            doSFarmer(client.farmer);
+            doFarmer(client.farmer);
             server.broadcast(this, client.id);
         }
 
-        private void doSFarmer( SFarmer farmer )
+        private void doFarmer( SFarmer farmer )
         {
             NPC npc = Game1.currentLocation.currentEvent.getActorByName(partner);
             if (npc == null) return;

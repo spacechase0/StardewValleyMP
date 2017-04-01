@@ -36,7 +36,7 @@ namespace StardewValleyMP.Vanilla
             else if ( Multiplayer.mode == Mode.Client )
             {
                 Multiplayer.client.stage = Client.NetStage.Waiting;
-                //Multiplayer.sendFunc(new ClientSFarmerDataPacket(Util.serialize<SFarmer>(Game1.player)));
+                //Multiplayer.sendFunc(new ClientFarmerDataPacket(Util.serialize<SFarmer>(Game1.player)));
                 Multiplayer.sendFunc(new NextDayPacket());
             }*/
             this.waitingText = new SparklingText(Game1.dialogueFont, "Waiting on host", Color.DodgerBlue, Color.Black * 0.001f, false, 0.1, 1500, Game1.tileSize / 2, 500);

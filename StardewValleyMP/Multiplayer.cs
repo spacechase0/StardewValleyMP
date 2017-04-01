@@ -73,7 +73,7 @@ namespace StardewValleyMP
             return 0;
         }
 
-        public static int getSFarmerCount()
+        public static int getFarmerCount()
         {
             if (mode == Mode.Host && server != null)
                 return server.clients.Count + 1;
@@ -500,7 +500,7 @@ namespace StardewValleyMP
                             MemoryStream tmp = new MemoryStream();
                             SaveGame.serializer.Serialize(tmp, SaveGame.loaded);
                             sendFunc(new NextDayPacket());
-                            sendFunc(new ClientSFarmerDataPacket(Encoding.UTF8.GetString(tmp.ToArray())));
+                            sendFunc(new ClientFarmerDataPacket(Encoding.UTF8.GetString(tmp.ToArray())));
                             //SaveGame.loaded = oldLoaded;
                         }
                         catch ( Exception e )
