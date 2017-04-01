@@ -16,7 +16,7 @@ namespace StardewValleyMP
         public static MultiplayerMod instance;
         public static MultiplayerConfig ModConfig { get; private set; }
         public static Assembly a;
-        public override void Entry(params object[] objects)
+        public override void Entry(IModHelper helper)
         {
             instance = this;
             Log.info("Loading Config");
