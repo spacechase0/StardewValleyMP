@@ -55,12 +55,6 @@ namespace StardewValleyMP
                 if (Game1.activeClickableMenu is TitleMenu)
                 {
                     TitleMenu title = (TitleMenu)Game1.activeClickableMenu;
-                    if (DEBUG)
-                    {
-                        Util.SetInstanceField(typeof(TitleMenu), title, "chuckleFishTimer", 0);
-                        Util.SetInstanceField(typeof(TitleMenu), title, "logoFadeTimer", 0);
-                        Util.SetInstanceField(typeof(TitleMenu), title, "fadeFromWhiteTimer", 0);
-                    }
                     
                     if (TitleMenu.subMenu != null && (TitleMenu.subMenu.GetType() == typeof(LoadGameMenu)))
                     {
