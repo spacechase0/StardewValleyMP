@@ -1,12 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using StardewValley.Objects;
-using Object = StardewValley.Object;
-
-namespace StardewValleyMP.States
+﻿namespace StardewValleyMP.States
 {
     public abstract class State
     {

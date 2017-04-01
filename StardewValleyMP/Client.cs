@@ -1,17 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using StardewValleyMP.Packets;
+using System;
 using System.Collections.Concurrent;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using System.Net;
+using System.Collections.Generic;
 using System.Net.Sockets;
-using System.IO;
-using System.Xml;
-using StardewValley;
-using StardewValleyMP.Packets;
-using StardewModdingAPI;
+using System.Threading;
 using SFarmer = StardewValley.Farmer;
 
 namespace StardewValleyMP

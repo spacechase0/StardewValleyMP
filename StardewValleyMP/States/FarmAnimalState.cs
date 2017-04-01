@@ -1,11 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Microsoft.Xna.Framework;
 using StardewValley;
-using StardewValley;
-using Microsoft.Xna.Framework;
 
 namespace StardewValleyMP.States
 {

@@ -1,21 +1,16 @@
-﻿using System;
+﻿using Microsoft.Xna.Framework;
+using StardewValley;
+using StardewValley.Buildings;
+using StardewValley.Locations;
+using StardewValley.Objects;
+using StardewValley.TerrainFeatures;
+using StardewValleyMP.Packets;
+using StardewValleyMP.States;
+using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using StardewModdingAPI;
-using StardewValley;
-using StardewValley.Locations;
-using StardewValleyMP.Packets;
-using StardewValley.TerrainFeatures;
-using StardewValley.Objects;
-using Microsoft.Xna.Framework;
 using Object = StardewValley.Object;
-using StardewValleyMP.States;
-using xTile.Tiles;
-using xTile.ObjectModel;
-using StardewValley.Buildings;
 
 namespace StardewValleyMP
 {

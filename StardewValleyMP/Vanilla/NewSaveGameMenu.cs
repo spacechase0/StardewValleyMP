@@ -1,12 +1,9 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using StardewValley.BellsAndWhistles;
-using System;
-using System.Collections.Generic;
 using StardewValley;
+using StardewValley.BellsAndWhistles;
 using StardewValley.Menus;
-using StardewValleyMP.Packets;
-using StardewModdingAPI;
+using System.Collections.Generic;
 using System.Threading;
 
 namespace StardewValleyMP.Vanilla

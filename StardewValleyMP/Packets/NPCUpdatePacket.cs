@@ -1,15 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.IO;
-using StardewValley;
-using StardewValley.Objects;
-using StardewModdingAPI;
-using Microsoft.Xna.Framework;
-using Object = StardewValley.Object;
+﻿using StardewValley;
 using StardewValleyMP.States;
+using System.IO;
 
 namespace StardewValleyMP.Packets
 {

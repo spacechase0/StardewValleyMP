@@ -1,19 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Reflection;
+﻿using Microsoft.Xna.Framework.Input;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewValley;
 using StardewValley.Menus;
-using StardewValley.Objects;
-using StardewValley.Tools;
-using Object = StardewValley.Object;
 using StardewValleyMP.Vanilla;
-using StardewValleyMP.Packets;
-using Microsoft.Xna.Framework.Input;
+using System;
+using System.Reflection;
 
 namespace StardewValleyMP
 {

@@ -1,14 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.IO;
+﻿using Microsoft.Xna.Framework;
 using StardewValley;
 using StardewValley.Objects;
-using StardewModdingAPI;
-using Microsoft.Xna.Framework;
-using System.Xml;
+using System;
+using System.IO;
+using System.Linq;
 using System.Xml.Serialization;
 using Object = StardewValley.Object;
 

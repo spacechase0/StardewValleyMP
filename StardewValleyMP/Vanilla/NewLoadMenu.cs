@@ -1,14 +1,13 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using StardewValley;
-using StardewValley.Menus;
 using StardewValley.BellsAndWhistles;
+using StardewValley.Menus;
 using System;
-using System.Threading;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using StardewModdingAPI;
+using System.Threading;
 using SFarmer = StardewValley.Farmer;
 
 namespace StardewValleyMP.Vanilla

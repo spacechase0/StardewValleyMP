@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using StardewValley.Objects;
-using StardewValley;
-using StardewModdingAPI;
+﻿using StardewValley.Objects;
 using SFarmer = StardewValley.Farmer;
 
 namespace StardewValleyMP.States

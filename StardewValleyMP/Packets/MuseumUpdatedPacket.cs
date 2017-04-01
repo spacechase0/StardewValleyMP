@@ -1,13 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.IO;
+﻿using Microsoft.Xna.Framework;
 using StardewValley;
 using StardewValley.Locations;
-using StardewModdingAPI;
-using Microsoft.Xna.Framework;
+using System.IO;
 using SFarmer = StardewValley.Farmer;
 
 namespace StardewValleyMP.Packets

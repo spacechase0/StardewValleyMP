@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.IO;
-using StardewValley;
+﻿using StardewValley;
 using StardewValley.Menus;
-using SFarmer = StardewValley.Farmer;
+using System.IO;
 
 namespace StardewValleyMP.Packets
 {

@@ -1,15 +1,8 @@
 ﻿//zzhack
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.IO;
 using StardewValley;
 using StardewValley.Locations;
 using StardewValley.TerrainFeatures;
-using Microsoft.Xna.Framework;
-using StardewModdingAPI;
+using System.IO;
 
 namespace StardewValleyMP.Packets
 {

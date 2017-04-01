@@ -1,15 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.IO;
-using StardewValley;
-using StardewValley.Locations;
-using StardewValley.Characters;
-using StardewModdingAPI;
-using StardewValleyMP.Vanilla;
+﻿using StardewValley;
 using StardewValley.Buildings;
+using StardewValley.Characters;
+using StardewValley.Locations;
+using StardewValleyMP.Vanilla;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Text;
 
 namespace StardewValleyMP.Packets
 {
