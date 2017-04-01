@@ -45,8 +45,6 @@ namespace StardewValleyMP
                 // We need our load menu to be able to do things
                 if (Game1.activeClickableMenu is TitleMenu)
                 {
-                    TitleMenu title = (TitleMenu)Game1.activeClickableMenu;
-                    
                     if (TitleMenu.subMenu != null && (TitleMenu.subMenu.GetType() == typeof(LoadGameMenu)))
                     {
                         TitleMenu.subMenu = new NewLoadMenu();
