@@ -258,7 +258,7 @@ namespace StardewValleyMP.Vanilla
             {
                 Game1.gameMode = 9;
                 Exception exception1 = task2.Exception.GetBaseException();
-    Game1.debugOutput = Game1.parseText(exception1.Message);
+                Game1.debugOutput = Game1.parseText(exception1.Message);
                 Console.WriteLine(exception1);
                 SaveGame.IsProcessing = false;
                 yield break;

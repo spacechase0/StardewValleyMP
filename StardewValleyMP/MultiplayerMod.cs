@@ -24,11 +24,12 @@ namespace StardewValleyMP
             instance = this;
             Log.info("Loading Config");
             ModConfig = Helper.ReadConfig<MultiplayerConfig>();
-
+            
             GameEvents.UpdateTick += onUpdate;
             GraphicsEvents.OnPreRenderHudEvent += onPreDraw;
             LocationEvents.CurrentLocationChanged += onCurrentLocationChange;
             ControlEvents.KeyboardChanged += onKeyboardChange;
+            
             //GraphicsEvents.DrawDebug += Multiplayer.drawNetworkingDebug;
 
             if (DEBUG)
@@ -43,7 +44,7 @@ namespace StardewValleyMP
         {
             try
             {
-                if (Multiplayer.mode != Mode.Singleplayer) Multiplayer.update();
+                Multiplayer.update();
 
                 // We need our load menu to be able to do things
                 if (Game1.activeClickableMenu is TitleMenu)
