@@ -6,7 +6,10 @@ using StardewValley.Menus;
 using StardewValleyMP.Vanilla;
 using Steamworks;
 using System;
+using System.Collections.Generic;
 using System.Reflection;
+using System.Threading.Tasks;
+using SFarmer = StardewValley.Farmer;
 
 namespace StardewValleyMP
 {
@@ -17,16 +20,17 @@ namespace StardewValleyMP
         public static MultiplayerMod instance;
         public static MultiplayerConfig ModConfig { get; private set; }
         public static Assembly a;
-        public override void Entry(params object[] objects)
+        public override void Entry(IModHelper helper)
         {
             instance = this;
             Log.info("Loading Config");
             ModConfig = Helper.ReadConfig<MultiplayerConfig>();
-
+            
             GameEvents.UpdateTick += onUpdate;
             GraphicsEvents.OnPreRenderHudEvent += onPreDraw;
             LocationEvents.CurrentLocationChanged += onCurrentLocationChange;
             ControlEvents.KeyboardChanged += onKeyboardChange;
+            
             //GraphicsEvents.DrawDebug += Multiplayer.drawNetworkingDebug;
 
             Helper.ConsoleCommands.Add("steam", "", steamtest);
@@ -43,14 +47,20 @@ namespace StardewValleyMP
         {
             try
             {
-                if (Multiplayer.mode != Mode.Singleplayer) Multiplayer.update();
+                Multiplayer.update();
 
                 // We need our load menu to be able to do things
                 if (Game1.activeClickableMenu is TitleMenu)
                 {
                     if (TitleMenu.subMenu != null && (TitleMenu.subMenu.GetType() == typeof(LoadGameMenu)))
                     {
-                        TitleMenu.subMenu = new NewLoadMenu();
+                        LoadGameMenu oldLoadMenu = ( LoadGameMenu ) TitleMenu.subMenu;
+                        NewLoadMenu newLoadMenu = new NewLoadMenu();
+
+                        IPrivateField< object > task = instance.Helper.Reflection.GetPrivateField< object >(oldLoadMenu, "_initTask");
+                        newLoadMenu._initTask = (Task<List<SFarmer>>)task.GetValue();
+
+                        TitleMenu.subMenu = newLoadMenu;
                     }
                 }
                 prevMenu = Game1.activeClickableMenu;

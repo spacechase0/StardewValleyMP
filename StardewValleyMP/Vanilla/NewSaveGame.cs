@@ -7,9 +7,11 @@ using StardewValley.TerrainFeatures;
 using StardewValleyMP.Packets;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Xml;
 using xTile;
 using xTile.ObjectModel;
@@ -28,14 +30,21 @@ namespace StardewValleyMP.Vanilla
             skipTo:
             Game1.currentLoader = NewSaveGame.getLoadEnumerator(filename, skip);
             Game1.gameMode = 6;
-            Game1.loadingMessage = "Loading...";
+            Game1.loadingMessage = Game1.content.LoadString("Strings\\StringsFromCSFiles:SaveGame.cs.4690", new object[0]);
 
             return true;
         }
 
         public static IEnumerator<int> getLoadEnumerator(string file, bool skip = false)
         {
+            Console.WriteLine("getLoadEnumerator('{0}')", file);
+            Game1.loadingMessage = "Accessing save...";
             SaveGame saveGame = new SaveGame();
+            SaveGame.IsProcessing = true;
+            if (SaveGame.CancelToTitle)
+            {
+                Game1.ExitToTitle();
+            }
             yield return 1;
             string[] folderPath = new string[] { Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "StardewValley", "Saves", file, file };
             string str = Path.Combine(folderPath);
@@ -69,12 +78,34 @@ namespace StardewValleyMP.Vanilla
             }
             yield break;
         Label0:
-            Game1.loadingMessage = "Loading (Deserializing)...";
+            Game1.loadingMessage = Game1.content.LoadString("Strings\\StringsFromCSFiles:SaveGame.cs.4696", new object[0]);
             yield return 7;
-            SaveGame.loaded = (SaveGame)SaveGame.serializer.Deserialize(stream);
-            Game1.loadingMessage = "Creating Base World...";
-            yield return 20;
-            stream.Close();
+            SaveGame saveGame1 = null;
+            Task task = new Task(() => {
+                Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
+                saveGame1 = (SaveGame)SaveGame.serializer.Deserialize(stream);
+            });
+            task.Start();
+            while (!task.IsCanceled && !task.IsCompleted && !task.IsFaulted)
+            {
+                yield return 20;
+            }
+            if (task.IsFaulted)
+            {
+                Game1.gameMode = 9;
+                Exception baseException = task.Exception.GetBaseException();
+                Game1.debugOutput = Game1.parseText(baseException.Message);
+                Console.WriteLine(baseException);
+                SaveGame.IsProcessing = false;
+                yield break;
+            }
+            SaveGame.loaded = saveGame1;
+            stream.Dispose();
+            Game1.loadingMessage = Game1.content.LoadString("Strings\\StringsFromCSFiles:SaveGame.cs.4697", new object[0]);
+            if (SaveGame.CancelToTitle)
+            {
+                Game1.ExitToTitle();
+            }
 
         ////////////////////////////////////////
         skipTo:
@@ -122,13 +153,36 @@ namespace StardewValleyMP.Vanilla
             NPCMonitor.reset();
             Log.info("MP loading done");
             ////////////////////////////////////////
-
-
             Game1.whichFarm = SaveGame.loaded.whichFarm;
             Game1.stats = SaveGame.loaded.stats;
             Game1.year = SaveGame.loaded.year;
             if (!skip) // I can't figure out all these day2+ location glitches. So this quick patch is here instead
-                Game1.loadForNewGame(true);
+            {
+                task = new Task(() =>
+                {
+                    Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
+                    Game1.loadForNewGame(true);
+                });
+                task.Start();
+                while (!task.IsCanceled && !task.IsCompleted && !task.IsFaulted)
+                {
+                    yield return 24;
+                }
+                if (task.IsFaulted)
+                {
+                    Game1.gameMode = 9;
+                    Exception exception = task.Exception.GetBaseException();
+                    Game1.debugOutput = Game1.parseText(exception.Message);
+                    Console.WriteLine(exception);
+                    SaveGame.IsProcessing = false;
+                    yield break;
+                }
+                if (SaveGame.CancelToTitle)
+                {
+                    Game1.ExitToTitle();
+                }
+                yield return 25;
+            }
             ////////////////////////////////////////
             Multiplayer.addOtherLocations();
             ////////////////////////////////////////
@@ -139,7 +193,7 @@ namespace StardewValleyMP.Vanilla
             Game1.dayOfMonth = SaveGame.loaded.dayOfMonth;
             Game1.year = SaveGame.loaded.year;
             Game1.currentSeason = SaveGame.loaded.currentSeason;
-            Game1.loadingMessage = "Loading Player...";
+            Game1.loadingMessage = Game1.content.LoadString("Strings\\StringsFromCSFiles:SaveGame.cs.4698", new object[0]);
             if (SaveGame.loaded.mine_permanentMineChanges != null)
             {
                 Game1.mine = new MineShaft()
@@ -151,26 +205,67 @@ namespace StardewValleyMP.Vanilla
                     lowestLevelReached = SaveGame.loaded.mine_lowestLevelReached
                 };
             }
+            if (SaveGame.CancelToTitle)
+            {
+                Game1.ExitToTitle();
+            }
             yield return 26;
             Game1.isRaining = SaveGame.loaded.isRaining;
             Game1.isLightning = SaveGame.loaded.isLightning;
             Game1.isSnowing = SaveGame.loaded.isSnowing;
-            NewSaveGame.loadDataToFarmer(SaveGame.loaded.player, null);
+            Task task1 = new Task(() => {
+                Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
+                NewSaveGame.loadDataToFarmer(SaveGame.loaded.player);
+            });
+            task1.Start();
+            while (!task1.IsCanceled && !task1.IsCompleted && !task1.IsFaulted)
+            {
+                yield return 1;
+            }
+            if (task1.IsFaulted)
+            {
+                Game1.gameMode = 9;
+                Exception baseException1 = task1.Exception.GetBaseException();
+                Game1.debugOutput = Game1.parseText(baseException1.Message);
+                Console.WriteLine(baseException1);
+                SaveGame.IsProcessing = false;
+                yield break;
+            }
             Game1.player = SaveGame.loaded.player;
-            Game1.loadingMessage = "Loading Maps...";
+            Game1.loadingMessage = Game1.content.LoadString("Strings\\StringsFromCSFiles:SaveGame.cs.4699", new object[0]);
             yield return 36;
             ////////////////////////////////////////
             SFarmer oldPlayer = Game1.player;
-            try
-            {
-                /*SaveGame.*/
-                loadDataToLocations(SaveGame.loaded.locations);
+            Task task2 = new Task(() => {
+                try
+                {
+                    /*SaveGame.*/
+                    loadDataToLocations(SaveGame.loaded.locations);
 
-                Game1.getLocationFromName("FarmHouse").resetForPlayerEntry();
-            }
-            catch (Exception e)
+                    Game1.getLocationFromName("FarmHouse").resetForPlayerEntry();
+                }
+                catch (Exception e)
+                {
+                    Log.error("Exception loading locations: " + e);
+                }
+            });
+            task2.Start();
+            while (!task2.IsCanceled && !task2.IsCompleted && !task2.IsFaulted)
             {
-                Log.error("Exception loading locations: " + e);
+                yield return 1;
+            }
+            if (task2.IsFaulted)
+            {
+                Game1.gameMode = 9;
+                Exception exception1 = task2.Exception.GetBaseException();
+                Game1.debugOutput = Game1.parseText(exception1.Message);
+                Console.WriteLine(exception1);
+                SaveGame.IsProcessing = false;
+                yield break;
+            }
+            if (SaveGame.CancelToTitle)
+            {
+                Game1.ExitToTitle();
             }
             Game1.player = oldPlayer;
             ////////////////////////////////////////
@@ -215,6 +310,10 @@ namespace StardewValleyMP.Vanilla
             Game1.updateWallpaperInFarmHouse(Game1.farmerWallpaper);
             yield return 77;
             Game1.FarmerFloor = SaveGame.loaded.FarmerFloor;
+            if (SaveGame.CancelToTitle)
+            {
+                Game1.ExitToTitle();
+            }
             yield return 79;
             Game1.updateFloorInFarmHouse(Game1.FarmerFloor);
             Game1.options.musicVolumeLevel = SaveGame.loaded.musicVolume;
@@ -266,7 +365,9 @@ namespace StardewValleyMP.Vanilla
                 Game1.footstepCategory.SetVolume(Game1.options.footstepVolumeLevel);
             }
             MultiplayerUtility.latestID = SaveGame.loaded.latestID;
-            Multiplayer.prevLatestId = MultiplayerUtility.latestID; // MINE
+            ////////////////////////////////////////
+            Multiplayer.prevLatestId = MultiplayerUtility.latestID;
+            ////////////////////////////////////////
             if (Game1.isRaining)
             {
                 Game1.changeMusicTrack("rain");
@@ -364,17 +465,56 @@ namespace StardewValleyMP.Vanilla
                 }
             }
             ////////////////////////////////////////
+            if (SaveGame.CancelToTitle)
+            {
+                Game1.ExitToTitle();
+            }
+            SaveGame.IsProcessing = false;
             yield return 100;
             yield break;
         }
 
         public static IEnumerator<int> Save( bool skipToFile = false)
         {
-            return NewSaveGame.getSaveEnumerator( skipToFile );
+            SaveGame.IsProcessing = true;
+            yield return 1;
+            IEnumerator<int> saveEnumerator = NewSaveGame.getSaveEnumerator( skipToFile );
+            Task task = new Task(() => {
+                Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
+                if (saveEnumerator == null)
+                {
+                    return;
+                }
+                while (saveEnumerator.MoveNext() && saveEnumerator.Current < 100)
+                {
+                }
+            });
+            task.Start();
+            while (!task.IsCanceled && !task.IsCompleted && !task.IsFaulted)
+            {
+                yield return 1;
+            }
+            SaveGame.IsProcessing = false;
+            if (!task.IsFaulted)
+            {
+                yield return 100;
+                yield break;
+            }
+            Exception baseException = task.Exception.GetBaseException();
+            if (!(baseException is TaskCanceledException))
+            {
+                throw baseException;
+            }
+            Game1.ExitToTitle();
         }
 
         public static IEnumerator<int> getSaveEnumerator(bool skipToFile = false)
         {
+            if (SaveGame.CancelToTitle)
+            {
+                throw new TaskCanceledException();
+            }
+
             ////////////////////////////////////////
             if (Multiplayer.mode == Mode.Host)
                 Multiplayer.server.delayUpdates = true;
@@ -512,6 +652,11 @@ namespace StardewValleyMP.Vanilla
                 Game1.debugOutput = Game1.parseText(oException.Message);
                 goto Label0;
             }
+            if (SaveGame.CancelToTitle)
+            {
+                throw new TaskCanceledException();
+            }
+            yield return 2;
             XmlWriterSettings xmlWriterSetting = new XmlWriterSettings()
             {
                 CloseOutput = true
@@ -523,13 +668,14 @@ namespace StardewValleyMP.Vanilla
                 xmlWriter.WriteEndDocument();
                 xmlWriter.Flush();
             }
+            stream.Close();
+            stream.Dispose();
             SFarmer totalMinutes = Game1.player;
             TimeSpan utcNow = DateTime.UtcNow - new DateTime(2012, 6, 22);
             totalMinutes.saveTime = (int)utcNow.TotalMinutes;
             try
             {
                 stream = File.Create(str7);
-                goto Label1;
             }
             catch (IOException oException1)
             {
@@ -539,6 +685,42 @@ namespace StardewValleyMP.Vanilla
                 }
                 Game1.gameMode = 9;
                 Game1.debugOutput = Game1.parseText(oException1.Message);
+                goto Label0;
+            }
+            xmlWriterSetting = new XmlWriterSettings()
+            {
+                CloseOutput = true
+            };
+            using (XmlWriter xmlWriter1 = XmlWriter.Create(stream, xmlWriterSetting))
+            {
+                xmlWriter1.WriteStartDocument();
+                SaveGame.farmerSerializer.Serialize(xmlWriter1, Game1.player);
+                xmlWriter1.WriteEndDocument();
+                xmlWriter1.Flush();
+            }
+            stream.Close();
+            stream.Dispose();
+            if (SaveGame.CancelToTitle)
+            {
+                throw new TaskCanceledException();
+            }
+            yield return 2;
+            SFarmer farmer = Game1.player;
+            utcNow = DateTime.UtcNow - new DateTime(2012, 6, 22);
+            farmer.saveTime = (int)utcNow.TotalMinutes;
+            try
+            {
+                stream = File.Create(str7);
+                goto Label1;
+            }
+            catch (IOException oException2)
+            {
+                if (stream != null)
+                {
+                    stream.Close();
+                }
+                Game1.gameMode = 9;
+                Game1.debugOutput = Game1.parseText(oException2.Message);
             }
         Label0:
             ////////////////////////////////////////
@@ -551,15 +733,20 @@ namespace StardewValleyMP.Vanilla
             {
                 CloseOutput = true
             };
-            using (XmlWriter xmlWriter1 = XmlWriter.Create(stream, xmlWriterSetting))
+            using (XmlWriter xmlWriter2 = XmlWriter.Create(stream, xmlWriterSetting))
             {
-                xmlWriter1.WriteStartDocument();
-                SaveGame.farmerSerializer.Serialize(xmlWriter1, Game1.player);
-                xmlWriter1.WriteEndDocument();
-                xmlWriter1.Flush();
+                xmlWriter2.WriteStartDocument();
+                SaveGame.farmerSerializer.Serialize(xmlWriter2, Game1.player);
+                xmlWriter2.WriteEndDocument();
+                xmlWriter2.Flush();
             }
-            str6 = Path.Combine(Path.Combine(Path.Combine(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "StardewValley"), "Saves"), str4), str4);
-            str7 = Path.Combine(Path.Combine(Path.Combine(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "StardewValley"), "Saves"), str4), "SaveGameInfo");
+            stream.Close();
+            stream.Dispose();
+            if (SaveGame.CancelToTitle)
+            {
+                throw new TaskCanceledException();
+            }
+            yield return 2;
             str6 = Path.Combine(Path.Combine(Path.Combine(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "StardewValley"), "Saves"), str4), str4);
             str7 = Path.Combine(Path.Combine(Path.Combine(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "StardewValley"), "Saves"), str4), "SaveGameInfo");
             string str8 = Path.Combine(Path.Combine(Path.Combine(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "StardewValley"), "Saves"), str4), string.Concat(str4, "_old"));
@@ -598,7 +785,10 @@ namespace StardewValleyMP.Vanilla
             {
                 File.Move(str7, str7.Replace(str, ""));
             }
-            yield return 100;
+            if (SaveGame.CancelToTitle)
+            {
+                throw new TaskCanceledException();
+            }
             ////////////////////////////////////////
             if (Multiplayer.mode == Mode.Host)
                 Multiplayer.server.delayUpdates = false;
@@ -615,14 +805,10 @@ namespace StardewValleyMP.Vanilla
             return Multiplayer.getFarmer(name);
         }
 
-        public static void loadDataToFarmer(SFarmer tmp, SFarmer target = null)
+        public static void loadDataToFarmer(SFarmer target)
         {
-            if (target == null)
-            {
-                target = Game1.player;
-            }
-            target = tmp;
-            target.items = tmp.items;
+            SFarmer farmer = target;
+            target.items = farmer.items;
             target.canMove = true;
             target.sprite = new FarmerSprite(null);
             target.FarmerSprite.setOwner(target);
@@ -647,7 +833,7 @@ namespace StardewValleyMP.Vanilla
             {
                 target.addedSpeed = 0;
             }
-            target.maxItems = tmp.maxItems;
+            target.maxItems = farmer.maxItems;
             for (int i = 0; i < target.maxItems; i++)
             {
                 if (target.items.Count <= i)
@@ -659,39 +845,33 @@ namespace StardewValleyMP.Vanilla
             {
                 target.FarmerRenderer = new FarmerRenderer(target.getTexture());
             }
-            target.changeGender(tmp.isMale);
-            target.changeAccessory(tmp.accessory);
-            target.changeShirt(tmp.shirt);
-            target.changePants(tmp.pantsColor);
-            target.changeSkinColor(tmp.skin);
-            target.changeHairColor(tmp.hairstyleColor);
-            target.changeHairStyle(tmp.hair);
+            target.changeGender(farmer.isMale);
+            target.changeAccessory(farmer.accessory);
+            target.changeShirt(farmer.shirt);
+            target.changePants(farmer.pantsColor);
+            target.changeSkinColor(farmer.skin);
+            target.changeHairColor(farmer.hairstyleColor);
+            target.changeHairStyle(farmer.hair);
             if (target.boots != null)
             {
-                target.changeShoeColor(tmp.boots.indexInColorSheet);
+                target.changeShoeColor(farmer.boots.indexInColorSheet);
             }
-            target.Stamina = tmp.Stamina;
-            target.health = tmp.health;
-            target.MaxStamina = tmp.MaxStamina;
-            target.mostRecentBed = tmp.mostRecentBed;
+            target.Stamina = farmer.Stamina;
+            target.health = farmer.health;
+            target.MaxStamina = farmer.MaxStamina;
+            target.mostRecentBed = farmer.mostRecentBed;
             target.position = target.mostRecentBed;
-            SFarmer expr_1E2_cp_0_cp_0 = target;
-            expr_1E2_cp_0_cp_0.position.X = expr_1E2_cp_0_cp_0.position.X - (float)Game1.tileSize;
-            //Game1.player = target;
-            /*Game1.player*/target.checkForLevelTenStatus();
-            if (!/*Game1.player*/target.craftingRecipes.ContainsKey("Wood Path"))
+            target.checkForLevelTenStatus();
+            if (!target.craftingRecipes.ContainsKey("Wood Path"))
             {
-                /*Game1.player*/
                 target.craftingRecipes.Add("Wood Path", 1);
             }
-            if (!/*Game1.player*/target.craftingRecipes.ContainsKey("Gravel Path"))
+            if (!target.craftingRecipes.ContainsKey("Gravel Path"))
             {
-                /*Game1.player*/
                 target.craftingRecipes.Add("Gravel Path", 1);
             }
-            if (!/*Game1.player*/target.craftingRecipes.ContainsKey("Cobblestone Path"))
+            if (!target.craftingRecipes.ContainsKey("Cobblestone Path"))
             {
-                /*Game1.player*/
                 target.craftingRecipes.Add("Cobblestone Path", 1);
             }
         }
@@ -730,32 +910,23 @@ namespace StardewValleyMP.Vanilla
                     catch (Exception e) { Log.error("Exception reseting " + Game1.player.name + "'s house: " + e); }
                     Game1.player = oldPlayer;
                     ////////////////////////////////////////
-                    using (List<Furniture>.Enumerator enumerator2 = (locationFromName as FarmHouse).furniture.GetEnumerator())
+                    foreach (Furniture furniture in (locationFromName as FarmHouse).furniture)
                     {
-                        while (enumerator2.MoveNext())
-                        {
-                            enumerator2.Current.updateDrawPosition();
-                        }
+                        furniture.updateDrawPosition();
                     }
                     locationFromName.lastTouchActionLocation = Game1.player.getTileLocation();
                 }
                 if (current.name.Equals("Farm"))
                 {
-                    GameLocation locationFromName2 = Game1.getLocationFromName(current.name);
-                    using (List<Building>.Enumerator enumerator3 = ((Farm)current).buildings.GetEnumerator())
+                    GameLocation gameLocation = Game1.getLocationFromName(current.name);
+                    foreach (Building building in ((Farm)current).buildings)
                     {
-                        while (enumerator3.MoveNext())
-                        {
-                            enumerator3.Current.load();
-                        }
+                        building.load();
                     }
-                    ((Farm)locationFromName2).buildings = ((Farm)current).buildings;
-                    using (Dictionary<long, FarmAnimal>.ValueCollection.Enumerator enumerator4 = ((Farm)current).animals.Values.GetEnumerator())
+                    ((Farm)gameLocation).buildings = ((Farm)current).buildings;
+                    foreach (FarmAnimal value in ((Farm)current).animals.Values)
                     {
-                        while (enumerator4.MoveNext())
-                        {
-                            enumerator4.Current.reload();
-                        }
+                        value.reload();
                     }
                 }
             }
@@ -775,12 +946,9 @@ namespace StardewValleyMP.Vanilla
                         current2.characters[i].reloadSprite();
                     }
                 }
-                using (Dictionary<Vector2, TerrainFeature>.ValueCollection.Enumerator enumerator5 = current2.terrainFeatures.Values.GetEnumerator())
+                foreach (TerrainFeature terrainFeature in current2.terrainFeatures.Values)
                 {
-                    while (enumerator5.MoveNext())
-                    {
-                        enumerator5.Current.loadSprite();
-                    }
+                    terrainFeature.loadSprite();
                 }
                 foreach (KeyValuePair<Vector2, Object> current3 in current2.objects)
                 {
@@ -790,12 +958,9 @@ namespace StardewValleyMP.Vanilla
                 if (current2.name.Equals("Farm"))
                 {
                     ((Farm)locationFromName3).buildings = ((Farm)current2).buildings;
-                    using (Dictionary<long, FarmAnimal>.ValueCollection.Enumerator enumerator4 = ((Farm)current2).animals.Values.GetEnumerator())
+                    foreach (FarmAnimal farmAnimal in ((Farm)current2).animals.Values)
                     {
-                        while (enumerator4.MoveNext())
-                        {
-                            enumerator4.Current.reload();
-                        }
+                        farmAnimal.reload();
                     }
                     foreach (Building current4 in Game1.getFarm().buildings)
                     {
@@ -821,6 +986,7 @@ namespace StardewValleyMP.Vanilla
                     locationFromName3.objects = current2.objects;
                     locationFromName3.numberOfSpawnedObjectsOnMap = current2.numberOfSpawnedObjectsOnMap;
                     locationFromName3.terrainFeatures = current2.terrainFeatures;
+                    locationFromName3.largeTerrainFeatures = current2.largeTerrainFeatures;
                     if (locationFromName3.name.Equals("Farm"))
                     {
                         ((Farm)locationFromName3).animals = ((Farm)current2).animals;
@@ -868,12 +1034,9 @@ namespace StardewValleyMP.Vanilla
                             (locationFromName3 as Forest).travelingMerchantBounds.Add(new Rectangle(23 * Game1.tileSize + 45 * Game1.pixelZoom, 10 * Game1.tileSize + 26 * Game1.pixelZoom, 19 * Game1.pixelZoom, 12 * Game1.pixelZoom));
                             (locationFromName3 as Forest).travelingMerchantBounds.Add(new Rectangle(23 * Game1.tileSize + 85 * Game1.pixelZoom, 10 * Game1.tileSize + 26 * Game1.pixelZoom, 26 * Game1.pixelZoom, 12 * Game1.pixelZoom));
                             (locationFromName3 as Forest).travelingMerchantStock = Utility.getTravelingMerchantStock();
-                            using (List<Rectangle>.Enumerator enumerator7 = (locationFromName3 as Forest).travelingMerchantBounds.GetEnumerator())
+                            foreach (Rectangle travelingMerchantBound in (locationFromName3 as Forest).travelingMerchantBounds)
                             {
-                                while (enumerator7.MoveNext())
-                                {
-                                    Utility.clearObjectsInArea(enumerator7.Current, locationFromName3);
-                                }
+                                Utility.clearObjectsInArea(travelingMerchantBound, locationFromName3);
                             }
                         }
                         (locationFromName3 as Forest).log = (current2 as Forest).log;
@@ -928,6 +1091,8 @@ namespace StardewValleyMP.Vanilla
                 house.setMapTileIndex(5, 23, 1043, "Back", 0);
                 house.setTileProperty(4, 23, "Back", "NoFurniture", "t");
                 house.setTileProperty(5, 23, "Back", "NoFurniture", "t");
+                house.setTileProperty(4, 23, "Back", "NPCBarrier", "t");
+                house.setTileProperty(5, 23, "Back", "NPCBarrier", "t");
                 house.setMapTileIndex(4, 24, 1075, "Back", 0);
                 house.setMapTileIndex(5, 24, 1075, "Back", 0);
                 house.setTileProperty(4, 24, "Back", "NoFurniture", "t");

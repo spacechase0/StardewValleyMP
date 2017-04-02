@@ -1,4 +1,5 @@
 ﻿using StardewValley;
+using StardewValleyMP.Connections;
 using StardewValleyMP.Packets;
 using System;
 using System.Collections.Concurrent;
@@ -156,11 +157,11 @@ namespace StardewValleyMP
         // Client management
         public List<Client> clients = new List<Client>();
 
-        public void addClient(Socket socket, NetworkStream stream)
+        public void addClient(IConnection socket)
         {
             Log.info("Got new client.");
 
-            Client client = new Client(this, (byte)getPlayerCount(), socket, stream);
+            Client client = new Client(this, (byte)getPlayerCount(), socket);
 
             client.update();
             while (client.stage == Client.NetStage.VerifyingVersion)
@@ -194,8 +195,7 @@ namespace StardewValleyMP
 
             private Server server;
             public readonly byte id;
-            private Socket socket;
-            private NetworkStream stream;
+            private IConnection socket;
             private Thread receiver;
             private BlockingCollection<Packet> toReceive = new BlockingCollection<Packet>( new ConcurrentQueue< Packet >());
             public NetStage stage = NetStage.VerifyingVersion;
@@ -206,20 +206,18 @@ namespace StardewValleyMP
 
             public IDictionary<string, GameLocation> addDuringLoading = new Dictionary<string, GameLocation>();
 
-            public Client(Server theServer, byte theId, Socket theSocket, NetworkStream theStream)
+            public Client(Server theServer, byte theId, IConnection theSocket)
             {
                 server = theServer;
                 id = theId;
                 socket = theSocket;
-                stream = theStream;
                 receiver = new Thread( receiveAndQueue );
                 receiver.Start();
             }
 
             ~Client()
             {
-                if ( stream != null ) stream.Close();
-                if ( socket != null ) socket.Close();
+                socket.disconnect();
                 receiver.Join();
             }
 
@@ -241,7 +239,7 @@ namespace StardewValleyMP
             public void update()
             {
                 if (socket == null) return;
-                if (!socket.Connected)
+                if (!socket.isConnected())
                 {
                     ChatMenu.chat.Add(new ChatEntry(null, ( farmer != null ? farmer.name : ( "Client " + id ) ) + " lost connection to the server."));
                     if ( farmer != null && farmer.currentLocation != null )
@@ -299,7 +297,7 @@ namespace StardewValleyMP
                 Interlocked.Add(ref Multiplayer.serverToClientBytesTransferred, bytes);
                 Log.Async("Sent packet " + packet + " ( " + bytes + " bytes)");
 #else
-                packet.writeTo(stream);
+                packet.writeTo(socket.getStream());
 #endif
             }
 
@@ -309,7 +307,7 @@ namespace StardewValleyMP
                 {
                     while (connected())
                     {
-                        Packet packet = Packet.readFrom(stream);
+                        Packet packet = Packet.readFrom(socket.getStream());
                         toReceive.Add(packet);
 
 #if NETWORKING_BENCHMARK

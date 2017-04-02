@@ -1,4 +1,5 @@
 ﻿using StardewValleyMP.Packets;
+using StardewValleyMP.Connections;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -18,8 +19,7 @@ namespace StardewValleyMP
             Playing,
         }
 
-        private TcpClient socket;
-        private NetworkStream stream;
+        private IConnection conn;
         private Thread receiver;
         private BlockingCollection<Packet> toReceive = new BlockingCollection<Packet>(new ConcurrentQueue<Packet>());
         public byte id = 255;
@@ -29,22 +29,20 @@ namespace StardewValleyMP
 
         public bool tempStopUpdating = false;
 
-        public Client( TcpClient theSocket )
+        public Client( IConnection theConn )
         {
-            socket = theSocket;
-            stream = socket.GetStream();
+            conn = theConn;
             receiver = new Thread(receiveAndQueue);
             receiver.Start();
 
-            new VersionPacket().writeTo(stream);
+            new VersionPacket().writeTo(conn.getStream());
 
             Multiplayer.sendFunc = send;
         }
 
         ~Client()
         {
-            if ( stream != null ) stream.Close();
-            if ( socket != null ) socket.Close();
+            conn.disconnect();
             receiver.Join();
         }
 
@@ -66,7 +64,7 @@ namespace StardewValleyMP
         
         public void update()
         {
-            if ( !socket.Connected )
+            if ( !conn.isConnected() )
             {
                 ChatMenu.chat.Add(new ChatEntry(null, "You lost connection to the server."));
                 Multiplayer.mode = Mode.Singleplayer;
@@ -108,7 +106,7 @@ namespace StardewValleyMP
         {
             try
             {
-                Packet packet = Packet.readFrom(stream);
+                Packet packet = Packet.readFrom(conn.getStream());
                 if (packet != null) packet.process(this);
             }
             catch (Exception e)
@@ -139,7 +137,7 @@ namespace StardewValleyMP
             Interlocked.Add(ref Multiplayer.clientToServerBytesTransferred, bytes);
             Log.Async("Sent packet " + packet + " ( " + bytes + " bytes)");
 #else
-            packet.writeTo(stream);
+            packet.writeTo(conn.getStream());
 #endif
         }
 
@@ -147,9 +145,9 @@ namespace StardewValleyMP
         {
             try
             {
-                while (socket.Connected)
+                while (conn.isConnected())
                 {
-                    Packet packet = Packet.readFrom(stream);
+                    Packet packet = Packet.readFrom(conn.getStream());
                     toReceive.Add(packet);
 
 #if NETWORKING_BENCHMARK

@@ -57,7 +57,7 @@ namespace StardewValleyMP.Packets
                 farmer.uniqueMultiplayerID += 1 + client.id; // For IsMainPlayer
 
                 //SFarmer oldPlayer = Game1.player;
-                NewSaveGame.loadDataToFarmer(farmer, farmer);
+                NewSaveGame.loadDataToFarmer(farmer);
                 //Game1.player = oldPlayer; // Seriously, why does this get reassigned in there?
 
                 client.others.Add(other.Key, farmer);

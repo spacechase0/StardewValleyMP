@@ -15,6 +15,11 @@ namespace StardewValleyMP
 {
     class Util
     {
+        public static bool UsingMono
+        {
+            get { return Type.GetType("Mono.Runtime") != null; }
+        }
+
         public static void drawStr(string str, float x, float y, Color col, float alpha = 1)
         {
             for ( int i = 0; i < str.Length; ++i )

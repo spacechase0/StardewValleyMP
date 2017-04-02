@@ -1,13 +1,16 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
 using StardewValley;
 using StardewValley.BellsAndWhistles;
 using StardewValley.Menus;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using SFarmer = StardewValley.Farmer;
 
 namespace StardewValleyMP.Vanilla
@@ -40,6 +43,8 @@ namespace StardewValleyMP.Vanilla
 
         private ClickableTextureComponent cancelDeleteButton;
 
+        public ClickableComponent backButton;
+
         private bool scrolling;
 
         private bool deleteConfirmationScreen;
@@ -52,82 +57,175 @@ namespace StardewValleyMP.Vanilla
 
         private bool loading;
 
+        private bool deleting;
+
+        public Task<List<SFarmer>> _initTask;
+
+        private Task _deleteTask;
+
+        private bool disposedValue;
+
+        public override bool readyToClose()
+        {
+            if (this._initTask != null || this._deleteTask != null || this.loading)
+            {
+                return false;
+            }
+            return !this.deleting;
+        }
+
         public NewLoadMenu() : base(Game1.viewport.Width / 2 - (1100 + IClickableMenu.borderWidth * 2) / 2, Game1.viewport.Height / 2 - (600 + IClickableMenu.borderWidth * 2) / 2, 1100 + IClickableMenu.borderWidth * 2, 600 + IClickableMenu.borderWidth * 2, false)
         {
-            this.upArrow = new ClickableTextureComponent(new Rectangle(this.xPositionOnScreen + this.width + Game1.tileSize / 4, this.yPositionOnScreen + Game1.tileSize / 4, 11 * Game1.pixelZoom, 12 * Game1.pixelZoom), Game1.mouseCursors, new Rectangle(421, 459, 11, 12), (float)Game1.pixelZoom, false);
-            this.downArrow = new ClickableTextureComponent(new Rectangle(this.xPositionOnScreen + this.width + Game1.tileSize / 4, this.yPositionOnScreen + this.height - Game1.tileSize, 11 * Game1.pixelZoom, 12 * Game1.pixelZoom), Game1.mouseCursors, new Rectangle(421, 472, 11, 12), (float)Game1.pixelZoom, false);
+            this.backButton = new ClickableComponent(new Microsoft.Xna.Framework.Rectangle(Game1.viewport.Width + -198 - 48, Game1.viewport.Height - 81 - 24, 198, 81), "")
+            {
+                myID = 81114,
+                upNeighborID = 801,
+                leftNeighborID = 801
+            }; ;
+            this.upArrow = new ClickableTextureComponent(new Microsoft.Xna.Framework.Rectangle(this.xPositionOnScreen + this.width + Game1.tileSize / 4, this.yPositionOnScreen + Game1.tileSize / 4, 11 * Game1.pixelZoom, 12 * Game1.pixelZoom), Game1.mouseCursors, new Microsoft.Xna.Framework.Rectangle(421, 459, 11, 12), (float)Game1.pixelZoom, false)
+            {
+                myID = 800,
+                downNeighborID = 801,
+                leftNeighborID = 100
+            };
+            this.downArrow = new ClickableTextureComponent(new Microsoft.Xna.Framework.Rectangle(this.xPositionOnScreen + this.width + Game1.tileSize / 4, this.yPositionOnScreen + this.height - Game1.tileSize, 11 * Game1.pixelZoom, 12 * Game1.pixelZoom), Game1.mouseCursors, new Microsoft.Xna.Framework.Rectangle(421, 472, 11, 12), (float)Game1.pixelZoom, false)
+            {
+                myID = 801,
+                upNeighborID = 800,
+                leftNeighborID = 103,
+                rightNeighborID = 81114,
+                downNeighborID = 81114
+            };
             this.scrollBar = new ClickableTextureComponent(new Rectangle(this.upArrow.bounds.X + Game1.pixelZoom * 3, this.upArrow.bounds.Y + this.upArrow.bounds.Height + Game1.pixelZoom, 6 * Game1.pixelZoom, 10 * Game1.pixelZoom), Game1.mouseCursors, new Rectangle(435, 463, 6, 10), (float)Game1.pixelZoom, false);
             this.scrollBarRunner = new Rectangle(this.scrollBar.bounds.X, this.upArrow.bounds.Y + this.upArrow.bounds.Height + Game1.pixelZoom, this.scrollBar.bounds.Width, this.height - Game1.tileSize - this.upArrow.bounds.Height - Game1.pixelZoom * 7);
-            this.okDeleteButton = new ClickableTextureComponent("OK", new Rectangle((int)Utility.getTopLeftPositionForCenteringOnScreen(Game1.tileSize, Game1.tileSize, 0, 0).X - Game1.tileSize, (int)Utility.getTopLeftPositionForCenteringOnScreen(Game1.tileSize, Game1.tileSize, 0, 0).Y + Game1.tileSize * 2, Game1.tileSize, Game1.tileSize), null, null, Game1.mouseCursors, Game1.getSourceRectForStandardTileSheet(Game1.mouseCursors, 46, -1, -1), 1f, false);
-            this.cancelDeleteButton = new ClickableTextureComponent("Cancel", new Rectangle((int)Utility.getTopLeftPositionForCenteringOnScreen(Game1.tileSize, Game1.tileSize, 0, 0).X + Game1.tileSize, (int)Utility.getTopLeftPositionForCenteringOnScreen(Game1.tileSize, Game1.tileSize, 0, 0).Y + Game1.tileSize * 2, Game1.tileSize, Game1.tileSize), null, null, Game1.mouseCursors, Game1.getSourceRectForStandardTileSheet(Game1.mouseCursors, 47, -1, -1), 1f, false);
+            this.okDeleteButton = new ClickableTextureComponent(Game1.content.LoadString("Strings\\StringsFromCSFiles:LoadGameMenu.cs.10992", new object[0]), new Microsoft.Xna.Framework.Rectangle((int)Utility.getTopLeftPositionForCenteringOnScreen(Game1.tileSize, Game1.tileSize, 0, 0).X - Game1.tileSize, (int)Utility.getTopLeftPositionForCenteringOnScreen(Game1.tileSize, Game1.tileSize, 0, 0).Y + Game1.tileSize * 2, Game1.tileSize, Game1.tileSize), null, null, Game1.mouseCursors, Game1.getSourceRectForStandardTileSheet(Game1.mouseCursors, 46, -1, -1), 1f, false)
+            {
+                myID = 802,
+                rightNeighborID = 803
+            };
+            this.cancelDeleteButton = new ClickableTextureComponent(Game1.content.LoadString("Strings\\StringsFromCSFiles:LoadGameMenu.cs.10993", new object[0]), new Microsoft.Xna.Framework.Rectangle((int)Utility.getTopLeftPositionForCenteringOnScreen(Game1.tileSize, Game1.tileSize, 0, 0).X + Game1.tileSize, (int)Utility.getTopLeftPositionForCenteringOnScreen(Game1.tileSize, Game1.tileSize, 0, 0).Y + Game1.tileSize * 2, Game1.tileSize, Game1.tileSize), null, null, Game1.mouseCursors, Game1.getSourceRectForStandardTileSheet(Game1.mouseCursors, 47, -1, -1), 1f, false)
+            {
+                myID = 803,
+                leftNeighborID = 802
+            };
             for (int i = 0; i < 4; i++)
             {
-                this.gamesToLoadButton.Add(new ClickableComponent(new Rectangle(this.xPositionOnScreen + Game1.tileSize / 4, this.yPositionOnScreen + Game1.tileSize / 4 + i * (this.height / 4), this.width - Game1.tileSize / 2, this.height / 4 + Game1.pixelZoom), string.Concat(i)));
-                this.deleteButtons.Add(new ClickableTextureComponent("", new Rectangle(this.xPositionOnScreen + this.width - Game1.tileSize - Game1.pixelZoom, this.yPositionOnScreen + Game1.tileSize / 2 + Game1.pixelZoom + i * (this.height / 4), 12 * Game1.pixelZoom, 12 * Game1.pixelZoom), "", "Delete File", Game1.mouseCursors, new Rectangle(322, 498, 12, 12), (float)Game1.pixelZoom * 3f / 4f, false));
+                this.gamesToLoadButton.Add(new ClickableComponent(new Microsoft.Xna.Framework.Rectangle(this.xPositionOnScreen + Game1.tileSize / 4, this.yPositionOnScreen + Game1.tileSize / 4 + i * (this.height / 4), this.width - Game1.tileSize / 2, this.height / 4 + Game1.pixelZoom), string.Concat(i))
+                {
+                    myID = i,
+                    downNeighborID = (i < 3 ? i + 1 : -7777),
+                    upNeighborID = (i > 0 ? i - 1 : -7777),
+                    rightNeighborID = i + 100
+                });
+                this.deleteButtons.Add(new ClickableTextureComponent("", new Microsoft.Xna.Framework.Rectangle(this.xPositionOnScreen + this.width - Game1.tileSize - Game1.pixelZoom, this.yPositionOnScreen + Game1.tileSize / 2 + Game1.pixelZoom + i * (this.height / 4), 12 * Game1.pixelZoom, 12 * Game1.pixelZoom), "", Game1.content.LoadString("Strings\\StringsFromCSFiles:LoadGameMenu.cs.10994", new object[0]), Game1.mouseCursors, new Microsoft.Xna.Framework.Rectangle(322, 498, 12, 12), (float)Game1.pixelZoom * 3f / 4f, false)
+                {
+                    myID = i + 100,
+                    leftNeighborID = i,
+                    downNeighborID = i + 1 + 100,
+                    upNeighborID = i - 1 + 100,
+                    rightNeighborID = (i < 2 ? 800 : 801)
+                });
             }
             string text = Path.Combine(new string[]
             {
                 Path.Combine(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "StardewValley"), "Saves")
             });
-            if (Directory.Exists(text))
+            /*
+            this._initTask = new Task<List<SFarmer>>(() => {
+                Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
+                return MultiplayerMod.instance.Helper.Reflection.GetPrivateMethod(typeof(LoadGameMenu), "FindSaveGames").Invoke< List<SFarmer> >();
+            });
+            this._initTask.Start();
+            //*/
+            if (Game1.options.snappyMenus && Game1.options.gamepadControls)
             {
-                string[] directories = Directory.GetDirectories(text);
-                if (directories.Length != 0)
+                base.populateClickableComponentList();
+                this.snapToDefaultClickableComponent();
+            }
+        }
+
+        public override void receiveGamePadButton(Buttons b)
+        {
+            if (b == Buttons.B && this.deleteConfirmationScreen)
+            {
+                this.deleteConfirmationScreen = false;
+                this.selectedForDelete = -1;
+                Game1.playSound("smallSelect");
+                if (Game1.options.snappyMenus && Game1.options.gamepadControls)
                 {
-                    string[] array = directories;
-                    for (int j = 0; j < array.Length; j++)
-                    {
-                        string text2 = array[j];
-                        try
-                        {
-                            Stream stream = null;
-                            try
-                            {
-                                stream = File.Open(Path.Combine(text, text2, "SaveGameInfo"), FileMode.Open);
-                            }
-                            catch (IOException)
-                            {
-                                if (stream != null)
-                                {
-                                    stream.Close();
-                                }
-                            }
-                            if (stream != null)
-                            {
-                                SFarmer farmer = (SFarmer)SaveGame.farmerSerializer.Deserialize(stream);
-                                NewSaveGame.loadDataToFarmer(farmer, farmer);
-                                farmer.favoriteThing = text2.Split(new char[]
-                                {
-                                    Path.DirectorySeparatorChar
-                                }).Last<string>();
-                                this.saveGames.Add(farmer);
-                                stream.Close();
-                            }
-                        }
-                        catch (Exception)
-                        {
-                        }
-                    }
+                    this.currentlySnappedComponent = base.getComponentWithID(0);
+                    this.snapCursorToCurrentSnappedComponent();
                 }
             }
-            this.saveGames.Sort();
+        }
+
+        public override void snapToDefaultClickableComponent()
+        {
+            this.currentlySnappedComponent = base.getComponentWithID(0);
+            this.snapCursorToCurrentSnappedComponent();
+        }
+
+        protected override void customSnapBehavior(int direction, int oldRegion, int oldID)
+        {
+            if (direction == 2 && this.currentItemIndex < Math.Max(0, this.saveGames.Count - 4))
+            {
+                this.downArrowPressed();
+                this.currentlySnappedComponent = base.getComponentWithID(3);
+                this.snapCursorToCurrentSnappedComponent();
+                return;
+            }
+            if (direction == 0 && this.currentItemIndex > 0)
+            {
+                this.upArrowPressed();
+                this.currentlySnappedComponent = base.getComponentWithID(0);
+                this.snapCursorToCurrentSnappedComponent();
+            }
         }
 
         public override void gameWindowSizeChanged(Rectangle oldBounds, Rectangle newBounds)
         {
             base.gameWindowSizeChanged(oldBounds, newBounds);
-            this.upArrow = new ClickableTextureComponent(new Rectangle(this.xPositionOnScreen + this.width + Game1.tileSize / 4, this.yPositionOnScreen + Game1.tileSize / 4, 11 * Game1.pixelZoom, 12 * Game1.pixelZoom), Game1.mouseCursors, new Rectangle(421, 459, 11, 12), (float)Game1.pixelZoom, false);
-            this.downArrow = new ClickableTextureComponent(new Rectangle(this.xPositionOnScreen + this.width + Game1.tileSize / 4, this.yPositionOnScreen + this.height - Game1.tileSize, 11 * Game1.pixelZoom, 12 * Game1.pixelZoom), Game1.mouseCursors, new Rectangle(421, 472, 11, 12), (float)Game1.pixelZoom, false);
+            this.upArrow = new ClickableTextureComponent(new Microsoft.Xna.Framework.Rectangle(this.xPositionOnScreen + this.width + Game1.tileSize / 4, this.yPositionOnScreen + Game1.tileSize / 4, 11 * Game1.pixelZoom, 12 * Game1.pixelZoom), Game1.mouseCursors, new Microsoft.Xna.Framework.Rectangle(421, 459, 11, 12), (float)Game1.pixelZoom, false)
+            {
+                myID = 800,
+                downNeighborID = 801
+            };
+            this.downArrow = new ClickableTextureComponent(new Microsoft.Xna.Framework.Rectangle(this.xPositionOnScreen + this.width + Game1.tileSize / 4, this.yPositionOnScreen + this.height - Game1.tileSize, 11 * Game1.pixelZoom, 12 * Game1.pixelZoom), Game1.mouseCursors, new Microsoft.Xna.Framework.Rectangle(421, 472, 11, 12), (float)Game1.pixelZoom, false)
+            {
+                myID = 801,
+                upNeighborID = 800
+            };
             this.scrollBar = new ClickableTextureComponent(new Rectangle(this.upArrow.bounds.X + Game1.pixelZoom * 3, this.upArrow.bounds.Y + this.upArrow.bounds.Height + Game1.pixelZoom, 6 * Game1.pixelZoom, 10 * Game1.pixelZoom), Game1.mouseCursors, new Rectangle(435, 463, 6, 10), (float)Game1.pixelZoom, false);
             this.scrollBarRunner = new Rectangle(this.scrollBar.bounds.X, this.upArrow.bounds.Y + this.upArrow.bounds.Height + Game1.pixelZoom, this.scrollBar.bounds.Width, this.height - Game1.tileSize - this.upArrow.bounds.Height - Game1.pixelZoom * 7);
-            this.okDeleteButton = new ClickableTextureComponent("OK", new Rectangle((int)Utility.getTopLeftPositionForCenteringOnScreen(Game1.tileSize, Game1.tileSize, 0, 0).X - Game1.tileSize, (int)Utility.getTopLeftPositionForCenteringOnScreen(Game1.tileSize, Game1.tileSize, 0, 0).Y + Game1.tileSize * 2, Game1.tileSize, Game1.tileSize), null, null, Game1.mouseCursors, Game1.getSourceRectForStandardTileSheet(Game1.mouseCursors, 46, -1, -1), 1f, false);
-            this.cancelDeleteButton = new ClickableTextureComponent("Cancel", new Rectangle((int)Utility.getTopLeftPositionForCenteringOnScreen(Game1.tileSize, Game1.tileSize, 0, 0).X + Game1.tileSize, (int)Utility.getTopLeftPositionForCenteringOnScreen(Game1.tileSize, Game1.tileSize, 0, 0).Y + Game1.tileSize * 2, Game1.tileSize, Game1.tileSize), null, null, Game1.mouseCursors, Game1.getSourceRectForStandardTileSheet(Game1.mouseCursors, 47, -1, -1), 1f, false);
+            this.okDeleteButton = new ClickableTextureComponent(Game1.content.LoadString("Strings\\StringsFromCSFiles:LoadGameMenu.cs.10992", new object[0]), new Microsoft.Xna.Framework.Rectangle((int)Utility.getTopLeftPositionForCenteringOnScreen(Game1.tileSize, Game1.tileSize, 0, 0).X - Game1.tileSize, (int)Utility.getTopLeftPositionForCenteringOnScreen(Game1.tileSize, Game1.tileSize, 0, 0).Y + Game1.tileSize * 2, Game1.tileSize, Game1.tileSize), null, null, Game1.mouseCursors, Game1.getSourceRectForStandardTileSheet(Game1.mouseCursors, 46, -1, -1), 1f, false)
+            {
+                myID = 802,
+                rightNeighborID = 803
+            };
+            this.cancelDeleteButton = new ClickableTextureComponent(Game1.content.LoadString("Strings\\StringsFromCSFiles:LoadGameMenu.cs.10993", new object[0]), new Microsoft.Xna.Framework.Rectangle((int)Utility.getTopLeftPositionForCenteringOnScreen(Game1.tileSize, Game1.tileSize, 0, 0).X + Game1.tileSize, (int)Utility.getTopLeftPositionForCenteringOnScreen(Game1.tileSize, Game1.tileSize, 0, 0).Y + Game1.tileSize * 2, Game1.tileSize, Game1.tileSize), null, null, Game1.mouseCursors, Game1.getSourceRectForStandardTileSheet(Game1.mouseCursors, 47, -1, -1), 1f, false)
+            {
+                myID = 803,
+                leftNeighborID = 802
+            };
             this.gamesToLoadButton.Clear();
             this.deleteButtons.Clear();
             for (int i = 0; i < 4; i++)
             {
-                this.gamesToLoadButton.Add(new ClickableComponent(new Rectangle(this.xPositionOnScreen + Game1.tileSize / 4, this.yPositionOnScreen + Game1.tileSize / 4 + i * (this.height / 4), this.width - Game1.tileSize / 2, this.height / 4 + Game1.pixelZoom), string.Concat(i)));
-                this.deleteButtons.Add(new ClickableTextureComponent("", new Rectangle(this.xPositionOnScreen + this.width - Game1.tileSize - Game1.pixelZoom, this.yPositionOnScreen + Game1.tileSize / 2 + Game1.pixelZoom + i * (this.height / 4), 12 * Game1.pixelZoom, 12 * Game1.pixelZoom), "", "Delete File", Game1.mouseCursors, new Rectangle(322, 498, 12, 12), (float)Game1.pixelZoom * 3f / 4f, false));
+                this.gamesToLoadButton.Add(new ClickableComponent(new Microsoft.Xna.Framework.Rectangle(this.xPositionOnScreen + Game1.tileSize / 4, this.yPositionOnScreen + Game1.tileSize / 4 + i * (this.height / 4), this.width - Game1.tileSize / 2, this.height / 4 + Game1.pixelZoom), string.Concat(i))
+                {
+                    myID = i,
+                    downNeighborID = (i < 3 ? i + 1 : -7777),
+                    upNeighborID = (i > 0 ? i - 1 : -7777),
+                    rightNeighborID = i + 100
+                });
+                this.deleteButtons.Add(new ClickableTextureComponent("", new Microsoft.Xna.Framework.Rectangle(this.xPositionOnScreen + this.width - Game1.tileSize - Game1.pixelZoom, this.yPositionOnScreen + Game1.tileSize / 2 + Game1.pixelZoom + i * (this.height / 4), 12 * Game1.pixelZoom, 12 * Game1.pixelZoom), "", Game1.content.LoadString("Strings\\StringsFromCSFiles:LoadGameMenu.cs.10994", new object[0]), Game1.mouseCursors, new Microsoft.Xna.Framework.Rectangle(322, 498, 12, 12), (float)Game1.pixelZoom * 3f / 4f, false)
+                {
+                    myID = i + 100,
+                    leftNeighborID = i,
+                    downNeighborID = i + 1 + 100,
+                    upNeighborID = i - 1 + 100,
+                    rightNeighborID = (i < 2 ? 800 : 801)
+                });
             }
         }
 
@@ -168,7 +266,7 @@ namespace StardewValleyMP.Vanilla
                     expr_C0.tryHover(x, y, 0.2f);
                     if (expr_C0.containsPoint(x, y))
                     {
-                        this.hoverText = "Delete File";
+                        this.hoverText = Game1.content.LoadString("Strings\\StringsFromCSFiles:LoadGameMenu.cs.10994", new object[0]);
                         return;
                     }
                 }
@@ -202,7 +300,7 @@ namespace StardewValleyMP.Vanilla
             }
             if (this.cancelDeleteButton.containsPoint(x, y))
             {
-                this.hoverText = "Cancel";
+                this.hoverText = Game1.content.LoadString("Strings\\StringsFromCSFiles:LoadGameMenu.cs.10993", new object[0]);
             }
         }
 
@@ -279,10 +377,10 @@ namespace StardewValleyMP.Vanilla
             {
                 Path.Combine(Path.Combine(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "StardewValley"), "Saves"), favoriteThing)
             });
+            Thread.Sleep(Game1.random.Next(1000, 5000));
             if (Directory.Exists(path))
             {
                 Directory.Delete(path, true);
-                this.saveGames.Remove(farmer);
             }
         }
 
@@ -362,7 +460,7 @@ namespace StardewValleyMP.Vanilla
                     Rectangle r = new Rectangle(buttonX, buttonY3, buttonW, buttonH);
                     if (r.Contains(x, y))
                     {
-                        StardewModdingAPI.Log.Async("Stopping listener, beginning loading");
+                        Log.debug("Stopping listener, beginning loading");
                         Multiplayer.listener.Server.Close();
                         readyToLoad = true;
                     }
@@ -405,6 +503,11 @@ namespace StardewValleyMP.Vanilla
                             this.deleteConfirmationScreen = true;
                             Game1.playSound("drumkit6");
                             this.selectedForDelete = this.currentItemIndex + i;
+                            if (Game1.options.snappyMenus && Game1.options.gamepadControls)
+                            {
+                                this.currentlySnappedComponent = base.getComponentWithID(803);
+                                this.snapCursorToCurrentSnappedComponent();
+                            }
                             return;
                         }
                     }
@@ -431,12 +534,28 @@ namespace StardewValleyMP.Vanilla
                 this.deleteConfirmationScreen = false;
                 this.selectedForDelete = -1;
                 Game1.playSound("smallSelect");
+                if (Game1.options.snappyMenus && Game1.options.gamepadControls)
+                {
+                    this.currentlySnappedComponent = base.getComponentWithID(0);
+                    this.snapCursorToCurrentSnappedComponent();
+                }
+                
                 return;
             }
             if (this.okDeleteButton.containsPoint(x, y))
             {
-                this.deleteFile(this.selectedForDelete);
-                this.deleteConfirmationScreen = false;
+                this.deleting = true;
+                this._deleteTask = new Task(() => {
+                    Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
+                    this.deleteFile(this.selectedForDelete);
+                });
+                this._deleteTask.Start();
+                this.deleteConfirmationScreen = false; ;
+                if (Game1.options.snappyMenus && Game1.options.gamepadControls)
+                {
+                    this.currentlySnappedComponent = base.getComponentWithID(0);
+                    this.snapCursorToCurrentSnappedComponent();
+                }
                 Game1.playSound("trashcan");
             }
         }
@@ -461,6 +580,49 @@ namespace StardewValleyMP.Vanilla
         public override void update(GameTime time)
         {
             base.update(time);
+            if (this._initTask != null)
+            {
+                if (this._initTask.IsCanceled || this._initTask.IsCompleted || this._initTask.IsFaulted)
+                {
+                    if (this._initTask.IsCompleted)
+                    {
+                        foreach (SFarmer saveGame in this.saveGames)
+                        {
+                            saveGame.unload();
+                        }
+                        this.saveGames.Clear();
+                        this.saveGames.AddRange(this._initTask.Result);
+                    }
+                    this._initTask = null;
+                }
+                return;
+            }
+            if (this._deleteTask != null)
+            {
+                if (this._deleteTask.IsCanceled || this._deleteTask.IsCompleted || this._deleteTask.IsFaulted)
+                {
+                    if (!this._deleteTask.IsCompleted)
+                    {
+                        this.selectedForDelete = -1;
+                    }
+                    this._deleteTask = null;
+                    this.deleting = false;
+                }
+                return;
+            }
+            if (this.selectedForDelete != -1 && !this.deleteConfirmationScreen && !this.deleting)
+            {
+                this.saveGames[this.selectedForDelete].unload();
+                this.saveGames.RemoveAt(this.selectedForDelete);
+                this.selectedForDelete = -1;
+                this.gamesToLoadButton.Clear();
+                this.deleteButtons.Clear();
+                for (int i = 0; i < 4; i++)
+                {
+                    this.gamesToLoadButton.Add(new ClickableComponent(new Microsoft.Xna.Framework.Rectangle(this.xPositionOnScreen + Game1.tileSize / 4, this.yPositionOnScreen + Game1.tileSize / 4 + i * (this.height / 4), this.width - Game1.tileSize / 2, this.height / 4 + Game1.pixelZoom), string.Concat(i)));
+                    this.deleteButtons.Add(new ClickableTextureComponent("", new Microsoft.Xna.Framework.Rectangle(this.xPositionOnScreen + this.width - Game1.tileSize - Game1.pixelZoom, this.yPositionOnScreen + Game1.tileSize / 2 + Game1.pixelZoom + i * (this.height / 4), 12 * Game1.pixelZoom, 12 * Game1.pixelZoom), "", "Delete File", Game1.mouseCursors, new Microsoft.Xna.Framework.Rectangle(322, 498, 12, 12), (float)Game1.pixelZoom * 3f / 4f, false));
+                }
+            }
             if (this.timerToLoad > 0)
             {
                 this.timerToLoad -= time.ElapsedGameTime.Milliseconds;
@@ -651,31 +813,79 @@ namespace StardewValleyMP.Vanilla
             }
             ////////////////////////////////////////
             IClickableMenu.drawTextureBox(b, Game1.mouseCursors, new Rectangle(384, 373, 18, 18), this.xPositionOnScreen, this.yPositionOnScreen, this.width, this.height + Game1.tileSize / 2, Color.White, (float)Game1.pixelZoom, true);
-            for (int i = 0; i < this.gamesToLoadButton.Count; i++)
+            if (this.selectedForDelete == -1 || !this.deleting || this.deleteConfirmationScreen)
             {
-                if (this.currentItemIndex + i < this.saveGames.Count)
+                for (int i = 0; i < this.gamesToLoadButton.Count; i++)
                 {
-                    IClickableMenu.drawTextureBox(b, Game1.mouseCursors, new Rectangle(384, 396, 15, 15), this.gamesToLoadButton[i].bounds.X, this.gamesToLoadButton[i].bounds.Y, this.gamesToLoadButton[i].bounds.Width, this.gamesToLoadButton[i].bounds.Height, ((this.currentItemIndex + i == this.selected && this.timerToLoad % 150 > 75 && this.timerToLoad > 1000) || (this.selected == -1 && this.gamesToLoadButton[i].containsPoint(Game1.getOldMouseX(), Game1.getOldMouseY()) && !this.scrolling && !this.deleteConfirmationScreen)) ? (this.deleteButtons[i].containsPoint(Game1.getOldMouseX(), Game1.getOldMouseY()) ? Color.White : Color.Wheat) : Color.White, (float)Game1.pixelZoom, false);
-                    SpriteText.drawString(b, this.currentItemIndex + i + 1 + ".", this.gamesToLoadButton[i].bounds.X + Game1.pixelZoom * 7 + Game1.tileSize / 2 - SpriteText.getWidthOfString(this.currentItemIndex + i + 1 + ".") / 2, this.gamesToLoadButton[i].bounds.Y + Game1.pixelZoom * 9, 999999, -1, 999999, 1f, 0.88f, false, -1, "", -1);
-                    SpriteText.drawString(b, this.saveGames[this.currentItemIndex + i].Name, this.gamesToLoadButton[i].bounds.X + Game1.tileSize * 2 + Game1.pixelZoom * 9, this.gamesToLoadButton[i].bounds.Y + Game1.pixelZoom * 9, 999999, -1, 999999, 1f, 0.88f, false, -1, "", -1);
-                    b.Draw(Game1.shadowTexture, new Vector2((float)(this.gamesToLoadButton[i].bounds.X + Game1.tileSize + Game1.tileSize - Game1.pixelZoom), (float)(this.gamesToLoadButton[i].bounds.Y + Game1.tileSize * 2 + Game1.pixelZoom * 4)), new Rectangle?(Game1.shadowTexture.Bounds), Color.White, 0f, new Vector2((float)Game1.shadowTexture.Bounds.Center.X, (float)Game1.shadowTexture.Bounds.Center.Y), 4f, SpriteEffects.None, 0.8f);
-                    this.saveGames[this.currentItemIndex + i].FarmerRenderer.draw(b, new FarmerSprite.AnimationFrame(0, 0, false, false, null, false), 0, new Rectangle(0, 0, 16, 32), new Vector2((float)(this.gamesToLoadButton[i].bounds.X + Game1.tileSize / 4 + Game1.tileSize + Game1.pixelZoom * 3), (float)(this.gamesToLoadButton[i].bounds.Y + Game1.pixelZoom * 5)), Vector2.Zero, 0.8f, 2, Color.White, 0f, 1f, this.saveGames[this.currentItemIndex + i]);
-                    Utility.drawTextWithShadow(b, this.saveGames[this.currentItemIndex + i].dateStringForSaveGame, Game1.dialogueFont, new Vector2((float)(this.gamesToLoadButton[i].bounds.X + Game1.tileSize * 2 + Game1.pixelZoom * 8), (float)(this.gamesToLoadButton[i].bounds.Y + Game1.tileSize + Game1.pixelZoom * 10)), Game1.textColor, 1f, -1f, -1, -1, 1f, 3);
-                    Utility.drawTextWithShadow(b, this.saveGames[this.currentItemIndex + i].farmName + " Farm", Game1.dialogueFont, new Vector2((float)(this.gamesToLoadButton[i].bounds.X + this.width - Game1.tileSize * 2) - Game1.dialogueFont.MeasureString(this.saveGames[this.currentItemIndex + i].farmName + " Farm").X, (float)(this.gamesToLoadButton[i].bounds.Y + Game1.pixelZoom * 11)), Game1.textColor, 1f, -1f, -1, -1, 1f, 3);
-                    int num = (int)Game1.dialogueFont.MeasureString(Utility.getNumberWithCommas(this.saveGames[this.currentItemIndex + i].Money) + "g").X;
-                    Utility.drawWithShadow(b, Game1.mouseCursors, new Vector2((float)(this.gamesToLoadButton[i].bounds.X + this.width - Game1.tileSize * 3 - Game1.pixelZoom * 25 - num), (float)(this.gamesToLoadButton[i].bounds.Y + Game1.tileSize + Game1.pixelZoom * 11)), new Rectangle(193, 373, 9, 9), Color.White, 0f, Vector2.Zero, (float)Game1.pixelZoom, false, 1f, -1, -1, 0.35f);
-                    Utility.drawTextWithShadow(b, Utility.getNumberWithCommas(this.saveGames[this.currentItemIndex + i].Money) + "g", Game1.dialogueFont, new Vector2((float)(this.gamesToLoadButton[i].bounds.X + this.width - Game1.tileSize * 3 - Game1.pixelZoom * 15 - num), (float)(this.gamesToLoadButton[i].bounds.Y + Game1.tileSize + Game1.pixelZoom * 11)), Game1.textColor, 1f, -1f, -1, -1, 1f, 3);
-                    Utility.drawWithShadow(b, Game1.mouseCursors, new Vector2((float)(this.gamesToLoadButton[i].bounds.X + this.width - Game1.tileSize * 3 - Game1.pixelZoom * 11), (float)(this.gamesToLoadButton[i].bounds.Y + Game1.tileSize + Game1.pixelZoom * 9)), new Rectangle(595, 1748, 9, 11), Color.White, 0f, Vector2.Zero, (float)Game1.pixelZoom, false, 1f, -1, -1, 0.35f);
-                    Utility.drawTextWithShadow(b, Utility.getHoursMinutesStringFromMilliseconds(this.saveGames[this.currentItemIndex + i].millisecondsPlayed), Game1.dialogueFont, new Vector2((float)(this.gamesToLoadButton[i].bounds.X + this.width - Game1.tileSize * 3 - Game1.pixelZoom), (float)(this.gamesToLoadButton[i].bounds.Y + Game1.tileSize + Game1.pixelZoom * 11)), Game1.textColor, 1f, -1f, -1, -1, 1f, 3);
-                    if (this.deleteButtons.Count > i)
+                    if (this.currentItemIndex + i < this.saveGames.Count)
                     {
-                        this.deleteButtons[i].draw(b, Color.White * 0.75f, 1f);
+                        SFarmer farmer = this.saveGames[this.currentItemIndex + i];
+                        IClickableMenu.drawTextureBox(b, Game1.mouseCursors, new Microsoft.Xna.Framework.Rectangle(384, 396, 15, 15), this.gamesToLoadButton[i].bounds.X, this.gamesToLoadButton[i].bounds.Y, this.gamesToLoadButton[i].bounds.Width, this.gamesToLoadButton[i].bounds.Height, ((this.currentItemIndex + i == this.selected && this.timerToLoad % 150 > 75 && this.timerToLoad > 1000) || (this.selected == -1 && this.gamesToLoadButton[i].containsPoint(Game1.getOldMouseX(), Game1.getOldMouseY()) && !this.scrolling && !this.deleteConfirmationScreen)) ? (this.deleteButtons[i].containsPoint(Game1.getOldMouseX(), Game1.getOldMouseY()) ? Color.White : Color.Wheat) : Color.White, (float)Game1.pixelZoom, false);
+                        SpriteText.drawString(b, this.currentItemIndex + i + 1 + ".", this.gamesToLoadButton[i].bounds.X + Game1.pixelZoom * 7 + Game1.tileSize / 2 - SpriteText.getWidthOfString(this.currentItemIndex + i + 1 + ".") / 2, this.gamesToLoadButton[i].bounds.Y + Game1.pixelZoom * 9, 999999, -1, 999999, 1f, 0.88f, false, -1, "", -1);
+                        SpriteText.drawString(b, farmer.Name, this.gamesToLoadButton[i].bounds.X + Game1.tileSize * 2 + Game1.pixelZoom * 9, this.gamesToLoadButton[i].bounds.Y + Game1.pixelZoom * 9, 999999, -1, 999999, 1f, 0.88f, false, -1, "", -1);
+                        b.Draw(Game1.shadowTexture, new Vector2((float)(this.gamesToLoadButton[i].bounds.X + Game1.tileSize + Game1.tileSize - Game1.pixelZoom), (float)(this.gamesToLoadButton[i].bounds.Y + Game1.tileSize * 2 + Game1.pixelZoom * 4)), new Microsoft.Xna.Framework.Rectangle?(Game1.shadowTexture.Bounds), Color.White, 0f, new Vector2((float)Game1.shadowTexture.Bounds.Center.X, (float)Game1.shadowTexture.Bounds.Center.Y), 4f, SpriteEffects.None, 0.8f);
+                        farmer.FarmerRenderer.draw(b, new FarmerSprite.AnimationFrame(0, 0, false, false, null, false), 0, new Microsoft.Xna.Framework.Rectangle(0, 0, 16, 32), new Vector2((float)(this.gamesToLoadButton[i].bounds.X + Game1.tileSize / 4 + Game1.tileSize + Game1.pixelZoom * 3), (float)(this.gamesToLoadButton[i].bounds.Y + Game1.pixelZoom * 5)), Vector2.Zero, 0.8f, 2, Color.White, 0f, 1f, farmer);
+                        string text;
+                        if (farmer.dayOfMonthForSaveGame.HasValue && farmer.seasonForSaveGame.HasValue && farmer.yearForSaveGame.HasValue)
+                        {
+                            text = Utility.getDateStringFor(farmer.dayOfMonthForSaveGame.Value, farmer.seasonForSaveGame.Value, farmer.yearForSaveGame.Value);
+                        }
+                        else
+                        {
+                            text = farmer.dateStringForSaveGame;
+                        }
+                        Utility.drawTextWithShadow(b, text, Game1.dialogueFont, new Vector2((float)(this.gamesToLoadButton[i].bounds.X + Game1.tileSize * 2 + Game1.pixelZoom * 8), (float)(this.gamesToLoadButton[i].bounds.Y + Game1.tileSize + Game1.pixelZoom * 10)), Game1.textColor, 1f, -1f, -1, -1, 1f, 3);
+                        Utility.drawTextWithShadow(b, Game1.content.LoadString("Strings\\StringsFromCSFiles:LoadGameMenu.cs.11019", new object[]
+                        {
+                            farmer.farmName
+                        }), Game1.dialogueFont, new Vector2((float)(this.gamesToLoadButton[i].bounds.X + this.width - Game1.tileSize * 2) - Game1.dialogueFont.MeasureString(farmer.farmName + " Farm").X, (float)(this.gamesToLoadButton[i].bounds.Y + Game1.pixelZoom * 11)), Game1.textColor, 1f, -1f, -1, -1, 1f, 3);
+                        string text2 = Game1.content.LoadString("Strings\\StringsFromCSFiles:LoadGameMenu.cs.11020", new object[]
+                        {
+                            Utility.getNumberWithCommas(farmer.Money)
+                        });
+                        if (farmer.Money == 1 && LocalizedContentManager.CurrentLanguageCode == LocalizedContentManager.LanguageCode.pt)
+                        {
+                            text2 = text2.Substring(0, text2.Length - 1);
+                        }
+                        int num = (int)Game1.dialogueFont.MeasureString(text2).X;
+                        Utility.drawWithShadow(b, Game1.mouseCursors, new Vector2((float)(this.gamesToLoadButton[i].bounds.X + this.width - Game1.tileSize * 3 - Game1.pixelZoom * 25 - num), (float)(this.gamesToLoadButton[i].bounds.Y + Game1.tileSize + Game1.pixelZoom * 11)), new Microsoft.Xna.Framework.Rectangle(193, 373, 9, 9), Color.White, 0f, Vector2.Zero, (float)Game1.pixelZoom, false, 1f, -1, -1, 0.35f);
+                        Vector2 position = new Vector2((float)(this.gamesToLoadButton[i].bounds.X + this.width - Game1.tileSize * 3 - Game1.pixelZoom * 15 - num), (float)(this.gamesToLoadButton[i].bounds.Y + Game1.tileSize + Game1.pixelZoom * 11));
+                        if (LocalizedContentManager.CurrentLanguageCode != LocalizedContentManager.LanguageCode.en)
+                        {
+                            position.Y += 5f;
+                        }
+                        Utility.drawTextWithShadow(b, text2, Game1.dialogueFont, position, Game1.textColor, 1f, -1f, -1, -1, 1f, 3);
+                        position = new Vector2((float)(this.gamesToLoadButton[i].bounds.X + this.width - Game1.tileSize * 3 - Game1.pixelZoom * 11), (float)(this.gamesToLoadButton[i].bounds.Y + Game1.tileSize + Game1.pixelZoom * 9));
+                        Utility.drawWithShadow(b, Game1.mouseCursors, position, new Microsoft.Xna.Framework.Rectangle(595, 1748, 9, 11), Color.White, 0f, Vector2.Zero, (float)Game1.pixelZoom, false, 1f, -1, -1, 0.35f);
+                        position = new Vector2((float)(this.gamesToLoadButton[i].bounds.X + this.width - Game1.tileSize * 3 - Game1.pixelZoom), (float)(this.gamesToLoadButton[i].bounds.Y + Game1.tileSize + Game1.pixelZoom * 11));
+                        if (LocalizedContentManager.CurrentLanguageCode != LocalizedContentManager.LanguageCode.en)
+                        {
+                            position.Y += 5f;
+                        }
+                        Utility.drawTextWithShadow(b, Utility.getHoursMinutesStringFromMilliseconds(farmer.millisecondsPlayed), Game1.dialogueFont, position, Game1.textColor, 1f, -1f, -1, -1, 1f, 3);
+                        if (this.deleteButtons.Count > i)
+                        {
+                            this.deleteButtons[i].draw(b, Color.White * 0.75f, 1f);
+                        }
                     }
                 }
             }
+            string text3 = null;
             if (this.saveGames.Count == 0)
             {
-                SpriteText.drawStringHorizontallyCenteredAt(b, "No Saved Games Found", Game1.graphics.GraphicsDevice.Viewport.Bounds.Center.X, Game1.graphics.GraphicsDevice.Viewport.Bounds.Center.Y, 999999, -1, 999999, 1f, 0.88f, false, -1);
+                text3 = Game1.content.LoadString("Strings\\StringsFromCSFiles:LoadGameMenu.cs.11022", new object[0]);
+            }
+            if (this._initTask != null)
+            {
+                text3 = Game1.content.LoadString("Strings\\UI:LoadGameMenu_LookingForSavedGames", new object[0]);
+            }
+            if (this.deleting)
+            {
+                text3 = Game1.content.LoadString("Strings\\UI:LoadGameMenu_Deleting", new object[0]);
+            }
+            if (text3 != null)
+            {
+                SpriteText.drawStringHorizontallyCenteredAt(b, text3, Game1.graphics.GraphicsDevice.Viewport.Bounds.Center.X, Game1.graphics.GraphicsDevice.Viewport.Bounds.Center.Y, 999999, -1, 999999, 1f, 0.88f, false, -1);
             }
             this.upArrow.draw(b);
             this.downArrow.draw(b);

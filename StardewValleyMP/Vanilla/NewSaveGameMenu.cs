@@ -4,6 +4,7 @@ using StardewValley;
 using StardewValley.BellsAndWhistles;
 using StardewValley.Menus;
 using System.Collections.Generic;
+using System.Text;
 using System.Threading;
 
 namespace StardewValleyMP.Vanilla
@@ -25,6 +26,12 @@ namespace StardewValleyMP.Vanilla
 
         private int margin = 500;
 
+        private StringBuilder _stringBuilder = new StringBuilder();
+
+        private float _ellipsisDelay = 0.5f;
+
+        private int _ellipsisCount;
+
         public NewSaveGameMenu()
         {
             ////////////////////////////////////////
@@ -41,7 +48,7 @@ namespace StardewValleyMP.Vanilla
             }*/
             this.waitingText = new SparklingText(Game1.dialogueFont, "Waiting on host", Color.DodgerBlue, Color.Black * 0.001f, false, 0.1, 1500, Game1.tileSize / 2, 500);
             ////////////////////////////////////////
-            this.saveText = new SparklingText(Game1.dialogueFont, "Your progress has been saved.", Color.LimeGreen, Color.Black * 0.001f, false, 0.1, 1500, Game1.tileSize / 2, 500);
+            this.saveText = new SparklingText(Game1.dialogueFont, Game1.content.LoadString("Strings\\StringsFromCSFiles:SaveGameMenu.cs.11378", new object[0]), Color.LimeGreen, Color.Black * 0.001f, false, 0.1, 1500, Game1.tileSize / 2, 500);
         }
 
         public override void receiveRightClick(int x, int y, bool playSound = true)
@@ -104,6 +111,16 @@ namespace StardewValleyMP.Vanilla
                         this.loader = null;
                     }
                 }
+                this._ellipsisDelay -= (float)time.ElapsedGameTime.TotalSeconds;
+                if (this._ellipsisDelay <= 0f)
+                {
+                    this._ellipsisDelay += 0.75f;
+                    this._ellipsisCount++;
+                    if (this._ellipsisCount > 3)
+                    {
+                        this._ellipsisCount = 1;
+                    }
+                }
             }
             else if (this.hasDrawn && this.completePause == -1)
             {
@@ -118,6 +135,7 @@ namespace StardewValleyMP.Vanilla
                     }
                 }
                 ////////////////////////////////////////
+                Game1.game1.IsSaving = true;
                 this.loader = NewSaveGame.Save(); // SaveGame -> NewSaveGame
             }
             if (this.completePause >= 0)
@@ -140,10 +158,7 @@ namespace StardewValleyMP.Vanilla
 
         public override void draw(SpriteBatch b)
         {
-            if (this.upperRightCloseButton != null)
-            {
-                this.upperRightCloseButton.draw(b);
-            }
+            base.draw(b);
             ////////////////////////////////////////
             /*
             if ( Multiplayer.waitingOnOthers() )
@@ -153,15 +168,29 @@ namespace StardewValleyMP.Vanilla
                 return;
             }*/
             ////////////////////////////////////////
+            Vector2 vector = new Vector2((float)Game1.tileSize, (float)(Game1.viewport.Height - Game1.tileSize));
+            Vector2 renderSize = new Vector2((float)Game1.tileSize, (float)Game1.tileSize);
+            vector = Utility.makeSafe(vector, renderSize);
             if (this.completePause >= 0)
             {
                 this.saveText.draw(b, new Vector2((float)Game1.tileSize, (float)(Game1.viewport.Height - Game1.tileSize)));
             }
             else
             {
-                b.DrawString(Game1.dialogueFont, "Saving...", new Vector2((float)Game1.tileSize, (float)(Game1.viewport.Height - Game1.tileSize)), Color.White);
+                this._stringBuilder.Clear();
+                this._stringBuilder.Append(Game1.content.LoadString("Strings\\StringsFromCSFiles:SaveGameMenu.cs.11381", new object[0]));
+                for (int i = 0; i < this._ellipsisCount; i++)
+                {
+                    this._stringBuilder.Append(".");
+                }
+                b.DrawString(Game1.dialogueFont, this._stringBuilder, vector, Color.White);
             }
             this.hasDrawn = true;
+        }
+
+        public void Dispose()
+        {
+            Game1.game1.IsSaving = false;
         }
     }
 }

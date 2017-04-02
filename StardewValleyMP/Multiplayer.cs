@@ -4,6 +4,7 @@ using StardewValley;
 using StardewValley.Buildings;
 using StardewValley.Locations;
 using StardewValley.Menus;
+using StardewValleyMP.Connections;
 using StardewValleyMP.Packets;
 using StardewValleyMP.Vanilla;
 using System;
@@ -357,7 +358,7 @@ namespace StardewValleyMP
             {
                 int port = Int32.Parse(portStr);
                 // http://stackoverflow.com/questions/1777629/how-to-listen-on-multiple-ip-addresses
-                listener = TcpListener.Create(port);
+                listener = Util.UsingMono ? new TcpListener( IPAddress.Any, port ) : TcpListener.Create(port);
                 listener.Start();
 
                 client = null;
@@ -366,10 +367,9 @@ namespace StardewValleyMP
                 while (true)
                 {
                     Log.info("Waiting for connection...");
-                    Socket socket = listener.AcceptSocket();
+                    TcpClient socket = listener.AcceptTcpClient();
                     socket.NoDelay = true;
-                    NetworkStream stream = new NetworkStream(socket);
-                    server.addClient(socket, stream);
+                    server.addClient(new NetworkConnection(socket));
                 }
 
             }
@@ -406,14 +406,14 @@ namespace StardewValleyMP
                 IPAddress ip;
                 IPAddress.TryParse(ipStr, out ip );
                 int port = Int32.Parse(portStr);
-
+                
                 TcpClient socket = new TcpClient(AddressFamily.InterNetworkV6);
                 socket.Client.DualMode = true;
                 socket.Connect(ip, port);
                 socket.NoDelay = true;
                 ChatMenu.chat.Add(new ChatEntry(null, "Connection established."));
 
-                client = new Client(socket);
+                client = new Client(new NetworkConnection( socket ) );
                 server = null;
             }
             catch ( Exception e )
@@ -433,9 +433,27 @@ namespace StardewValleyMP
 
         private static int prevDuhu, prevHul, prevLul;
         public static void update()
-        {// Really don't understand why it breaks without this
+        {
+            // Really don't understand why it breaks without this
             // But as soon as you get to the second day, it does. Ugh.
             Game1.player.FarmerSprite.setOwner(Game1.player);
+            // Or in this case, as soon as you load the game.
+            if ( Game1.player.FarmerRenderer.baseTexture.IsDisposed )
+            {
+                SFarmer f = Game1.player;
+                f.FarmerRenderer.baseTexture = Game1.content.Load<Microsoft.Xna.Framework.Graphics.Texture2D>("Characters\\Farmer\\farmer_" + (f.isMale ? "" : "girl_") + "base");
+                f.changeGender(f.isMale);
+                f.changeAccessory(f.accessory);
+                f.changeShirt(f.shirt);
+                f.changePants(f.pantsColor);
+                f.changeSkinColor(f.skin);
+                f.changeHairColor(f.hairstyleColor);
+                f.changeHairStyle(f.hair);
+                if (f.boots != null)
+                {
+                    f.changeShoeColor(f.boots.indexInColorSheet);
+                }
+            }
 
             if (Multiplayer.mode == Mode.Singleplayer) return;
 
@@ -653,6 +671,23 @@ namespace StardewValleyMP
             GameTime gt = new GameTime(new TimeSpan(), new TimeSpan(TimeSpan.TicksPerMillisecond * 16));
             farmer.FarmerSprite.setOwner(farmer); // Not sure why this is necessary
             farmer.UpdateIfOtherPlayer(gt);
+
+            SFarmer f = farmer;
+            if ( f.FarmerRenderer.baseTexture.IsDisposed )
+            {
+                f.FarmerRenderer.baseTexture = Game1.content.Load<Microsoft.Xna.Framework.Graphics.Texture2D>("Characters\\Farmer\\farmer_" + (f.isMale ? "" : "girl_") + "base");
+                f.changeGender(f.isMale);
+                f.changeAccessory(f.accessory);
+                f.changeShirt(f.shirt);
+                f.changePants(f.pantsColor);
+                f.changeSkinColor(f.skin);
+                f.changeHairColor(f.hairstyleColor);
+                f.changeHairStyle(f.hair);
+                if (f.boots != null)
+                {
+                    f.changeShoeColor(f.boots.indexInColorSheet);
+                }
+            }
         }
 
         public static void draw( SpriteBatch sb )
@@ -725,7 +760,7 @@ namespace StardewValleyMP
                     }
                     goingToFestival = false;
                 }
-                else if ( oldLoc.Name == "Temp" )
+                else if ( oldLoc != null && oldLoc.Name == "Temp" )
                 {
                     foreach (Server.Client other in server.clients)
                     {
@@ -753,7 +788,7 @@ namespace StardewValleyMP
                     }
                     goingToFestival = false;
                 }
-                else if (oldLoc.Name == "Temp")
+                else if (oldLoc != null && oldLoc.Name == "Temp")
                 {
                     foreach (KeyValuePair< byte, SFarmer > other in client.others)
                     {
