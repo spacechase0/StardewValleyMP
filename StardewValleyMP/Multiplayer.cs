@@ -364,7 +364,7 @@ namespace StardewValleyMP
                 client = null;
                 server = new Server();
 
-                while (true)
+                while ( Multiplayer.mode == Mode.Host)
                 {
                     Log.info("Waiting for connection...");
                     TcpClient socket = listener.AcceptTcpClient();
@@ -440,8 +440,17 @@ namespace StardewValleyMP
             // Or in this case, as soon as you load the game.
             if ( Game1.player.FarmerRenderer.baseTexture.IsDisposed )
             {
+                Log.warn("hi there");
                 SFarmer f = Game1.player;
-                f.FarmerRenderer.baseTexture = Game1.content.Load<Microsoft.Xna.Framework.Graphics.Texture2D>("Characters\\Farmer\\farmer_" + (f.isMale ? "" : "girl_") + "base");
+                var field = MultiplayerMod.instance.Helper.Reflection.GetPrivateField<LocalizedContentManager>(f, "farmerTextureManager");
+                var ftm = field.GetValue();
+                if (ftm != null)
+                {
+                    ftm.Unload();
+                    ftm.Dispose();
+                }
+                field.SetValue(Game1.content.CreateTemporary());
+                //f.FarmerRenderer.baseTexture = Game1.content.Load<Microsoft.Xna.Framework.Graphics.Texture2D>("Characters\\Farmer\\farmer_" + (f.isMale ? "" : "girl_") + "base");
                 f.changeGender(f.isMale);
                 f.changeAccessory(f.accessory);
                 f.changeShirt(f.shirt);
