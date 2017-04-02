@@ -76,8 +76,13 @@
   <ItemGroup>
     <Compile Include="Client.cs" />
     <Compile Include="ChatMenu.cs" />
+    <Compile Include="Connections\SteamConnection.cs" />
     <Compile Include="Events.cs" />
     <Compile Include="Connections\IConnection.cs" />
+    <Compile Include="Platforms\Friend.cs" />
+    <Compile Include="Platforms\SteamPlatform.cs" />
+    <Compile Include="Platforms\DummyPlatform.cs" />
+    <Compile Include="Platforms\IPlatform.cs" />
     <Compile Include="LocationCache.cs" />
     <Compile Include="Log.cs" />
     <Compile Include="MultiplayerConfig.cs" />

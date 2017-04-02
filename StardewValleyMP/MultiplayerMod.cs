@@ -3,6 +3,7 @@ using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewValley;
 using StardewValley.Menus;
+using StardewValleyMP.Platforms;
 using StardewValleyMP.Vanilla;
 using Steamworks;
 using System;
@@ -23,17 +24,22 @@ namespace StardewValleyMP
         public override void Entry(IModHelper helper)
         {
             instance = this;
+
             Log.info("Loading Config");
             ModConfig = Helper.ReadConfig<MultiplayerConfig>();
-            
+
             GameEvents.UpdateTick += onUpdate;
-            GraphicsEvents.OnPreRenderHudEvent += onPreDraw;
+            GraphicsEvents.OnPreRenderHudEvent += onPreDraw;      
             LocationEvents.CurrentLocationChanged += onCurrentLocationChange;
             ControlEvents.KeyboardChanged += onKeyboardChange;
-            
+
             //GraphicsEvents.DrawDebug += Multiplayer.drawNetworkingDebug;
 
-            Helper.ConsoleCommands.Add("steam", "", steamtest);
+            if (DEBUG)
+            {
+                Helper.ConsoleCommands.Add("platform", "", platformtest);
+                Helper.ConsoleCommands.Add("steam", "", steamtest);
+            }
 
             if (DEBUG)
             {
@@ -133,10 +139,44 @@ namespace StardewValleyMP
             }
         }
 
+        public static void platformtest(string str, string[] args)
+        {
+            if (args.Length == 0)
+            {
+                Log.error("No command given.");
+                return;
+            }
+
+            if ( args[ 0 ] == "friends" )
+            {
+                var friends = IPlatform.instance.getFriends();
+                foreach ( Friend friend in friends )
+                {
+                    Log.info("Friend: " + friend.id + "=" + friend.displayName + " avatar=" + (friend.avatar == null ? "no" : "yes"));
+                }
+            }
+            else if (args[0] == "online")
+            {
+                var friends = IPlatform.instance.getOnlineFriends();
+                foreach (Friend friend in friends)
+                {
+                    Log.info("Friend: " + friend.id + "=" + friend.displayName + " avatar=" + (friend.avatar == null ? "no" : "yes"));
+                }
+            }
+            else
+            {
+                Log.error("Bad command.");
+            }
+        }
+
         private static Callback<P2PSessionRequest_t> sessReq;
         public static void steamtest( string str, string[] args )
         {
-            if (args.Length == 0) return;
+            if (args.Length == 0)
+            {
+                Log.error("No command given.");
+                return;
+            }
 
             try
             {
@@ -205,6 +245,10 @@ namespace StardewValleyMP
                             Log.error("Failed to receive packet.");
                         }
                     }
+                }
+                else
+                {
+                    Log.error("Bad command.");
                 }
             }
             catch ( Exception e )
