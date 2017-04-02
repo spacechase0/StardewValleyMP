@@ -6,7 +6,7 @@ namespace StardewValleyMP.Connections
 {
     public class NetworkConnection : IConnection
     {
-        private TcpClient conn;
+        private TcpClient socket;
         private NetworkStream stream;
 
         public NetworkConnection()
@@ -22,18 +22,18 @@ namespace StardewValleyMP.Connections
         {
             disconnect();
 
-            TcpClient socket = new TcpClient(AddressFamily.InterNetworkV6);
+            socket = new TcpClient(AddressFamily.InterNetworkV6);
             socket.Client.DualMode = true;
             socket.Connect(ip, port);
             socket.NoDelay = true;
         }
 
-        override public bool isConnected()
+        public bool isConnected()
         {
             return (socket != null && socket.Connected);
         }
 
-        override public void disconnect()
+        public void disconnect()
         {
             if (stream != null)
             {
@@ -41,14 +41,14 @@ namespace StardewValleyMP.Connections
                 stream = null;
             }
 
-            if (conn != null)
+            if (socket != null)
             {
-                conn.Close();
-                conn = null;
+                socket.Close();
+                socket = null;
             }
         }
 
-        override public Stream getStream()
+        public Stream getStream()
         {
             return stream;
         }

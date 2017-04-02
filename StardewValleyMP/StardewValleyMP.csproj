@@ -77,11 +77,11 @@
     <Compile Include="Client.cs" />
     <Compile Include="ChatMenu.cs" />
     <Compile Include="Events.cs" />
-    <Compile Include="IConnection.cs" />
+    <Compile Include="Connections\IConnection.cs" />
     <Compile Include="LocationCache.cs" />
     <Compile Include="Log.cs" />
     <Compile Include="MultiplayerConfig.cs" />
-    <Compile Include="NetworkConnection.cs" />
+    <Compile Include="Connections\NetworkConnection.cs" />
     <Compile Include="NPCMonitor.cs" />
     <Compile Include="Packets\FarmAnimalPacket.cs" />
     <Compile Include="Packets\BuildingUpdatePacket.cs" />
