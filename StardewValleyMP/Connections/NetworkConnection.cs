@@ -13,6 +13,12 @@ namespace StardewValleyMP.Connections
         {
         }
 
+        public NetworkConnection( TcpClient theSocket )
+        {
+            socket = theSocket;
+            stream = socket.GetStream();
+        }
+
         ~NetworkConnection()
         {
             disconnect();
@@ -26,6 +32,8 @@ namespace StardewValleyMP.Connections
             socket.Client.DualMode = true;
             socket.Connect(ip, port);
             socket.NoDelay = true;
+
+            stream = socket.GetStream();
         }
 
         public bool isConnected()

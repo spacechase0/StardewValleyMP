@@ -4,6 +4,7 @@ using StardewValley;
 using StardewValley.Buildings;
 using StardewValley.Locations;
 using StardewValley.Menus;
+using StardewValleyMP.Connections;
 using StardewValleyMP.Packets;
 using StardewValleyMP.Vanilla;
 using System;
@@ -366,10 +367,9 @@ namespace StardewValleyMP
                 while (true)
                 {
                     Log.info("Waiting for connection...");
-                    Socket socket = listener.AcceptSocket();
+                    TcpClient socket = listener.AcceptTcpClient();
                     socket.NoDelay = true;
-                    NetworkStream stream = new NetworkStream(socket);
-                    server.addClient(socket, stream);
+                    server.addClient(new NetworkConnection(socket));
                 }
 
             }
@@ -413,7 +413,7 @@ namespace StardewValleyMP
                 socket.NoDelay = true;
                 ChatMenu.chat.Add(new ChatEntry(null, "Connection established."));
 
-                client = new Client(socket);
+                client = new Client(new NetworkConnection( socket ) );
                 server = null;
             }
             catch ( Exception e )
