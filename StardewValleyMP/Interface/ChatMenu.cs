@@ -8,7 +8,7 @@ using System;
 using System.Collections.Generic;
 using SFarmer = StardewValley.Farmer;
 
-namespace StardewValleyMP
+namespace StardewValleyMP.Interface
 {
     public class ChatEntry
     {

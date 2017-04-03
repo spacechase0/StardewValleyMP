@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using StardewValley;
 using StardewValley.Locations;
+using StardewValleyMP.Interface;
 using System.IO;
 using SFarmer = StardewValley.Farmer;
 

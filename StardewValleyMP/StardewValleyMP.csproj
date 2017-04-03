@@ -75,7 +75,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Client.cs" />
-    <Compile Include="ChatMenu.cs" />
+    <Compile Include="Interface\ChatMenu.cs" />
     <Compile Include="Connections\SteamConnection.cs" />
     <Compile Include="Events.cs" />
     <Compile Include="Connections\IConnection.cs" />
@@ -144,7 +144,7 @@
     <Compile Include="Vanilla\FurniturePlacer.cs" />
     <Compile Include="Multiplayer.cs" />
     <Compile Include="MultiplayerMod.cs" />
-    <Compile Include="Vanilla\ModeSelectMenu.cs" />
+    <Compile Include="Interface\ModeSelectMenu.cs" />
     <Compile Include="Vanilla\NewLoadMenu.cs" />
     <Compile Include="Vanilla\NewSaveGame.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

@@ -3,11 +3,12 @@ using System.Threading;
 using StardewValley;
 using StardewValley.BellsAndWhistles;
 using StardewValley.Menus;
+using StardewValleyMP.Vanilla;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using SFarmer = StardewValley.Farmer;
 
-namespace StardewValleyMP.Vanilla
+namespace StardewValleyMP.Interface
 {
     public class ModeSelectMenu : IClickableMenu
     {

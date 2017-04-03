@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework.Input;
 using StardewValley;
 using StardewValley.BellsAndWhistles;
 using StardewValley.Menus;
+using StardewValleyMP.Interface;
 using System;
 using System.Collections.Generic;
 using System.Globalization;

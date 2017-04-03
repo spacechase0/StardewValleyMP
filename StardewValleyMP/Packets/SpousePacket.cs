@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using StardewValleyMP.Interface;
+using System.IO;
 using SFarmer = StardewValley.Farmer;
 
 namespace StardewValleyMP.Packets

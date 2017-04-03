@@ -8,6 +8,7 @@ using StardewValley;
 using StardewValley.Locations;
 using StardewValley.Characters;
 using StardewModdingAPI;
+using StardewValleyMP.Interface;
 using StardewValleyMP.Vanilla;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;

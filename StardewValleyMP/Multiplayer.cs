@@ -5,6 +5,7 @@ using StardewValley.Buildings;
 using StardewValley.Locations;
 using StardewValley.Menus;
 using StardewValleyMP.Connections;
+using StardewValleyMP.Interface;
 using StardewValleyMP.Packets;
 using StardewValleyMP.Vanilla;
 using System;

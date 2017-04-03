@@ -1,5 +1,6 @@
 ﻿using StardewValley;
 using StardewValley.Locations;
+using StardewValleyMP.Interface;
 using System.IO;
 using System.Linq;
 using SFarmer = StardewValley.Farmer;

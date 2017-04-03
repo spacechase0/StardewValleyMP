@@ -1,5 +1,6 @@
 ﻿using StardewValley;
 using StardewValleyMP.Connections;
+using StardewValleyMP.Interface;
 using StardewValleyMP.Packets;
 using System;
 using System.Collections.Concurrent;
