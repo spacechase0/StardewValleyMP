@@ -364,7 +364,7 @@ namespace StardewValleyMP
                 client = null;
                 server = new Server();
 
-                while (true)
+                while ( Multiplayer.mode == Mode.Host)
                 {
                     Log.info("Waiting for connection...");
                     TcpClient socket = listener.AcceptTcpClient();
@@ -438,22 +438,7 @@ namespace StardewValleyMP
             // But as soon as you get to the second day, it does. Ugh.
             Game1.player.FarmerSprite.setOwner(Game1.player);
             // Or in this case, as soon as you load the game.
-            if ( Game1.player.FarmerRenderer.baseTexture.IsDisposed )
-            {
-                SFarmer f = Game1.player;
-                f.FarmerRenderer.baseTexture = Game1.content.Load<Microsoft.Xna.Framework.Graphics.Texture2D>("Characters\\Farmer\\farmer_" + (f.isMale ? "" : "girl_") + "base");
-                f.changeGender(f.isMale);
-                f.changeAccessory(f.accessory);
-                f.changeShirt(f.shirt);
-                f.changePants(f.pantsColor);
-                f.changeSkinColor(f.skin);
-                f.changeHairColor(f.hairstyleColor);
-                f.changeHairStyle(f.hair);
-                if (f.boots != null)
-                {
-                    f.changeShoeColor(f.boots.indexInColorSheet);
-                }
-            }
+            fixDisposedFarmerTexture(Game1.player);
 
             if (Multiplayer.mode == Mode.Singleplayer) return;
 
@@ -670,22 +655,48 @@ namespace StardewValleyMP
 
             GameTime gt = new GameTime(new TimeSpan(), new TimeSpan(TimeSpan.TicksPerMillisecond * 16));
             farmer.FarmerSprite.setOwner(farmer); // Not sure why this is necessary
+            fixDisposedFarmerTexture(farmer);
             farmer.UpdateIfOtherPlayer(gt);
+        }
 
-            SFarmer f = farmer;
-            if ( f.FarmerRenderer.baseTexture.IsDisposed )
+        private static void fixDisposedFarmerTexture( SFarmer f )
+        {
+            if (f.FarmerRenderer.baseTexture.IsDisposed)
             {
-                f.FarmerRenderer.baseTexture = Game1.content.Load<Microsoft.Xna.Framework.Graphics.Texture2D>("Characters\\Farmer\\farmer_" + (f.isMale ? "" : "girl_") + "base");
-                f.changeGender(f.isMale);
-                f.changeAccessory(f.accessory);
-                f.changeShirt(f.shirt);
-                f.changePants(f.pantsColor);
-                f.changeSkinColor(f.skin);
-                f.changeHairColor(f.hairstyleColor);
-                f.changeHairStyle(f.hair);
-                if (f.boots != null)
+                Log.debug("Disposed texture for player " + f.name + ", fixing");
+                int times = 0;
+            preFixDispose:
+                try
                 {
-                    f.changeShoeColor(f.boots.indexInColorSheet);
+                    var field = MultiplayerMod.instance.Helper.Reflection.GetPrivateField<LocalizedContentManager>(f, "farmerTextureManager");
+                    var ftm = field.GetValue();
+                    if (ftm != null)
+                    {
+                        ftm.Unload();
+                        ftm.Dispose();
+                    }
+                    field.SetValue(Game1.content.CreateTemporary());
+                    f.FarmerRenderer.baseTexture = f.getTexture();
+                    f.changeEyeColor(f.newEyeColor);
+                    f.changeAccessory(f.accessory);
+                    f.changeShirt(f.shirt);
+                    f.changePants(f.pantsColor);
+                    f.changeSkinColor(f.skin);
+                    f.changeHairColor(f.hairstyleColor);
+                    f.changeHairStyle(f.hair);
+                    if (f.boots != null)
+                    {
+                        f.changeShoeColor(f.boots.indexInColorSheet);
+                    }
+                }
+                catch (ObjectDisposedException e)
+                {
+                    if (++times < 5)
+                    {
+                        Log.trace("Failed, trying again");
+                        goto preFixDispose;
+                    }
+                    else Log.trace("Waiting until next frame I guess");
                 }
             }
         }

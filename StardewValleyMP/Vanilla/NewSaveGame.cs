@@ -126,7 +126,7 @@ namespace StardewValleyMP.Vanilla
             }
             else if (Multiplayer.mode == Mode.Client)
             {
-                while (Multiplayer.client.stage != Client.NetStage.Waiting)
+                while (Multiplayer.client != null && Multiplayer.client.stage != Client.NetStage.Waiting)
                 {
                     try
                     {
@@ -147,6 +147,11 @@ namespace StardewValleyMP.Vanilla
                     }
                     catch (Exception e) { Log.error("Exception loading world: " + e); }
                     yield return 20;
+                }
+
+                if ( Multiplayer.client == null )
+                {
+                    Multiplayer.mode = Mode.Singleplayer;
                 }
             }
             Multiplayer.locations.Clear();
