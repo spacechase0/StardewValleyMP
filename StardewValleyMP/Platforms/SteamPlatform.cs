@@ -50,7 +50,7 @@ namespace StardewValleyMP.Platforms
                         friend.avatar.SetData(pixels);
                     }
                 }
-                
+
                 friends.Add(friend);
             }
 

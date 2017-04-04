@@ -47,20 +47,28 @@ namespace StardewValleyMP.Interface
         {
         }
 
-        public void draw( SpriteBatch b )
+        public void draw(SpriteBatch b)
         {
             IClickableMenu.drawTextureBox(b, Game1.mouseCursors, new Rectangle(384, 373, 18, 18), x, y, w, h, Color.White, (float)Game1.pixelZoom, true);
 
-            int si = scroll / -80;
-            for ( int i = Math.Max( 0, si - 1 ); i < Math.Min( friends.Count, si + h / 80 + 1 ); ++i )
+            b.End();
+            b.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, null,
+                    new RasterizerState() { ScissorTestEnable = true } );
+            b.GraphicsDevice.ScissorRectangle = new Rectangle(x + 24, y + 20, w - 48, h - 36);
             {
-                Friend friend = friends[i];
-                int ix = x + 32;
-                int iy = y + 32 + i * 80 + scroll;
+                int si = scroll / -80;
+                for (int i = Math.Max(0, si - 1); i < Math.Min(friends.Count, si + h / 80 + 1); ++i)
+                {
+                    Friend friend = friends[i];
+                    int ix = x + 32;
+                    int iy = y + 32 + i * 80 + scroll;
 
-                b.Draw(friend.avatar, new Rectangle(ix, iy, 64, 64), Color.White);
-                SpriteText.drawString(b, friend.displayName, ix + 88, iy + 8);
+                    b.Draw(friend.avatar, new Rectangle(ix, iy, 64, 64), Color.White);
+                    SpriteText.drawString(b, friend.displayName, ix + 88, iy + 8);
+                }
             }
+            b.End();
+            b.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, null, null);
         }
     }
 }
