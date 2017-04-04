@@ -24,6 +24,8 @@ namespace StardewValleyMP.Interface
         private Rectangle scrollbarBack;
         private Rectangle scrollbar;
 
+        private bool dragScroll = false;
+
         public FriendSelectorWidget( bool onlineOnly, int x, int y, int w, int h )
         {
             online = onlineOnly;
@@ -41,6 +43,19 @@ namespace StardewValleyMP.Interface
             }
         }
 
+        public void leftClick( int x, int y )
+        {
+            if ( scrollbarBack.Contains( x, y ) )
+            {
+                dragScroll = true;
+            }
+        }
+
+        public void leftRelease(int x, int y)
+        {
+            dragScroll = false;
+        }
+
         public void mouseScroll( int dir )
         {
             scroll += dir * 1;
@@ -52,6 +67,16 @@ namespace StardewValleyMP.Interface
 
         public void update( GameTime time )
         {
+            if ( dragScroll )
+            {
+                int my = Game1.getMouseY();
+                int relY = my - (scrollbarBack.Y + 2 + scrollbar.Height / 2);
+                relY = Math.Max(0, relY);
+                relY = Math.Min(relY, scrollbarBack.Height - 4 - scrollbar.Height);
+                float percY = relY / (scrollbarBack.Height - 4f - scrollbar.Height);
+                int totalY = friends.Count * 80 - h + 48;
+                scroll = -(int)( totalY * percY );
+            }
         }
 
         public void draw(SpriteBatch b)

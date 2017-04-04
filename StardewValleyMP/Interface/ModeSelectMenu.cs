@@ -42,6 +42,11 @@ namespace StardewValleyMP.Interface
 
         public override void receiveLeftClick(int x, int y, bool playSound = true)
         {
+            if ( showingFriends )
+            {
+                friends.leftClick(x, y);
+            }
+
             if (!didModeSelect)
             {
                 Rectangle r = new Rectangle(buttonX, buttonY1, buttonW, buttonH);
@@ -156,6 +161,14 @@ namespace StardewValleyMP.Interface
             }
         }
 
+        public override void releaseLeftClick(int x, int y)
+        {
+            if ( showingFriends )
+            {
+                friends.leftRelease(x, y);
+            }
+        }
+
         public override void receiveRightClick(int x, int y, bool playSound = true)
         {
         }
@@ -205,7 +218,7 @@ namespace StardewValleyMP.Interface
             {
                 readyToLoad = true;
             }
-            else if ( modeInit == null && Multiplayer.mode != Mode.Singleplayer )
+            else if ( modeInit == null && Multiplayer.mode == Mode.Client )
             {
                 if (friends != null)
                     friends.update(time);
