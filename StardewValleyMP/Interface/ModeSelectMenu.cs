@@ -160,6 +160,14 @@ namespace StardewValleyMP.Interface
         {
         }
 
+        public override void receiveScrollWheelAction( int dir )
+        {
+            if ( showingFriends )
+            {
+                friends.mouseScroll(dir);
+            }
+        }
+
         public override void performHoverAction(int x, int y)
         {
             base.performHoverAction(x, y);

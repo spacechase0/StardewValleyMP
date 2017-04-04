@@ -20,7 +20,7 @@ namespace StardewValleyMP.Interface
         private int x, y;
         private int w, h;
 
-        int scroll = 0;
+        private int scroll = 0;
 
         public FriendSelectorWidget( bool onlineOnly, int x, int y, int w, int h )
         {
@@ -31,7 +31,16 @@ namespace StardewValleyMP.Interface
             this.w = w;
             this.h = h;
 
-            friends = online ? IPlatform.instance.getOnlineFriends() : IPlatform.instance.getFriends();
+            friends = false&&online ? IPlatform.instance.getOnlineFriends() : IPlatform.instance.getFriends();
+        }
+
+        public void mouseScroll( int dir )
+        {
+            scroll += dir * 1;
+            if (scroll > 0)
+                scroll = 0;
+            else if (scroll < friends.Count * -80 + h - 48)
+                scroll = friends.Count * -80 + h - 48;
         }
 
         public void update( GameTime time )
@@ -46,7 +55,7 @@ namespace StardewValleyMP.Interface
             {
                 Friend friend = friends[i];
                 int ix = x + 32;
-                int iy = y + 32 + i * 80;
+                int iy = y + 32 + i * 80 + scroll;
 
                 b.Draw(friend.avatar, new Rectangle(ix, iy, 64, 64), Color.White);
                 SpriteText.drawString(b, friend.displayName, ix + 88, iy + 8);
