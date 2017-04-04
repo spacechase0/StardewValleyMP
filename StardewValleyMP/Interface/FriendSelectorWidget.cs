@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using StardewValley;
+using StardewValley.BellsAndWhistles;
 using StardewValley.Menus;
 using StardewValleyMP.Platforms;
 using System;
@@ -40,6 +41,16 @@ namespace StardewValleyMP.Interface
         public void draw( SpriteBatch b )
         {
             IClickableMenu.drawTextureBox(b, Game1.mouseCursors, new Rectangle(384, 373, 18, 18), x, y, w, h, Color.White, (float)Game1.pixelZoom, true);
+
+            for ( int i = 0; i < friends.Count; ++i )
+            {
+                Friend friend = friends[i];
+                int ix = x + 32;
+                int iy = y + 32 + i * 48;
+
+                b.Draw(friend.avatar, new Rectangle(ix, iy, 32, 32), Color.White);
+                SpriteText.drawString(b, friend.displayName, ix + 40, iy);
+            }
         }
     }
 }

@@ -36,7 +36,7 @@ namespace StardewValleyMP.Interface
             path = thePath;
             if ( IPlatform.instance.getFriends().Count > 0 )
             {
-                friends = new FriendSelectorWidget( true, 75, 75, Game1.viewport.Width - 150, 475 );
+                friends = new FriendSelectorWidget( true, xPositionOnScreen + width / 4, 75, width / 2, 475 );
             }
         }
 
@@ -86,18 +86,21 @@ namespace StardewValleyMP.Interface
             }
             else if (modeInit == null)
             {
-                Rectangle r1 = new Rectangle(Game1.viewport.Width / 2 - SpriteText.getWidthOfString("Network") - 50, 20, SpriteText.getWidthOfString("Network"), SpriteText.getHeightOfString("Network"));
-                Rectangle r2 = new Rectangle(Game1.viewport.Width / 2 + 50, 20, SpriteText.getWidthOfString("Friends"), SpriteText.getHeightOfString("Friends"));
+                if (Multiplayer.mode == Mode.Client)
+                {
+                    Rectangle r1 = new Rectangle(Game1.viewport.Width / 2 - SpriteText.getWidthOfString("Network") - 50, 20, SpriteText.getWidthOfString("Network"), SpriteText.getHeightOfString("Network"));
+                    Rectangle r2 = new Rectangle(Game1.viewport.Width / 2 + 50, 20, SpriteText.getWidthOfString("Friends"), SpriteText.getHeightOfString("Friends"));
 
-                if (r1.Contains(x, y))
-                {
-                    showingFriends = false;
-                    Log.trace("Changing to network tab");
-                }
-                else if (r2.Contains(x, y))
-                {
-                    showingFriends = true;
-                    Log.trace("Changing to friends tab");
+                    if (r1.Contains(x, y))
+                    {
+                        showingFriends = false;
+                        Log.trace("Changing to network tab");
+                    }
+                    else if (r2.Contains(x, y))
+                    {
+                        showingFriends = true;
+                        Log.trace("Changing to friends tab");
+                    }
                 }
 
                 Multiplayer.problemStarting = false;
@@ -233,10 +236,13 @@ namespace StardewValleyMP.Interface
                 int x = buttonX, y = buttonY3 + buttonH, w = buttonW, h = buttonH;
                 String str = (Multiplayer.mode == Mode.Host ? "Listen" : "Connect");
 
-                SpriteText.drawString(b, "Network", Game1.viewport.Width / 2 - SpriteText.getWidthOfString("Network") - 50, 20,
-                    999999, -1, 999999, 1, 0.88f, false, -1, "", showingFriends ? -1 : 5);
-                SpriteText.drawString(b, "Friends", Game1.viewport.Width / 2 + 50, 20,
-                    999999, -1, 999999, 1, 0.88f, false, -1, "", friends == null ? 0 : (showingFriends ? 5 : -1));
+                if (Multiplayer.mode == Mode.Client)
+                {
+                    SpriteText.drawString(b, "Network", Game1.viewport.Width / 2 - SpriteText.getWidthOfString("Network") - 50, 20,
+                        999999, -1, 999999, 1, 0.88f, false, -1, "", showingFriends ? -1 : 5);
+                    SpriteText.drawString(b, "Friends", Game1.viewport.Width / 2 + 50, 20,
+                        999999, -1, 999999, 1, 0.88f, false, -1, "", friends == null ? 0 : (showingFriends ? 5 : -1));
+                }
 
                 if (!showingFriends)
                 {
