@@ -43,11 +43,16 @@ namespace StardewValleyMP.Interface
             }
         }
 
+        private bool justClicked = false;
         public void leftClick( int x, int y )
         {
             if ( scrollbarBack.Contains( x, y ) )
             {
                 dragScroll = true;
+            }
+            else
+            {
+                justClicked = true;
             }
         }
 
@@ -61,8 +66,8 @@ namespace StardewValleyMP.Interface
             scroll += dir * 1;
             if (scroll > 0)
                 scroll = 0;
-            else if (scroll < friends.Count * -80 + h - 48)
-                scroll = friends.Count * -80 + h - 48;
+            else if (scroll < friends.Count * -80 + h - 48 - 4)
+                scroll = friends.Count * -80 + h - 48 - 4;
         }
 
         public void update( GameTime time )
@@ -74,7 +79,7 @@ namespace StardewValleyMP.Interface
                 relY = Math.Max(0, relY);
                 relY = Math.Min(relY, scrollbarBack.Height - 4 - scrollbar.Height);
                 float percY = relY / (scrollbarBack.Height - 4f - scrollbar.Height);
-                int totalY = friends.Count * 80 - h + 48;
+                int totalY = friends.Count * 80 - h + 48 + 4;
                 scroll = -(int)( totalY * percY );
             }
         }
@@ -93,7 +98,17 @@ namespace StardewValleyMP.Interface
                 {
                     Friend friend = friends[i];
                     int ix = x + 32;
-                    int iy = y + 32 + i * 80 + scroll;
+                    int iy = y + 32 + 4 + i * 80 + scroll;
+
+                    Rectangle area = new Rectangle(ix - 8, iy - 8, w - 40 - Game1.pixelZoom * 6, 80);
+                    if (area.Contains(Game1.getMouseX(), Game1.getMouseY()) )
+                    {
+                        b.Draw(Util.WHITE_1X1, area, new Color(200, 32, 32, 64));
+                        if ( justClicked )
+                        {
+                            // DO STUFF
+                        }
+                    }
 
                     b.Draw(friend.avatar, new Rectangle(ix, iy, 64, 64), Color.White);
                     SpriteText.drawString(b, friend.displayName, ix + 88, iy + 8);
@@ -104,7 +119,7 @@ namespace StardewValleyMP.Interface
 
             if (friends.Count > 5)
             {
-                scrollbar.Y = scrollbarBack.Y + 2 + ( int )( ((scroll / -80f) / (friends.Count - (h - 64) / 80f)) * ( scrollbarBack.Height - scrollbar.Height ) );
+                scrollbar.Y = scrollbarBack.Y + 2 + ( int )( ((scroll / -80f) / (friends.Count - (h - 64 + 8) / 80f)) * ( scrollbarBack.Height - scrollbar.Height ) );
 
                 IClickableMenu.drawTextureBox(b, Game1.mouseCursors, new Rectangle(403, 383, 6, 6), scrollbarBack.X, scrollbarBack.Y, scrollbarBack.Width, scrollbarBack.Height, Color.DarkGoldenrod, (float)Game1.pixelZoom, false);
                 IClickableMenu.drawTextureBox(b, Game1.mouseCursors, new Rectangle(403, 383, 6, 6), scrollbar.X, scrollbar.Y, scrollbar.Width, scrollbar.Height, Color.Gold, (float)Game1.pixelZoom, false);

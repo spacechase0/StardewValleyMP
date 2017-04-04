@@ -1,4 +1,6 @@
-﻿using Microsoft.Xna.Framework.Input;
+﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewValley;
@@ -29,6 +31,7 @@ namespace StardewValleyMP
             Log.info("Loading Config");
             ModConfig = Helper.ReadConfig<MultiplayerConfig>();
 
+            GameEvents.LoadContent += loadContent;
             GameEvents.UpdateTick += onUpdate;
             GraphicsEvents.OnPreRenderHudEvent += onPreDraw;      
             LocationEvents.CurrentLocationChanged += onCurrentLocationChange;
@@ -47,6 +50,12 @@ namespace StardewValleyMP
                 a = Assembly.GetAssembly(typeof(StardewValley.Game1));
                 Util.SetStaticField(a.GetType("StardewValley.Program"), "releaseBuild", false);
             }
+        }
+
+        public static void loadContent( object sender, EventArgs args )
+        {
+            Util.WHITE_1X1 = new Texture2D(Game1.graphics.GraphicsDevice, 1, 1);
+            Util.WHITE_1X1.SetData(new Color[] { Color.White });
         }
 
         private static IClickableMenu prevMenu = null;

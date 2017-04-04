@@ -21,6 +21,8 @@ namespace StardewValleyMP
             get { return Type.GetType("Mono.Runtime") != null; }
         }
 
+        public static Texture2D WHITE_1X1;
+
         public static void drawStr(string str, float x, float y, Color col, float alpha = 1, bool smallFont = true)
         {
             for ( int i = 0; i < str.Length; ++i )
