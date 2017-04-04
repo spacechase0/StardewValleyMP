@@ -51,7 +51,8 @@ namespace StardewValleyMP.Interface
         {
             IClickableMenu.drawTextureBox(b, Game1.mouseCursors, new Rectangle(384, 373, 18, 18), x, y, w, h, Color.White, (float)Game1.pixelZoom, true);
 
-            for ( int i = 0; i < friends.Count; ++i )
+            int si = scroll / -80;
+            for ( int i = Math.Max( 0, si - 1 ); i < Math.Min( friends.Count, si + h / 80 + 1 ); ++i )
             {
                 Friend friend = friends[i];
                 int ix = x + 32;
