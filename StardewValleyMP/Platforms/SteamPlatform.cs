@@ -52,6 +52,8 @@ namespace StardewValleyMP.Platforms
                 }
 
                 friends.Add(friend);
+                friends.Add(friend);
+                friends.Add(friend);
             }
 
             return friends;

@@ -259,22 +259,47 @@ namespace StardewValleyMP.Interface
 
                 if (Multiplayer.mode == Mode.Client)
                 {
+                    /*
                     SpriteText.drawString(b, "Network", Game1.viewport.Width / 2 - SpriteText.getWidthOfString("Network") - 50, 20,
                         999999, -1, 999999, 1, 0.88f, false, -1, "", showingFriends ? -1 : 5);
                     SpriteText.drawString(b, "Friends", Game1.viewport.Width / 2 + 50, 20,
-                        999999, -1, 999999, 1, 0.88f, false, -1, "", friends == null ? 0 : (showingFriends ? 5 : -1));
+                        999999, -1, 999999, 1, 0.88f, false, -1, "", friends == null ? 0 : (showingFriends ? 5 : -1));*/
+
+                    b.DrawString(Game1.dialogueFont, "Network", new Vector2(Game1.viewport.Width / 2 - Game1.dialogueFont.MeasureString("Network").X - 50+0, 20+2), (Color.Black)*0.25f);
+                    b.DrawString(Game1.dialogueFont, "Network", new Vector2(Game1.viewport.Width / 2 - Game1.dialogueFont.MeasureString("Network").X - 50+2, 20+0), (Color.Black) *0.25f);
+                    b.DrawString(Game1.dialogueFont, "Network", new Vector2(Game1.viewport.Width / 2 - Game1.dialogueFont.MeasureString("Network").X - 50+0, 20-2), (Color.Black) *0.25f);
+                    b.DrawString(Game1.dialogueFont, "Network", new Vector2(Game1.viewport.Width / 2 - Game1.dialogueFont.MeasureString("Network").X - 50-2, 20-0), (Color.Black) *0.25f);
+                    b.DrawString(Game1.dialogueFont, "Network", new Vector2(Game1.viewport.Width / 2 - Game1.dialogueFont.MeasureString("Network").X - 50, 20), (showingFriends ? Color.SaddleBrown : Color.OrangeRed));
+                    b.DrawString(Game1.dialogueFont, "Friends", new Vector2(Game1.viewport.Width / 2 + 50 + 0, 20 + 2), (Color.Black) * 0.25f);
+                    b.DrawString(Game1.dialogueFont, "Friends", new Vector2(Game1.viewport.Width / 2 + 50 + 2, 20 + 0), (Color.Black) * 0.25f);
+                    b.DrawString(Game1.dialogueFont, "Friends", new Vector2(Game1.viewport.Width / 2 + 50 + 0, 20 - 2), (Color.Black) * 0.25f);
+                    b.DrawString(Game1.dialogueFont, "Friends", new Vector2(Game1.viewport.Width / 2 + 50 - 2, 20 - 0), (Color.Black) * 0.25f);
+                    b.DrawString(Game1.dialogueFont, "Friends", new Vector2(Game1.viewport.Width / 2 + 50, 20), friends == null ? Color.Black : (showingFriends ? Color.OrangeRed : Color.SaddleBrown));
+
                 }
 
                 if (!showingFriends)
                 {
+                    Color gray = new Color(127, 127, 127);
+                    Color text = new Color(86, 22, 12);
                     if (ipBox != null)
                     {
-                        SpriteText.drawString(b, "IP Address:", ipBox.X - SpriteText.getWidthOfString("IP Address:") - 20, ipBox.Y);
+                        b.DrawString(Game1.dialogueFont, "IP Address:", new Vector2(ipBox.X - Game1.dialogueFont.MeasureString("IP Address:").X - 20 + 0, ipBox.Y + 2), gray * 0.25f);
+                        b.DrawString(Game1.dialogueFont, "IP Address:", new Vector2(ipBox.X - Game1.dialogueFont.MeasureString("IP Address:").X - 20 + 2, ipBox.Y + 0), gray * 0.25f);
+                        b.DrawString(Game1.dialogueFont, "IP Address:", new Vector2(ipBox.X - Game1.dialogueFont.MeasureString("IP Address:").X - 20 + 0, ipBox.Y - 2), gray * 0.25f);
+                        b.DrawString(Game1.dialogueFont, "IP Address:", new Vector2(ipBox.X - Game1.dialogueFont.MeasureString("IP Address:").X - 20 - 2, ipBox.Y - 0), gray * 0.25f);
+                        b.DrawString(Game1.dialogueFont, "IP Address:", new Vector2(ipBox.X - Game1.dialogueFont.MeasureString("IP Address:").X - 20, ipBox.Y), text);
+                        
                         ipBox.Draw(b);
                     }
                     if (portBox != null)
                     {
-                        SpriteText.drawString(b, "Port:", portBox.X - SpriteText.getWidthOfString("IP Address:") - 20, portBox.Y);
+                        b.DrawString(Game1.dialogueFont, "Port:", new Vector2(portBox.X - Game1.dialogueFont.MeasureString("IP Address:").X - 20 + 0, portBox.Y + 2), gray * 0.25f);
+                        b.DrawString(Game1.dialogueFont, "Port:", new Vector2(portBox.X - Game1.dialogueFont.MeasureString("IP Address:").X - 20 + 2, portBox.Y + 0), gray * 0.25f);
+                        b.DrawString(Game1.dialogueFont, "Port:", new Vector2(portBox.X - Game1.dialogueFont.MeasureString("IP Address:").X - 20 + 0, portBox.Y - 2), gray * 0.25f);
+                        b.DrawString(Game1.dialogueFont, "Port:", new Vector2(portBox.X - Game1.dialogueFont.MeasureString("IP Address:").X - 20 - 2, portBox.Y - 0), gray * 0.25f);
+                        b.DrawString(Game1.dialogueFont, "Port:", new Vector2(portBox.X - Game1.dialogueFont.MeasureString("IP Address:").X - 20, portBox.Y), text);
+
                         portBox.Draw(b);
                     }
 

@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using StardewValley;
+using StardewValley.BellsAndWhistles;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -20,7 +21,7 @@ namespace StardewValleyMP
             get { return Type.GetType("Mono.Runtime") != null; }
         }
 
-        public static void drawStr(string str, float x, float y, Color col, float alpha = 1)
+        public static void drawStr(string str, float x, float y, Color col, float alpha = 1, bool smallFont = true)
         {
             for ( int i = 0; i < str.Length; ++i )
             {
@@ -38,11 +39,12 @@ namespace StardewValleyMP
             SpriteBatch b = Game1.spriteBatch;
             Color inverted = new Color(255 - col.R, 255 - col.G, 255 - col.B);
 
-            b.DrawString(Game1.smallFont, str, new Vector2((float)(x + Game1.tileSize / 4), (float)(y + Game1.tileSize / 4 + 4)) + new Vector2(-2f, 0f), inverted * alpha * 0.8f);
-            b.DrawString(Game1.smallFont, str, new Vector2((float)(x + Game1.tileSize / 4), (float)(y + Game1.tileSize / 4 + 4)) + new Vector2(2f, 0f), inverted * alpha * 0.8f);
-            b.DrawString(Game1.smallFont, str, new Vector2((float)(x + Game1.tileSize / 4), (float)(y + Game1.tileSize / 4 + 4)) + new Vector2(0f, 2f), inverted * alpha * 0.8f);
-            b.DrawString(Game1.smallFont, str, new Vector2((float)(x + Game1.tileSize / 4), (float)(y + Game1.tileSize / 4 + 4)) + new Vector2(0f, -2f), inverted * alpha * 0.8f);
-            b.DrawString(Game1.smallFont, str, new Vector2((float)(x + Game1.tileSize / 4), (float)(y + Game1.tileSize / 4 + 4)), col * 0.9f * alpha);
+            SpriteFont font = smallFont ? Game1.smallFont : Game1.dialogueFont;
+            b.DrawString(font, str, new Vector2((float)(x + Game1.tileSize / 4), (float)(y + Game1.tileSize / 4 + 4)) + new Vector2(-2f, 0f), inverted * alpha * 0.8f);
+            b.DrawString(font, str, new Vector2((float)(x + Game1.tileSize / 4), (float)(y + Game1.tileSize / 4 + 4)) + new Vector2(2f, 0f), inverted * alpha * 0.8f);
+            b.DrawString(font, str, new Vector2((float)(x + Game1.tileSize / 4), (float)(y + Game1.tileSize / 4 + 4)) + new Vector2(0f, 2f), inverted * alpha * 0.8f);
+            b.DrawString(font, str, new Vector2((float)(x + Game1.tileSize / 4), (float)(y + Game1.tileSize / 4 + 4)) + new Vector2(0f, -2f), inverted * alpha * 0.8f);
+            b.DrawString(font, str, new Vector2((float)(x + Game1.tileSize / 4), (float)(y + Game1.tileSize / 4 + 4)), col * 0.9f * alpha);
         }
 
         // http://stackoverflow.com/a/17546909
