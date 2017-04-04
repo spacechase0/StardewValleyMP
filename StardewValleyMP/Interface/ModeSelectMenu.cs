@@ -111,7 +111,7 @@ namespace StardewValleyMP.Interface
                 }
 
                 Rectangle r = new Rectangle(buttonX, buttonY3 + buttonH, buttonW, buttonH);
-                if (r.Contains(x, y))
+                if (r.Contains(x, y) && !showingFriends)
                 {
                     MultiplayerMod.ModConfig.DefaultPort = portBox.Text;
                     Multiplayer.portStr = portBox.Text;
@@ -256,14 +256,14 @@ namespace StardewValleyMP.Interface
                         SpriteText.drawString(b, "Port:", portBox.X - SpriteText.getWidthOfString("IP Address:") - 20, portBox.Y);
                         portBox.Draw(b);
                     }
+
+                    IClickableMenu.drawTextureBox(b, Game1.mouseCursors, new Rectangle(384, 373, 18, 18), x, y, w, h, new Rectangle(x, y, w, h).Contains(Game1.getOldMouseX(), Game1.getOldMouseY()) ? Color.Wheat : Color.White, (float)Game1.pixelZoom, true);
+                    SpriteText.drawString(b, str, x + w / 2 - SpriteText.getWidthOfString(str) / 2, y + h / 2 - SpriteText.getHeightOfString(str) / 2);
                 }
                 else
                 {
                     friends.draw(b);
                 }
-                
-                IClickableMenu.drawTextureBox(b, Game1.mouseCursors, new Rectangle(384, 373, 18, 18), x, y, w, h, new Rectangle(x, y, w, h).Contains(Game1.getOldMouseX(), Game1.getOldMouseY()) ? Color.Wheat : Color.White, (float)Game1.pixelZoom, true);
-                SpriteText.drawString(b, str, x + w / 2 - SpriteText.getWidthOfString(str) / 2, y + h / 2 - SpriteText.getHeightOfString(str) / 2);
             }
             else if (Multiplayer.problemStarting)
             {
