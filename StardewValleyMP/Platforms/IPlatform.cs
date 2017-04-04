@@ -7,6 +7,8 @@ namespace StardewValleyMP.Platforms
     {
         public static IPlatform instance = makeCurrentPlatform();
 
+        public abstract string getName();
+
         public abstract List<Friend> getFriends();
         public abstract List<Friend> getOnlineFriends();
 

@@ -7,6 +7,7 @@ using StardewValleyMP.Vanilla;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using SFarmer = StardewValley.Farmer;
+using StardewValleyMP.Platforms;
 
 namespace StardewValleyMP.Interface
 {
@@ -20,6 +21,7 @@ namespace StardewValleyMP.Interface
 
         private TextBox ipBox;
         private TextBox portBox;
+        private FriendSelectorWidget friends;
         private int buttonX;
         private int buttonY1;
         private int buttonY2;
@@ -27,9 +29,15 @@ namespace StardewValleyMP.Interface
         private int buttonW;
         private int buttonH;
 
+        private bool showingFriends = false;
+
         public ModeSelectMenu(string thePath) : base(Game1.viewport.Width / 2 - (1100 + IClickableMenu.borderWidth * 2) / 2, Game1.viewport.Height / 2 - (600 + IClickableMenu.borderWidth * 2) / 2, 1100 + IClickableMenu.borderWidth * 2, 600 + IClickableMenu.borderWidth * 2, false)
         {
             path = thePath;
+            if ( IPlatform.instance.getFriends().Count > 0 )
+            {
+                friends = new FriendSelectorWidget( true, 75, 75, Game1.viewport.Width - 150, 475 );
+            }
         }
 
         public override void receiveLeftClick(int x, int y, bool playSound = true)
@@ -78,11 +86,28 @@ namespace StardewValleyMP.Interface
             }
             else if (modeInit == null)
             {
-                Multiplayer.problemStarting = false;
-                if (ipBox != null) ipBox.Update();
-                if (portBox != null) portBox.Update();
+                Rectangle r1 = new Rectangle(Game1.viewport.Width / 2 - SpriteText.getWidthOfString("Network") - 50, 20, SpriteText.getWidthOfString("Network"), SpriteText.getHeightOfString("Network"));
+                Rectangle r2 = new Rectangle(Game1.viewport.Width / 2 + 50, 20, SpriteText.getWidthOfString("Friends"), SpriteText.getHeightOfString("Friends"));
 
-                Rectangle r = new Rectangle(buttonX, buttonY3, buttonW, buttonH);
+                if (r1.Contains(x, y))
+                {
+                    showingFriends = false;
+                    Log.trace("Changing to network tab");
+                }
+                else if (r2.Contains(x, y))
+                {
+                    showingFriends = true;
+                    Log.trace("Changing to friends tab");
+                }
+
+                Multiplayer.problemStarting = false;
+                if (!showingFriends)
+                {
+                    if (ipBox != null) ipBox.Update();
+                    if (portBox != null) portBox.Update();
+                }
+
+                Rectangle r = new Rectangle(buttonX, buttonY3 + buttonH, buttonW, buttonH);
                 if (r.Contains(x, y))
                 {
                     MultiplayerMod.ModConfig.DefaultPort = portBox.Text;
@@ -169,6 +194,11 @@ namespace StardewValleyMP.Interface
             {
                 readyToLoad = true;
             }
+            else if ( modeInit == null && Multiplayer.mode != Mode.Singleplayer )
+            {
+                if (friends != null)
+                    friends.update(time);
+            }
         }
 
         public override void draw(SpriteBatch b)
@@ -200,20 +230,32 @@ namespace StardewValleyMP.Interface
             }
             else if (modeInit == null)
             {
-                int x = buttonX, y = buttonY3, w = buttonW, h = buttonH;
+                int x = buttonX, y = buttonY3 + buttonH, w = buttonW, h = buttonH;
                 String str = (Multiplayer.mode == Mode.Host ? "Listen" : "Connect");
 
-                if (ipBox != null)
-                {
-                    SpriteText.drawString(b, "IP Address:", ipBox.X - SpriteText.getWidthOfString("IP Address:") - 20, ipBox.Y);
-                    ipBox.Draw(b);
-                }
-                if (portBox != null)
-                {
-                    SpriteText.drawString(b, "Port:", portBox.X - SpriteText.getWidthOfString("IP Address:") - 20, portBox.Y);
-                    portBox.Draw(b);
-                }
+                SpriteText.drawString(b, "Network", Game1.viewport.Width / 2 - SpriteText.getWidthOfString("Network") - 50, 20,
+                    999999, -1, 999999, 1, 0.88f, false, -1, "", showingFriends ? -1 : 5);
+                SpriteText.drawString(b, "Friends", Game1.viewport.Width / 2 + 50, 20,
+                    999999, -1, 999999, 1, 0.88f, false, -1, "", friends == null ? 0 : (showingFriends ? 5 : -1));
 
+                if (!showingFriends)
+                {
+                    if (ipBox != null)
+                    {
+                        SpriteText.drawString(b, "IP Address:", ipBox.X - SpriteText.getWidthOfString("IP Address:") - 20, ipBox.Y);
+                        ipBox.Draw(b);
+                    }
+                    if (portBox != null)
+                    {
+                        SpriteText.drawString(b, "Port:", portBox.X - SpriteText.getWidthOfString("IP Address:") - 20, portBox.Y);
+                        portBox.Draw(b);
+                    }
+                }
+                else
+                {
+                    friends.draw(b);
+                }
+                
                 IClickableMenu.drawTextureBox(b, Game1.mouseCursors, new Rectangle(384, 373, 18, 18), x, y, w, h, new Rectangle(x, y, w, h).Contains(Game1.getOldMouseX(), Game1.getOldMouseY()) ? Color.Wheat : Color.White, (float)Game1.pixelZoom, true);
                 SpriteText.drawString(b, str, x + w / 2 - SpriteText.getWidthOfString(str) / 2, y + h / 2 - SpriteText.getHeightOfString(str) / 2);
             }

@@ -4,6 +4,11 @@ namespace StardewValleyMP.Platforms
 {
     class DummyPlatform : IPlatform
     {
+        public override string getName()
+        {
+            return "";
+        }
+
         public override List< Friend > getFriends()
         {
             return new List<Friend>();

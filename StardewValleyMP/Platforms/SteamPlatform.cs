@@ -16,6 +16,11 @@ namespace StardewValleyMP.Platforms
             sessReqCallback = new Callback<P2PSessionRequest_t>(onP2PSessionRequest);
         }
 
+        public override string getName()
+        {
+            return "Steam";
+        }
+
         private List<Friend> friends;
         public override List<Friend> getFriends()
         {
