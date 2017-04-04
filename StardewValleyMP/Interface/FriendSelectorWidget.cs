@@ -21,6 +21,8 @@ namespace StardewValleyMP.Interface
         private int w, h;
 
         private int scroll = 0;
+        private Rectangle scrollbarBack;
+        private ClickableTextureComponent scrollbar;
 
         public FriendSelectorWidget( bool onlineOnly, int x, int y, int w, int h )
         {
@@ -31,7 +33,12 @@ namespace StardewValleyMP.Interface
             this.w = w;
             this.h = h;
 
-            friends = false&&online ? IPlatform.instance.getOnlineFriends() : IPlatform.instance.getFriends();
+            friends = false && online ? IPlatform.instance.getOnlineFriends() : IPlatform.instance.getFriends();
+            if (friends.Count > 0)
+            {
+                scrollbarBack = new Rectangle(x + w - Game1.pixelZoom * 6 - 16, y + 16, Game1.pixelZoom * 6, h - 28);
+                scrollbar = new ClickableTextureComponent(new Rectangle(scrollbarBack.Left, scrollbarBack.Top, 6 * Game1.pixelZoom, (int)((5.0 / friends.Count) * scrollbarBack.Height)), Game1.mouseCursors, new Rectangle(435, 463, 6, 10), (float)Game1.pixelZoom, false);
+            }
         }
 
         public void mouseScroll( int dir )
@@ -54,7 +61,7 @@ namespace StardewValleyMP.Interface
             b.End();
             b.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, null,
                     new RasterizerState() { ScissorTestEnable = true } );
-            b.GraphicsDevice.ScissorRectangle = new Rectangle(x + 24, y + 20, w - 48, h - 36);
+            b.GraphicsDevice.ScissorRectangle = new Rectangle(x + 24, y + 20, scrollbarBack.Left - (x + 24), h - 36);
             {
                 int si = scroll / -80;
                 for (int i = Math.Max(0, si - 1); i < Math.Min(friends.Count, si + h / 80 + 1); ++i)
@@ -69,6 +76,12 @@ namespace StardewValleyMP.Interface
             }
             b.End();
             b.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, null, null);
+
+            if (friends.Count > 5)
+            {
+                IClickableMenu.drawTextureBox(b, Game1.mouseCursors, new Rectangle(403, 383, 6, 6), scrollbarBack.X, scrollbarBack.Y, scrollbarBack.Width, scrollbarBack.Height, Color.White, (float)Game1.pixelZoom, false);
+                scrollbar.draw(b);
+            }
         }
     }
 }
