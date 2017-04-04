@@ -22,7 +22,7 @@ namespace StardewValleyMP.Interface
 
         private int scroll = 0;
         private Rectangle scrollbarBack;
-        private ClickableTextureComponent scrollbar;
+        private Rectangle scrollbar;
 
         public FriendSelectorWidget( bool onlineOnly, int x, int y, int w, int h )
         {
@@ -37,7 +37,7 @@ namespace StardewValleyMP.Interface
             if (friends.Count > 0)
             {
                 scrollbarBack = new Rectangle(x + w - Game1.pixelZoom * 6 - 16, y + 16, Game1.pixelZoom * 6, h - 28);
-                scrollbar = new ClickableTextureComponent(new Rectangle(scrollbarBack.Left, scrollbarBack.Top, 6 * Game1.pixelZoom, (int)((5.0 / friends.Count) * scrollbarBack.Height)), Game1.mouseCursors, new Rectangle(435, 463, 6, 10), (float)Game1.pixelZoom, false);
+                scrollbar = new Rectangle(scrollbarBack.X + 2, scrollbarBack.Y + 2, 6 * Game1.pixelZoom - 4, (int)((5.0 / friends.Count) * scrollbarBack.Height) - 4);
             }
         }
 
@@ -79,8 +79,10 @@ namespace StardewValleyMP.Interface
 
             if (friends.Count > 5)
             {
-                IClickableMenu.drawTextureBox(b, Game1.mouseCursors, new Rectangle(403, 383, 6, 6), scrollbarBack.X, scrollbarBack.Y, scrollbarBack.Width, scrollbarBack.Height, Color.White, (float)Game1.pixelZoom, false);
-                scrollbar.draw(b);
+                scrollbar.Y = scrollbarBack.Y + 2 + ( int )( ((scroll / -80f) / (friends.Count - (h - 64) / 80f)) * ( scrollbarBack.Height - scrollbar.Height ) );
+
+                IClickableMenu.drawTextureBox(b, Game1.mouseCursors, new Rectangle(403, 383, 6, 6), scrollbarBack.X, scrollbarBack.Y, scrollbarBack.Width, scrollbarBack.Height, Color.DarkGoldenrod, (float)Game1.pixelZoom, false);
+                IClickableMenu.drawTextureBox(b, Game1.mouseCursors, new Rectangle(403, 383, 6, 6), scrollbar.X, scrollbar.Y, scrollbar.Width, scrollbar.Height, Color.Gold, (float)Game1.pixelZoom, false);
             }
         }
     }
