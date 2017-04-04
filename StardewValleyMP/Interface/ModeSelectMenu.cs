@@ -36,7 +36,7 @@ namespace StardewValleyMP.Interface
             path = thePath;
             if ( IPlatform.instance.getFriends().Count > 0 )
             {
-                friends = new FriendSelectorWidget( true, xPositionOnScreen + width / 4, 75, width / 2, 475 );
+                friends = new FriendSelectorWidget( true, xPositionOnScreen + width / 5, 75, width / 5 * 3, 475 );
             }
         }
 

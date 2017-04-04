@@ -46,10 +46,10 @@ namespace StardewValleyMP.Interface
             {
                 Friend friend = friends[i];
                 int ix = x + 32;
-                int iy = y + 32 + i * 48;
+                int iy = y + 32 + i * 80;
 
-                b.Draw(friend.avatar, new Rectangle(ix, iy, 32, 32), Color.White);
-                SpriteText.drawString(b, friend.displayName, ix + 40, iy);
+                b.Draw(friend.avatar, new Rectangle(ix, iy, 64, 64), Color.White);
+                SpriteText.drawString(b, friend.displayName, ix + 88, iy + 8);
             }
         }
     }

@@ -39,16 +39,13 @@ namespace StardewValleyMP.Platforms
                 string name = SteamFriends.GetPlayerNickname(id);
                 friend.displayName = ( name == null || name == "" ) ? SteamFriends.GetFriendPersonaName(id) : name;
 
-                int handle = SteamFriends.GetSmallFriendAvatar(id);
+                int handle = SteamFriends.GetMediumFriendAvatar(id);
                 uint width = 0, height = 0;
-                Log.info(friend.displayName+" avatar:");
                 if (handle != 0 && SteamUtils.GetImageSize(handle, out width, out height))
                 {
-                    Log.info("\tsize:" + width + " " + height);
                     byte[] pixels = new byte[width * height * 4];
                     if ( SteamUtils.GetImageRGBA(handle, pixels, (int)(width * height * 4)) )
                     {
-                        Log.info("\tgot avatar");
                         friend.avatar = new Texture2D(Game1.graphics.GraphicsDevice, (int) width, (int) height);
                         friend.avatar.SetData(pixels);
                     }
