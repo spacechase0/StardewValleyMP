@@ -370,8 +370,19 @@ namespace StardewValleyMP.Interface
                     iy += 32;
                     b.Draw(friend.avatar, new Rectangle(ix, iy, 64, 64), Color.White);
                     SpriteText.drawString(b, friend.displayName, ix + 88, iy + 8);
-                    SpriteText.drawString(b, "(Left click accept, right click decline)", ix + 32, iy + 96);
-                    SpriteText.drawString(b, "TODO PROPER BUTTONS", ix + 32, iy + 96 * 2);
+
+                    ix += 40;
+                    iy += ih - 32 * 2 - 80;
+                    iw = iw / 2 - 96;
+                    ih = 80;
+
+                    IClickableMenu.drawTextureBox(b, Game1.mouseCursors, new Rectangle(384, 373, 18, 18), ix, iy, iw, ih, new Rectangle(ix, iy, iw, ih).Contains(Game1.getOldMouseX(), Game1.getOldMouseY()) ? Color.Wheat : Color.White, (float)Game1.pixelZoom, true);
+                    SpriteText.drawString(b, "Accept", ix + iw / 2 - SpriteText.getWidthOfString("Accept") / 2, iy + ih / 2 - SpriteText.getHeightOfString("Accept") / 2);
+
+                    ix += iw + 40;
+
+                    IClickableMenu.drawTextureBox(b, Game1.mouseCursors, new Rectangle(384, 373, 18, 18), ix, iy, iw, ih, new Rectangle(ix, iy, iw, ih).Contains(Game1.getOldMouseX(), Game1.getOldMouseY()) ? Color.Wheat : Color.White, (float)Game1.pixelZoom, true);
+                    SpriteText.drawString(b, "Decline", ix + iw / 2 - SpriteText.getWidthOfString("Decline") / 2, iy + ih / 2 - SpriteText.getHeightOfString("Decline") / 2);
                 }
                 else
                 {
