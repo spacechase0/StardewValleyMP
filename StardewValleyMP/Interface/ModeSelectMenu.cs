@@ -420,7 +420,15 @@ namespace StardewValleyMP.Interface
             Log.trace("onFriendSelected " + friend.displayName);
             if (modeInit == null && Multiplayer.mode == Mode.Client)
             {
-                pendingConns.Add(IPlatform.instance.connectToFriend(friend));
+                IConnection conn = IPlatform.instance.connectToFriend(friend);
+                string msg = "Testing stuff";
+
+                byte[] bytes = new byte[msg.Length * sizeof(char)];
+                System.Buffer.BlockCopy(msg.ToCharArray(), 0, bytes, 0, bytes.Length);
+
+                bool b = Steamworks.SteamNetworking.SendP2PPacket(new Steamworks.CSteamID(friend.id), bytes, (uint)bytes.Length, Steamworks.EP2PSend.k_EP2PSendReliable);
+                Log.trace("Attempted send");
+                pendingConns.Add(conn);
             }
         }
 
