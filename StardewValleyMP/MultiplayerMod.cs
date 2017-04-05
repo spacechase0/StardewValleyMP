@@ -208,6 +208,14 @@ namespace StardewValleyMP
                 {
                     Log.info("Steam user ID: " + SteamUser.GetSteamID());
                 }
+                else if (args[0] == "friends")
+                {
+                    var friends = IPlatform.instance.getOnlineFriends();
+                    foreach ( var friend in friends )
+                    {
+                        Log.info(friend.displayName + " (" + friend.id + ")");
+                    }
+                }
                 else if (args[0] == "listen")
                 {
                     sessReq = Callback<P2PSessionRequest_t>.Create(sessReqFunc);

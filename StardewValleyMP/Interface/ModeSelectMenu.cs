@@ -46,7 +46,7 @@ namespace StardewValleyMP.Interface
 
         public override void receiveLeftClick(int x, int y, bool playSound = true)
         {
-            if ( showingFriends && pendingConns.Count < 0 )
+            if ( showingFriends && pendingConns.Count == 0 )
             {
                 friends.leftClick(x, y);
             }
@@ -168,7 +168,7 @@ namespace StardewValleyMP.Interface
 
         public override void releaseLeftClick(int x, int y)
         {
-            if ( showingFriends )
+            if ( showingFriends && pendingConns.Count == 0 )
             {
                 friends.leftRelease(x, y);
             }
@@ -176,16 +176,11 @@ namespace StardewValleyMP.Interface
 
         public override void receiveRightClick(int x, int y, bool playSound = true)
         {
-            Friend f = new Friend();
-            f.displayName = "Test Dummy";
-            f.avatar = Util.WHITE_1X1;
-            f.id = 0;
-            pendingConns.Add(new SteamConnection(f, false));
         }
 
         public override void receiveScrollWheelAction( int dir )
         {
-            if ( showingFriends )
+            if (showingFriends && pendingConns.Count == 0)
             {
                 friends.mouseScroll(dir);
             }
@@ -285,7 +280,6 @@ namespace StardewValleyMP.Interface
                     b.DrawString(Game1.dialogueFont, "Friends", new Vector2(Game1.viewport.Width / 2 + 50 + 0, 20 - 2), (Color.Black) * 0.25f);
                     b.DrawString(Game1.dialogueFont, "Friends", new Vector2(Game1.viewport.Width / 2 + 50 - 2, 20 - 0), (Color.Black) * 0.25f);
                     b.DrawString(Game1.dialogueFont, "Friends", new Vector2(Game1.viewport.Width / 2 + 50, 20), friends == null ? Color.Black : (showingFriends ? Color.OrangeRed : Color.SaddleBrown));
-
                 }
 
                 if (!showingFriends)
