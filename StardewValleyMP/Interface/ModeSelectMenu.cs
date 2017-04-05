@@ -8,6 +8,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using SFarmer = StardewValley.Farmer;
 using StardewValleyMP.Platforms;
+using StardewValleyMP.Connections;
 
 namespace StardewValleyMP.Interface
 {
@@ -124,6 +125,7 @@ namespace StardewValleyMP.Interface
                     if (Multiplayer.mode == Mode.Host)
                     {
                         modeInit = new Thread(Multiplayer.startHost);
+                        IPlatform.instance.onFriendConnected = new Action<Friend, IConnection>(onFriendConnected);
                     }
                     else if (Multiplayer.mode == Mode.Client)
                     {
@@ -366,10 +368,23 @@ namespace StardewValleyMP.Interface
 
             ChatMenu.drawChat(false);
         }
-        
-        private void onFriendSelected( Friend friend )
+
+        private void onFriendSelected(Friend friend)
         {
             Log.trace("onFriendSelected " + friend.displayName);
+            if (modeInit == null && Multiplayer.mode == Mode.Client)
+            {
+                //pendingConn = IPlatform.instance.connectToFriend(friend);
+            }
+        }
+
+        private void onFriendConnected(Friend friend, IConnection conn)
+        {
+            Log.trace("onFriendConnected " + friend.displayName + " " + conn);
+            if (modeInit != null && Multiplayer.mode == Mode.Host)
+            {
+                //pendingConn = IPlatform.instance.connectToFriend(friend);
+            }
         }
     }
 }
