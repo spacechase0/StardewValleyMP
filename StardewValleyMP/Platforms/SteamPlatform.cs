@@ -9,12 +9,25 @@ namespace StardewValleyMP.Platforms
 {
     public class SteamPlatform : IPlatform
     {
+        private static Dictionary<int, Texture2D> avatars = new Dictionary< int, Texture2D >();
+        private static Dictionary<ulong, IConnection> conns = new Dictionary<ulong, IConnection>();
+
         public SteamPlatform()
         {
             Log.info("Initializing Steam integration...");
             SteamAPI.InitSafe();
 
             sessReqCallback = Callback<P2PSessionRequest_t>.Create(onP2PSessionRequest);
+            sessConnFailCallback = Callback<P2PSessionConnectFail_t>.Create(onP2PConnectionFail);
+        }
+
+        ~SteamPlatform()
+        {
+            foreach ( KeyValuePair< int, Texture2D > entry in avatars )
+            {
+                entry.Value.Dispose();
+            }
+            avatars.Clear();
         }
 
         public override string getName()
@@ -55,6 +68,13 @@ namespace StardewValleyMP.Platforms
             return online;
         }
 
+        public override IConnection connectToFriend(Friend other)
+        {
+            var conn = new SteamConnection(other);
+            conns.Add(other.id, conn);
+            return conn;
+        }
+
         private Callback<P2PSessionRequest_t> sessReqCallback;
         private static void onP2PSessionRequest( P2PSessionRequest_t req )
         {
@@ -76,7 +96,26 @@ namespace StardewValleyMP.Platforms
                 match = getFriendFromId(other);
             }
 
-            IPlatform.instance.onFriendConnected(match, new SteamConnection(match));
+            IConnection conn = new SteamConnection(match, true);
+            conns.Add( other.m_SteamID, conn );
+            IPlatform.instance.onFriendConnected(match, conn);
+        }
+
+        private Callback<P2PSessionConnectFail_t> sessConnFailCallback;
+        private static void onP2PConnectionFail(P2PSessionConnectFail_t req)
+        {
+            Log.info("P2P connection status for " + req.m_steamIDRemote.m_SteamID + ": " + req.m_eP2PSessionError);
+            if (req.m_eP2PSessionError != 0 /*EP2PSessionError.k_EP2PSessionErrorNone*/ )
+            {
+                Log.warn("Connection failed for some reason or another.");
+
+                IConnection conn;
+                if (conns.TryGetValue(req.m_steamIDRemote.m_SteamID, out conn) )
+                {
+                    conn.disconnect();
+                    conns.Remove(req.m_steamIDRemote.m_SteamID);
+                }
+            }
         }
 
         private static Friend getFriendFromId( CSteamID id )

@@ -12,10 +12,10 @@ namespace StardewValleyMP.Connections
         public bool accepted { get; private set; }
 
         // Ugh, wish I could just do friend SteamPlatform; or something
-        internal SteamConnection( Friend theFriend )
+        internal SteamConnection( Friend theFriend, bool alreadyConnected = false )
         {
             friend = theFriend;
-            accepted = false;
+            accepted = alreadyConnected;
         }
 
         ~SteamConnection()

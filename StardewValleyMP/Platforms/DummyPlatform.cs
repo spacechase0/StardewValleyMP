@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using StardewValleyMP.Connections;
+using System.Collections.Generic;
 
 namespace StardewValleyMP.Platforms
 {
@@ -17,6 +18,11 @@ namespace StardewValleyMP.Platforms
         public override List<Friend> getOnlineFriends()
         {
             return new List<Friend>();
+        }
+
+        public override IConnection connectToFriend(Friend other)
+        {
+            return null;
         }
     }
 }
