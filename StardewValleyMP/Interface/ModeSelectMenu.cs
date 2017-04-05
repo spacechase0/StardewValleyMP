@@ -176,6 +176,13 @@ namespace StardewValleyMP.Interface
 
         public override void receiveRightClick(int x, int y, bool playSound = true)
         {
+            /*
+            Friend f = new Friend();
+            f.avatar = Util.WHITE_1X1;
+            f.displayName = "TEST DUMMY";
+            f.id = 0;
+            pendingConns.Add(new SteamConnection(f));
+            //*/
         }
 
         public override void receiveScrollWheelAction( int dir )
@@ -348,23 +355,44 @@ namespace StardewValleyMP.Interface
             }
             else if (Multiplayer.server != null)
             {
-                int x = buttonX, y = buttonY1, w = buttonW, h = buttonH;
-                String str = "Start";
-
-                /*Util.drawStr("Other players: ", x, buttonY1, Color.White);
-                foreach ( Server.Client client in Multiplayer.server.clients )
+                if (pendingConns.Count > 0)
                 {
-                    String str_ = "<Client " + ( int )( client.id ) + ">";
-                    if ( client.farmer != null )
-                        str_ = client.farmer.name;
+                    PlatformConnection conn = (PlatformConnection)pendingConns[0];
+                    Friend friend = conn.friend;
 
-                    y += 30;
-                    Util.drawStr(str_, x + 25, y, Color.White);
-                }*/
+                    int ix = xPositionOnScreen + width / 5;
+                    int iw = width / 5 * 3;
+                    int ih = 80 * 2 + 64;
+                    int iy = (Game1.viewport.Height - ih) / 2;
 
-                y = buttonY3;
-                IClickableMenu.drawTextureBox(b, Game1.mouseCursors, new Rectangle(384, 373, 18, 18), x, y, w, h, new Rectangle(x, y, w, h).Contains(Game1.getOldMouseX(), Game1.getOldMouseY()) ? Color.Wheat : Color.White, (float)Game1.pixelZoom, true);
-                SpriteText.drawString(b, str, x + w / 2 - SpriteText.getWidthOfString(str) / 2, y + h / 2 - SpriteText.getHeightOfString(str) / 2);
+                    IClickableMenu.drawTextureBox(b, Game1.mouseCursors, new Rectangle(384, 373, 18, 18), ix, iy, iw, ih, Color.White, (float)Game1.pixelZoom, true);
+                    ix += 32;
+                    iy += 32;
+                    b.Draw(friend.avatar, new Rectangle(ix, iy, 64, 64), Color.White);
+                    SpriteText.drawString(b, friend.displayName, ix + 88, iy + 8);
+                    SpriteText.drawString(b, "(Left click accept, right click decline)", ix + 32, iy + 96);
+                    SpriteText.drawString(b, "TODO PROPER BUTTONS", ix + 32, iy + 96 * 2);
+                }
+                else
+                {
+                    int x = buttonX, y = buttonY1, w = buttonW, h = buttonH;
+                    String str = "Start";
+
+                    /*Util.drawStr("Other players: ", x, buttonY1, Color.White);
+                    foreach ( Server.Client client in Multiplayer.server.clients )
+                    {
+                        String str_ = "<Client " + ( int )( client.id ) + ">";
+                        if ( client.farmer != null )
+                            str_ = client.farmer.name;
+
+                        y += 30;
+                        Util.drawStr(str_, x + 25, y, Color.White);
+                    }*/
+
+                    y = buttonY3;
+                    IClickableMenu.drawTextureBox(b, Game1.mouseCursors, new Rectangle(384, 373, 18, 18), x, y, w, h, new Rectangle(x, y, w, h).Contains(Game1.getOldMouseX(), Game1.getOldMouseY()) ? Color.Wheat : Color.White, (float)Game1.pixelZoom, true);
+                    SpriteText.drawString(b, str, x + w / 2 - SpriteText.getWidthOfString(str) / 2, y + h / 2 - SpriteText.getHeightOfString(str) / 2);
+                }
             }
             else if (Multiplayer.client != null)
             {
