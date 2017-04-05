@@ -44,6 +44,7 @@ namespace StardewValleyMP.Interface
             }
         }
 
+        private bool justClicked = false;
         public override void receiveLeftClick(int x, int y, bool playSound = true)
         {
             if ( showingFriends && pendingConns.Count == 0 )
@@ -156,12 +157,19 @@ namespace StardewValleyMP.Interface
             }
             else if (Multiplayer.mode == Mode.Host)
             {
-                Rectangle r = new Rectangle(buttonX, buttonY3, buttonW, buttonH);
-                if (r.Contains(x, y))
+                if (pendingConns.Count != 0)
                 {
-                    Log.debug("Stopping listener, beginning loading");
-                    Multiplayer.listener.Server.Close();
-                    readyToLoad = true;
+                    justClicked = true;
+                }
+                else
+                {
+                    Rectangle r = new Rectangle(buttonX, buttonY3, buttonW, buttonH);
+                    if (r.Contains(x, y))
+                    {
+                        Log.debug("Stopping listener, beginning loading");
+                        Multiplayer.listener.Server.Close();
+                        readyToLoad = true;
+                    }
                 }
             }
         }
@@ -176,7 +184,7 @@ namespace StardewValleyMP.Interface
 
         public override void receiveRightClick(int x, int y, bool playSound = true)
         {
-            /*
+            //*
             Friend f = new Friend();
             f.avatar = Util.WHITE_1X1;
             f.displayName = "TEST DUMMY";
@@ -378,11 +386,24 @@ namespace StardewValleyMP.Interface
 
                     IClickableMenu.drawTextureBox(b, Game1.mouseCursors, new Rectangle(384, 373, 18, 18), ix, iy, iw, ih, new Rectangle(ix, iy, iw, ih).Contains(Game1.getOldMouseX(), Game1.getOldMouseY()) ? Color.Wheat : Color.White, (float)Game1.pixelZoom, true);
                     SpriteText.drawString(b, "Accept", ix + iw / 2 - SpriteText.getWidthOfString("Accept") / 2, iy + ih / 2 - SpriteText.getHeightOfString("Accept") / 2);
+                    if ( justClicked && new Rectangle(ix, iy, iw, ih).Contains( Game1.getMouseX(), Game1.getMouseY() ) )
+                    {
+                        Log.trace("Accepted " + ((PlatformConnection)pendingConns[0]).friend.displayName);
+                        // DO STUFF
+                        pendingConns.Remove(pendingConns[0]);
+                    }
 
                     ix += iw + 40;
 
                     IClickableMenu.drawTextureBox(b, Game1.mouseCursors, new Rectangle(384, 373, 18, 18), ix, iy, iw, ih, new Rectangle(ix, iy, iw, ih).Contains(Game1.getOldMouseX(), Game1.getOldMouseY()) ? Color.Wheat : Color.White, (float)Game1.pixelZoom, true);
                     SpriteText.drawString(b, "Decline", ix + iw / 2 - SpriteText.getWidthOfString("Decline") / 2, iy + ih / 2 - SpriteText.getHeightOfString("Decline") / 2);
+                    if (justClicked && new Rectangle(ix, iy, iw, ih).Contains(Game1.getMouseX(), Game1.getMouseY()))
+                    {
+                        Log.trace("Declined " + ((PlatformConnection)pendingConns[0]).friend.displayName);
+                        pendingConns.Remove(pendingConns[0]);
+                    }
+
+                    justClicked = false;
                 }
                 else
                 {
