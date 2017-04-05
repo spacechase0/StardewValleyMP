@@ -14,6 +14,8 @@ namespace StardewValleyMP.Interface
 {
     public class FriendSelectorWidget
     {
+        public Action<Friend> onSelectFriend;
+
         private bool online;
         private List<Friend> friends;
 
@@ -107,7 +109,8 @@ namespace StardewValleyMP.Interface
                         if ( justClicked )
                         {
                             Log.trace("Clicked on " + friend.displayName);
-
+                            if (onSelectFriend != null)
+                                onSelectFriend.Invoke(friend);
                         }
                     }
 

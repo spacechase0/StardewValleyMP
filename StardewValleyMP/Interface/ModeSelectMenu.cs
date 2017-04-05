@@ -37,6 +37,7 @@ namespace StardewValleyMP.Interface
             if ( IPlatform.instance.getFriends().Count > 0 )
             {
                 friends = new FriendSelectorWidget( true, xPositionOnScreen + width / 5, 75, width / 5 * 3, 475 );
+                friends.onSelectFriend = new Action<Friend>(onFriendSelected);
             }
         }
 
@@ -364,6 +365,11 @@ namespace StardewValleyMP.Interface
             base.draw(b);
 
             ChatMenu.drawChat(false);
+        }
+        
+        private void onFriendSelected( Friend friend )
+        {
+            Log.trace("onFriendSelected " + friend.displayName);
         }
     }
 }

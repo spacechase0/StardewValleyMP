@@ -96,9 +96,12 @@ namespace StardewValleyMP.Platforms
                 match = getFriendFromId(other);
             }
 
-            IConnection conn = new SteamConnection(match, true);
-            conns.Add( other.m_SteamID, conn );
-            IPlatform.instance.onFriendConnected(match, conn);
+            if (IPlatform.instance.onFriendConnected != null)
+            {
+                IConnection conn = new SteamConnection(match, true);
+                conns.Add(other.m_SteamID, conn);
+                IPlatform.instance.onFriendConnected(match, conn);
+            }
         }
 
         private Callback<P2PSessionConnectFail_t> sessConnFailCallback;
