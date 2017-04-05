@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using StardewValley;
 using Microsoft.Xna.Framework.Graphics;
 using StardewValleyMP.Connections;
+using System.Text;
 
 namespace StardewValleyMP.Platforms
 {
@@ -16,6 +17,9 @@ namespace StardewValleyMP.Platforms
         {
             Log.info("Initializing Steam integration...");
             SteamAPI.InitSafe();
+
+            warningHook = new SteamAPIWarningMessageHook_t(onSteamWarning);
+            SteamClient.SetWarningMessageHook(warningHook);
 
             sessReqCallback = Callback<P2PSessionRequest_t>.Create(onP2PSessionRequest);
             sessConnFailCallback = Callback<P2PSessionConnectFail_t>.Create(onP2PConnectionFail);
@@ -78,6 +82,12 @@ namespace StardewValleyMP.Platforms
             var conn = new SteamConnection(other);
             conns.Add(other.id, conn);
             return conn;
+        }
+
+        private static SteamAPIWarningMessageHook_t warningHook;
+        private static void onSteamWarning( int sev, StringBuilder str )
+        {
+            Log.warn("[STEAM] " + str);
         }
 
         private Callback<P2PSessionRequest_t> sessReqCallback;
