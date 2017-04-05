@@ -63,6 +63,7 @@ namespace StardewValleyMP
         {
             try
             {
+                IPlatform.instance.update();
                 Multiplayer.update();
 
                 // We need our load menu to be able to do things

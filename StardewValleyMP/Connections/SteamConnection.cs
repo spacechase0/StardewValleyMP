@@ -5,36 +5,26 @@ using System.IO;
 
 namespace StardewValleyMP.Connections
 {
-    public class SteamConnection : IConnection
+    public class SteamConnection : PlatformConnection
     {
-        public Friend friend { get; private set; }
-
-        public bool accepted { get; private set; }
-
         // Ugh, wish I could just do friend SteamPlatform; or something
         internal SteamConnection( Friend theFriend, bool alreadyConnected = false )
+        :   base( theFriend, alreadyConnected )
         {
-            friend = theFriend;
-            accepted = alreadyConnected;
         }
 
-        ~SteamConnection()
-        {
-            disconnect();
-        }
-
-        public bool isConnected()
+        public override bool isConnected()
         {
             return friend != null && accepted;
         }
 
-        public void disconnect()
+        public override void disconnect()
         {
             SteamNetworking.CloseP2PSessionWithUser(new CSteamID(friend.id));
             friend = null;
         }
 
-        public Stream getStream()
+        public override Stream getStream()
         {
             return null;
         }

@@ -9,6 +9,7 @@ using Microsoft.Xna.Framework.Graphics;
 using SFarmer = StardewValley.Farmer;
 using StardewValleyMP.Platforms;
 using StardewValleyMP.Connections;
+using System.Collections.Generic;
 
 namespace StardewValleyMP.Interface
 {
@@ -31,6 +32,7 @@ namespace StardewValleyMP.Interface
         private int buttonH;
 
         private bool showingFriends = false;
+        private List< IConnection > pendingConns = new List< IConnection >();
 
         public ModeSelectMenu(string thePath) : base(Game1.viewport.Width / 2 - (1100 + IClickableMenu.borderWidth * 2) / 2, Game1.viewport.Height / 2 - (600 + IClickableMenu.borderWidth * 2) / 2, 1100 + IClickableMenu.borderWidth * 2, 600 + IClickableMenu.borderWidth * 2, false)
         {
@@ -44,7 +46,7 @@ namespace StardewValleyMP.Interface
 
         public override void receiveLeftClick(int x, int y, bool playSound = true)
         {
-            if ( showingFriends )
+            if ( showingFriends && pendingConns.Count < 0 )
             {
                 friends.leftClick(x, y);
             }
@@ -125,7 +127,7 @@ namespace StardewValleyMP.Interface
                     if (Multiplayer.mode == Mode.Host)
                     {
                         modeInit = new Thread(Multiplayer.startHost);
-                        IPlatform.instance.onFriendConnected = new Action<Friend, IConnection>(onFriendConnected);
+                        IPlatform.instance.onFriendConnected = new Action<Friend, PlatformConnection>(onFriendConnected);
                     }
                     else if (Multiplayer.mode == Mode.Client)
                     {
@@ -174,6 +176,11 @@ namespace StardewValleyMP.Interface
 
         public override void receiveRightClick(int x, int y, bool playSound = true)
         {
+            Friend f = new Friend();
+            f.displayName = "Test Dummy";
+            f.avatar = Util.WHITE_1X1;
+            f.id = 0;
+            pendingConns.Add(new SteamConnection(f, false));
         }
 
         public override void receiveScrollWheelAction( int dir )
@@ -311,7 +318,24 @@ namespace StardewValleyMP.Interface
                 }
                 else
                 {
-                    friends.draw(b);
+                    if (pendingConns.Count > 0)
+                    {
+                        PlatformConnection conn = (PlatformConnection)pendingConns[0];
+                        Friend friend = conn.friend;
+
+                        int ix = xPositionOnScreen + width / 5;
+                        int iw = width / 5 * 3;
+                        int ih = 80 * 2 + 64;
+                        int iy = (Game1.viewport.Height - ih) / 2;
+
+                        IClickableMenu.drawTextureBox(b, Game1.mouseCursors, new Rectangle(384, 373, 18, 18), ix, iy, iw, ih, Color.White, (float)Game1.pixelZoom, true);
+                        ix += 32;
+                        iy += 32;
+                        b.Draw(friend.avatar, new Rectangle(ix, iy, 64, 64), Color.White);
+                        SpriteText.drawString(b, friend.displayName, ix + 88, iy + 8);
+                        SpriteText.drawString(b, "Connecting...", ix + 32, iy + 96);
+                    }
+                    else friends.draw(b);
                 }
             }
             else if (Multiplayer.problemStarting)
@@ -374,16 +398,16 @@ namespace StardewValleyMP.Interface
             Log.trace("onFriendSelected " + friend.displayName);
             if (modeInit == null && Multiplayer.mode == Mode.Client)
             {
-                //pendingConn = IPlatform.instance.connectToFriend(friend);
+                pendingConns.Add(IPlatform.instance.connectToFriend(friend));
             }
         }
 
-        private void onFriendConnected(Friend friend, IConnection conn)
+        private void onFriendConnected(Friend friend, PlatformConnection conn)
         {
             Log.trace("onFriendConnected " + friend.displayName + " " + conn);
             if (modeInit != null && Multiplayer.mode == Mode.Host)
             {
-                //pendingConn = IPlatform.instance.connectToFriend(friend);
+                pendingConns.Add(conn);
             }
         }
     }

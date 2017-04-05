@@ -35,6 +35,11 @@ namespace StardewValleyMP.Platforms
             return "Steam";
         }
 
+        public override void update()
+        {
+            SteamAPI.RunCallbacks();
+        }
+
         private List<Friend> friends;
         public override List<Friend> getFriends()
         {
@@ -98,7 +103,7 @@ namespace StardewValleyMP.Platforms
 
             if (IPlatform.instance.onFriendConnected != null)
             {
-                IConnection conn = new SteamConnection(match, true);
+                PlatformConnection conn = new SteamConnection(match, true);
                 conns.Add(other.m_SteamID, conn);
                 IPlatform.instance.onFriendConnected(match, conn);
             }

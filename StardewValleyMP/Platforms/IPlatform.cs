@@ -11,10 +11,12 @@ namespace StardewValleyMP.Platforms
 
         public abstract string getName();
 
+        public abstract void update();
+
         public abstract List<Friend> getFriends();
         public abstract List<Friend> getOnlineFriends();
 
-        public Action<Friend, IConnection> onFriendConnected;
+        public Action<Friend, PlatformConnection> onFriendConnected;
         public abstract IConnection connectToFriend(Friend other);
 
         private static IPlatform makeCurrentPlatform()

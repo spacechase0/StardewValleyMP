@@ -10,6 +10,10 @@ namespace StardewValleyMP.Platforms
             return "";
         }
 
+        public override void update()
+        {
+        }
+
         public override List< Friend > getFriends()
         {
             return new List<Friend>();
