@@ -16,7 +16,12 @@ namespace StardewValleyMP.Platforms
         public SteamPlatform()
         {
             Log.info("Initializing Steam integration...");
-            SteamAPI.InitSafe();
+            if ( !SteamAPI.Init() )
+            {
+                Log.warn("Failed to initialize Steam!");
+                IPlatform.instance = new DummyPlatform(); // I don't even know if this will work how I want it
+                return;
+            }
 
             warningHook = new SteamAPIWarningMessageHook_t(onSteamWarning);
             SteamClient.SetWarningMessageHook(warningHook);
