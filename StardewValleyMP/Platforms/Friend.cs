@@ -2,7 +2,7 @@
 
 namespace StardewValleyMP.Platforms
 {
-    public struct Friend
+    public class Friend
     {
         public ulong id;
         public string displayName;

@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using StardewValley;
 using Microsoft.Xna.Framework.Graphics;
+using StardewValleyMP.Connections;
 
 namespace StardewValleyMP.Platforms
 {
@@ -13,7 +14,7 @@ namespace StardewValleyMP.Platforms
             Log.info("Initializing Steam integration...");
             SteamAPI.InitSafe();
 
-            sessReqCallback = new Callback<P2PSessionRequest_t>(onP2PSessionRequest);
+            sessReqCallback = Callback<P2PSessionRequest_t>.Create(onP2PSessionRequest);
         }
 
         public override string getName()
@@ -32,26 +33,7 @@ namespace StardewValleyMP.Platforms
             for ( int i = 0; i < friendCount; ++i )
             {
                 CSteamID id = SteamFriends.GetFriendByIndex(i, EFriendFlags.k_EFriendFlagImmediate);
-
-                Friend friend = new Friend();
-                friend.id = id.m_SteamID;
-
-                string name = SteamFriends.GetPlayerNickname(id);
-                friend.displayName = ( name == null || name == "" ) ? SteamFriends.GetFriendPersonaName(id) : name;
-
-                int handle = SteamFriends.GetMediumFriendAvatar(id);
-                uint width = 0, height = 0;
-                if (handle != 0 && SteamUtils.GetImageSize(handle, out width, out height))
-                {
-                    byte[] pixels = new byte[width * height * 4];
-                    if ( SteamUtils.GetImageRGBA(handle, pixels, (int)(width * height * 4)) )
-                    {
-                        friend.avatar = new Texture2D(Game1.graphics.GraphicsDevice, (int) width, (int) height);
-                        friend.avatar.SetData(pixels);
-                    }
-                }
-
-                friends.Add(friend);
+                friends.Add( getFriendFromId( id ) );
             }
 
             return friends;
@@ -76,7 +58,48 @@ namespace StardewValleyMP.Platforms
         private Callback<P2PSessionRequest_t> sessReqCallback;
         private static void onP2PSessionRequest( P2PSessionRequest_t req )
         {
+            CSteamID other = req.m_steamIDRemote;
             Log.info("Got a P2P session request: " + req.m_steamIDRemote);
+
+            Friend match = null;
+            foreach ( Friend friend in IPlatform.instance.getFriends() )
+            {
+                if ( friend.id == other.m_SteamID )
+                {
+                    match = friend;
+                    break;
+                }
+            }
+
+            if ( match == null )
+            {
+                match = getFriendFromId(other);
+            }
+
+            IPlatform.instance.onFriendConnected(match, new SteamConnection(match));
+        }
+
+        private static Friend getFriendFromId( CSteamID id )
+        {
+            Friend friend = new Friend();
+            friend.id = id.m_SteamID;
+
+            string name = SteamFriends.GetPlayerNickname(id);
+            friend.displayName = (name == null || name == "") ? SteamFriends.GetFriendPersonaName(id) : name;
+
+            int handle = SteamFriends.GetMediumFriendAvatar(id);
+            uint width = 0, height = 0;
+            if (handle != 0 && SteamUtils.GetImageSize(handle, out width, out height))
+            {
+                byte[] pixels = new byte[width * height * 4];
+                if (SteamUtils.GetImageRGBA(handle, pixels, (int)(width * height * 4)))
+                {
+                    friend.avatar = new Texture2D(Game1.graphics.GraphicsDevice, (int)width, (int)height);
+                    friend.avatar.SetData(pixels);
+                }
+            }
+
+            return friend;
         }
     }
 }

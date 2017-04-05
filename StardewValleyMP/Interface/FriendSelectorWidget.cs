@@ -35,7 +35,7 @@ namespace StardewValleyMP.Interface
             this.w = w;
             this.h = h;
 
-            friends = false && online ? IPlatform.instance.getOnlineFriends() : IPlatform.instance.getFriends();
+            friends = online ? IPlatform.instance.getOnlineFriends() : IPlatform.instance.getFriends();
             if (friends.Count > 0)
             {
                 scrollbarBack = new Rectangle(x + w - Game1.pixelZoom * 6 - 16, y + 16, Game1.pixelZoom * 6, h - 28);
@@ -106,7 +106,8 @@ namespace StardewValleyMP.Interface
                         b.Draw(Util.WHITE_1X1, area, new Color(200, 32, 32, 64));
                         if ( justClicked )
                         {
-                            // DO STUFF
+                            Log.trace("Clicked on " + friend.displayName);
+
                         }
                     }
 
@@ -124,6 +125,8 @@ namespace StardewValleyMP.Interface
                 IClickableMenu.drawTextureBox(b, Game1.mouseCursors, new Rectangle(403, 383, 6, 6), scrollbarBack.X, scrollbarBack.Y, scrollbarBack.Width, scrollbarBack.Height, Color.DarkGoldenrod, (float)Game1.pixelZoom, false);
                 IClickableMenu.drawTextureBox(b, Game1.mouseCursors, new Rectangle(403, 383, 6, 6), scrollbar.X, scrollbar.Y, scrollbar.Width, scrollbar.Height, Color.Gold, (float)Game1.pixelZoom, false);
             }
+
+            justClicked = false;
         }
     }
 }

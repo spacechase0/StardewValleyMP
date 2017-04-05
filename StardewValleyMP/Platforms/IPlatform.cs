@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
 using StardewValley;
+using System;
+using StardewValleyMP.Connections;
 
 namespace StardewValleyMP.Platforms
 {
@@ -11,6 +13,8 @@ namespace StardewValleyMP.Platforms
 
         public abstract List<Friend> getFriends();
         public abstract List<Friend> getOnlineFriends();
+
+        public Action<Friend, IConnection> onFriendConnected;
 
         private static IPlatform makeCurrentPlatform()
         {
