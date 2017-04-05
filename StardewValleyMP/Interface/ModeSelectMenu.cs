@@ -219,7 +219,7 @@ namespace StardewValleyMP.Interface
 
         public override void update(GameTime time)
         {
-            if (!didModeSelect) return;
+            if (!didModeSelect || Multiplayer.problemStarting) return;
             if ( readyToLoad )
             {
                 Multiplayer.lobby = false;
