@@ -21,6 +21,7 @@ namespace StardewValleyMP.Platforms
             warningHook = new SteamAPIWarningMessageHook_t(onSteamWarning);
             SteamClient.SetWarningMessageHook(warningHook);
 
+            overlayCallback = Callback<GameOverlayActivated_t>.Create(onOverlay);
             sessReqCallback = Callback<P2PSessionRequest_t>.Create(onP2PSessionRequest);
             sessConnFailCallback = Callback<P2PSessionConnectFail_t>.Create(onP2PConnectionFail);
         }
@@ -88,6 +89,12 @@ namespace StardewValleyMP.Platforms
         private static void onSteamWarning( int sev, StringBuilder str )
         {
             Log.warn("[STEAM] " + str);
+        }
+
+        private static Callback<GameOverlayActivated_t> overlayCallback;
+        static void onOverlay(GameOverlayActivated_t t)
+        {
+            Log.trace("Steam overlay toggled.");
         }
 
         private Callback<P2PSessionRequest_t> sessReqCallback;
