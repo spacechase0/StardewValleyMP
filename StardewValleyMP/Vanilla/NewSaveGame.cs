@@ -107,7 +107,26 @@ namespace StardewValleyMP.Vanilla
                 Game1.ExitToTitle();
             }
 
-        ////////////////////////////////////////
+            ////////////////////////////////////////
+        
+            // Before other things we need to remove any player locations that aren't ours.
+            // These would exist from previous times that this file was used in MP, with different players.
+            List<GameLocation> toRemove = new List<GameLocation>();
+            foreach ( GameLocation loc in SaveGame.loaded.locations )
+            {
+                string name = loc.name;
+                if (!name.Contains('_')) continue;
+
+                string rawName = name.Substring(0, name.LastIndexOf('_'));
+                if ( Multiplayer.isPlayerUnique(rawName, true ) )
+                {
+                    Log.trace("Will remove " + name);
+                    toRemove.Add(loc);
+                }
+            }
+            SaveGame.loaded.locations.RemoveAll(loc => toRemove.Contains( loc ));
+            Log.debug("Removed " + toRemove.Count + " old locations");
+
         skipTo:
             Log.debug("Initial loading done");
             if (Multiplayer.mode == Mode.Host)
