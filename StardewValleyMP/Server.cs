@@ -158,11 +158,13 @@ namespace StardewValleyMP
         // Client management
         public List<Client> clients = new List<Client>();
 
-        public void addClient(IConnection socket)
+        public void addClient(IConnection socket, bool askResend = false)
         {
             Log.info("Got new client.");
 
             Client client = new Client(this, (byte)getPlayerCount(), socket);
+            if ( askResend )
+                client.send(new VersionPacket());
 
             client.update();
             while (client.stage == Client.NetStage.VerifyingVersion)

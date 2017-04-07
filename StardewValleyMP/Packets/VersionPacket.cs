@@ -22,8 +22,19 @@ namespace StardewValleyMP.Packets
             writer.Write(version);
         }
 
+        public override void process( Client client )
+        {
+            client.send(new VersionPacket());
+        }
+
         public override void process( Server server, Server.Client client )
         {
+            if (client.stage != Server.Client.NetStage.VerifyingVersion)
+            {
+                Log.debug("Got version packet at wrong stage");
+                return;
+            }
+
             if (version == Multiplayer.PROTOCOL_VERSION)
             {
                 client.stage = Server.Client.NetStage.WaitingForFarmerInfo;

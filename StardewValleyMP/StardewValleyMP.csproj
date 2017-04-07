@@ -76,6 +76,7 @@
   <ItemGroup>
     <Compile Include="Client.cs" />
     <Compile Include="Connections\PlatformConnection.cs" />
+    <Compile Include="Connections\SteamStream.cs" />
     <Compile Include="Interface\ChatMenu.cs" />
     <Compile Include="Connections\SteamConnection.cs" />
     <Compile Include="Events.cs" />

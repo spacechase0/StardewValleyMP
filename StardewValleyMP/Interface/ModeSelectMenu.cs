@@ -10,6 +10,8 @@ using SFarmer = StardewValley.Farmer;
 using StardewValleyMP.Platforms;
 using StardewValleyMP.Connections;
 using System.Collections.Generic;
+using System.IO;
+using StardewValleyMP.Packets;
 
 namespace StardewValleyMP.Interface
 {
@@ -33,6 +35,7 @@ namespace StardewValleyMP.Interface
 
         private bool showingFriends = false;
         private List< IConnection > pendingConns = new List< IConnection >();
+        private Client pendingClient = null;
 
         public ModeSelectMenu(string thePath) : base(Game1.viewport.Width / 2 - (1100 + IClickableMenu.borderWidth * 2) / 2, Game1.viewport.Height / 2 - (600 + IClickableMenu.borderWidth * 2) / 2, 1100 + IClickableMenu.borderWidth * 2, 600 + IClickableMenu.borderWidth * 2, false)
         {
@@ -47,6 +50,8 @@ namespace StardewValleyMP.Interface
         private bool justClicked = false;
         public override void receiveLeftClick(int x, int y, bool playSound = true)
         {
+            if (pendingClient != null) return;
+
             if ( showingFriends && pendingConns.Count == 0 )
             {
                 friends.leftClick(x, y);
@@ -176,6 +181,7 @@ namespace StardewValleyMP.Interface
 
         public override void releaseLeftClick(int x, int y)
         {
+            if (pendingClient != null) return;
             if ( showingFriends && pendingConns.Count == 0 )
             {
                 friends.leftRelease(x, y);
@@ -184,7 +190,8 @@ namespace StardewValleyMP.Interface
 
         public override void receiveRightClick(int x, int y, bool playSound = true)
         {
-            //*
+            if (pendingClient != null) return;
+            /*
             Friend f = new Friend();
             f.avatar = Util.WHITE_1X1;
             f.displayName = "TEST DUMMY";
@@ -195,6 +202,7 @@ namespace StardewValleyMP.Interface
 
         public override void receiveScrollWheelAction( int dir )
         {
+            if (pendingClient != null) return;
             if (showingFriends && pendingConns.Count == 0)
             {
                 friends.mouseScroll(dir);
@@ -227,9 +235,19 @@ namespace StardewValleyMP.Interface
 
         public override void update(GameTime time)
         {
+            if (pendingClient != null)
+            {
+                pendingClient.update();
+                if (pendingClient.id != 255)
+                    readyToLoad = true;
+                else return;
+            }
+
             if (!didModeSelect || Multiplayer.problemStarting) return;
             if ( readyToLoad )
             {
+                if (pendingClient != null)
+                    Multiplayer.client = pendingClient;
                 Multiplayer.lobby = false;
                 NewSaveGame.Load(path);
                 Game1.exitActiveMenu();
@@ -325,7 +343,7 @@ namespace StardewValleyMP.Interface
                     IClickableMenu.drawTextureBox(b, Game1.mouseCursors, new Rectangle(384, 373, 18, 18), x, y, w, h, new Rectangle(x, y, w, h).Contains(Game1.getOldMouseX(), Game1.getOldMouseY()) ? Color.Wheat : Color.White, (float)Game1.pixelZoom, true);
                     SpriteText.drawString(b, str, x + w / 2 - SpriteText.getWidthOfString(str) / 2, y + h / 2 - SpriteText.getHeightOfString(str) / 2);
                 }
-                else
+                else if ( pendingClient == null )
                 {
                     if (pendingConns.Count > 0)
                     {
@@ -389,7 +407,8 @@ namespace StardewValleyMP.Interface
                     if ( justClicked && new Rectangle(ix, iy, iw, ih).Contains( Game1.getMouseX(), Game1.getMouseY() ) )
                     {
                         Log.trace("Accepted " + ((PlatformConnection)pendingConns[0]).friend.displayName);
-                        // DO STUFF
+                        ((PlatformConnection)pendingConns[0]).accept();
+                        Multiplayer.server.addClient(pendingConns[0], true);
                         pendingConns.Remove(pendingConns[0]);
                     }
 
@@ -453,14 +472,7 @@ namespace StardewValleyMP.Interface
             if (modeInit == null && Multiplayer.mode == Mode.Client)
             {
                 IConnection conn = IPlatform.instance.connectToFriend(friend);
-                string msg = "Testing stuff";
-
-                byte[] bytes = new byte[msg.Length * sizeof(char)];
-                System.Buffer.BlockCopy(msg.ToCharArray(), 0, bytes, 0, bytes.Length);
-
-                bool b = Steamworks.SteamNetworking.SendP2PPacket(new Steamworks.CSteamID(friend.id), bytes, (uint)bytes.Length, Steamworks.EP2PSend.k_EP2PSendReliable);
-                Log.trace("Attempted send");
-                pendingConns.Add(conn);
+                pendingClient = new Client(conn);
             }
         }
 

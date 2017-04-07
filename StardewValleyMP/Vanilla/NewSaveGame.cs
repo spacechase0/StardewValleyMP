@@ -112,6 +112,7 @@ namespace StardewValleyMP.Vanilla
             Log.debug("Initial loading done");
             if (Multiplayer.mode == Mode.Host)
             {
+                Log.debug("Doing host loading stage");
                 foreach ( Server.Client client in Multiplayer.server.clients )
                 {
                     foreach ( KeyValuePair< string, GameLocation > pair in client.addDuringLoading )
@@ -126,6 +127,7 @@ namespace StardewValleyMP.Vanilla
             }
             else if (Multiplayer.mode == Mode.Client)
             {
+                Log.debug("Doing client loading stage, M.c=" + Multiplayer.client + " M.c.s=" + Multiplayer.client.stage);
                 while (Multiplayer.client != null && Multiplayer.client.stage != Client.NetStage.Waiting)
                 {
                     try
@@ -138,6 +140,8 @@ namespace StardewValleyMP.Vanilla
                         }
                         if (Multiplayer.client.stage == Client.NetStage.WaitingForID && Multiplayer.client.id != 255)
                         {
+                            Log.trace("Sending farmer data");
+
                             String xml = File.ReadAllText(str);
                             ClientFarmerDataPacket farmerData = new ClientFarmerDataPacket(xml);
                             Multiplayer.client.send(farmerData);
@@ -151,6 +155,7 @@ namespace StardewValleyMP.Vanilla
 
                 if ( Multiplayer.client == null )
                 {
+                    Log.debug("Client object disappeared, going to SP");
                     Multiplayer.mode = Mode.Singleplayer;
                 }
             }

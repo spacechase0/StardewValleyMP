@@ -122,6 +122,7 @@ namespace StardewValleyMP.Packets
             }
             //Log.Async("Got packet " + type);
             packet.read(reader);
+            Log.trace("<-- " + packet.id);
 
             return packet;
         }
@@ -131,6 +132,7 @@ namespace StardewValleyMP.Packets
         /// </summary>
         public int writeTo( Stream s )
         {
+            Log.trace("--> " + id);
             // Wrapped into a memory stream in order to figure out how many data was sent.
             using (MemoryStream ms = new MemoryStream())
             {

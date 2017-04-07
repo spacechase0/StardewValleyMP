@@ -25,6 +25,7 @@ namespace StardewValleyMP.Connections
 
         public abstract bool isConnected();
         public abstract void disconnect();
+        public abstract void accept();
 
         public abstract Stream getStream();
     }
