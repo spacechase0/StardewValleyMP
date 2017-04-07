@@ -143,8 +143,9 @@ namespace StardewValleyMP
         }
 
         private static NatDiscoverer disco;
-        private static Mapping portMap = new Mapping(Protocol.Tcp, 24464, 24464, 5 * 60 * 1000, "Stardew Valley");
+        private static Mapping portMap = new Mapping(Protocol.Tcp, 24644, 24644, 5 * 60, "StardewValleyMP");
         private static CancellationTokenSource canc;
+        private static List<NatDevice> devs = new List< NatDevice >();
         public async static void nattest(string str, string[] args)
         {
             if ( args.Length < 1 )
@@ -156,7 +157,7 @@ namespace StardewValleyMP
             if ( canc == null )
             {
                 canc = new CancellationTokenSource();
-                canc.CancelAfter(5000);
+                canc.CancelAfter(3000);
             }
 
             if ( args[ 0 ] == "discover" )
@@ -168,21 +169,70 @@ namespace StardewValleyMP
                 var devEnum = await disco.DiscoverDevicesAsync(PortMapper.Pmp | PortMapper.Upnp, canc);
                 foreach ( var dev in devEnum )
                 {
-                    Log.info("Found a device: " + dev);
-                    try
+                    Log.info("\t" + dev);
+                    devs.Add(dev);
+                }
+                Log.info("Done");
+            }
+            else if (args[0] == "devices" && args.Length == 2)
+            {
+                Log.info("Devices: ");
+                foreach (NatDevice dev in devs )
+                {
+                    Log.info("\t" + dev);
+                }
+            }
+            else if ( args[ 0 ] == "mappings" && args.Length == 2 )
+            {
+                try
+                {
+                    int index = int.Parse(args[1]);
+                    if ( index >= devs.Count )
                     {
-                        Log.info("Mappings: ");
-                        var mappings = await dev.GetAllMappingsAsync();
-                        foreach ( var mapping in mappings )
-                        {
-                            Log.info("\t" + mapping);
-                        }
+                        Log.info("Bad device");
+                        return;
                     }
-                    catch ( Exception e )
+                    NatDevice dev = devs[index];
+
+                    Log.info("Mappings: ");
+                    var mappings = await dev.GetAllMappingsAsync();
+                    foreach (var mapping in mappings)
                     {
-                        Log.error("Exception: " + e);
+                        Log.info("\t" + mapping);
                     }
                 }
+                catch (Exception e)
+                {
+                    Log.error("Exception: " + e);
+                }
+            }
+            else if ( args[ 0 ] == "map" && args.Length == 2 )
+            {
+                int index = int.Parse(args[1]);
+                if (index >= devs.Count)
+                {
+                    Log.info("Bad device");
+                    return;
+                }
+                NatDevice dev = devs[index];
+                
+                await dev.CreatePortMapAsync(portMap);
+
+                Log.info("Done.");
+            }
+            else if (args[0] == "unmap" && args.Length == 2)
+            {
+                int index = int.Parse(args[1]);
+                if (index >= devs.Count)
+                {
+                    Log.info("Bad device");
+                    return;
+                }
+                NatDevice dev = devs[index];
+
+                await dev.DeletePortMapAsync(portMap);
+
+                Log.info("Done.");
             }
             else
             {
