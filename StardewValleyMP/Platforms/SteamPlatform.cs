@@ -10,6 +10,7 @@ namespace StardewValleyMP.Platforms
 {
     public class SteamPlatform : IPlatform
     {
+        private static bool initSuccess = false;
         private static Dictionary<int, Texture2D> avatars = new Dictionary< int, Texture2D >();
         private static Dictionary<ulong, IConnection> conns = new Dictionary<ulong, IConnection>();
 
@@ -22,6 +23,7 @@ namespace StardewValleyMP.Platforms
                 IPlatform.instance = new DummyPlatform(); // I don't even know if this will work how I want it
                 return;
             }
+            initSuccess = true;
 
             warningHook = new SteamAPIWarningMessageHook_t(onSteamWarning);
             SteamClient.SetWarningMessageHook(warningHook);
@@ -47,6 +49,11 @@ namespace StardewValleyMP.Platforms
 
         public override void update()
         {
+            if ( !initSuccess )
+            {
+                IPlatform.instance = new DummyPlatform();
+                return;
+            }
             SteamAPI.RunCallbacks();
         }
 
