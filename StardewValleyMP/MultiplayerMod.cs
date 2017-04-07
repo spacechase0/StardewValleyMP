@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework.Input;
+using Open.Nat;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewValley;
@@ -7,6 +8,7 @@ using StardewValleyMP.Vanilla;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Threading;
 using System.Threading.Tasks;
 using SFarmer = StardewValley.Farmer;
 
@@ -29,14 +31,24 @@ namespace StardewValleyMP
             GraphicsEvents.OnPreRenderHudEvent += onPreDraw;
             LocationEvents.CurrentLocationChanged += onCurrentLocationChange;
             ControlEvents.KeyboardChanged += onKeyboardChange;
-            
+
             //GraphicsEvents.DrawDebug += Multiplayer.drawNetworkingDebug;
+
+            if (DEBUG)
+            {
+                Helper.ConsoleCommands.Add("nat", "", nattest);
+            }
 
             if (DEBUG)
             {
                 a = Assembly.GetAssembly(typeof(StardewValley.Game1));
                 Util.SetStaticField(a.GetType("StardewValley.Program"), "releaseBuild", false);
             }
+        }
+
+        ~MultiplayerMod()
+        {
+            NatDiscoverer.ReleaseAll();
         }
 
         private static IClickableMenu prevMenu = null;
@@ -127,6 +139,54 @@ namespace StardewValleyMP
             catch ( Exception e )
             {
                 Log.error("Exception during keyboard change: " + e);
+            }
+        }
+
+        private static NatDiscoverer disco;
+        private static Mapping portMap = new Mapping(Protocol.Tcp, 24464, 24464, 5 * 60 * 1000, "Stardew Valley");
+        private static CancellationTokenSource canc;
+        public async static void nattest(string str, string[] args)
+        {
+            if ( args.Length < 1 )
+            {
+                Log.error("No command given");
+                return;
+            }
+
+            if ( canc == null )
+            {
+                canc = new CancellationTokenSource();
+                canc.CancelAfter(5000);
+            }
+
+            if ( args[ 0 ] == "discover" )
+            {
+                if ( disco == null )
+                    disco = new NatDiscoverer();
+
+                Log.info("Starting discovery...");
+                var devEnum = await disco.DiscoverDevicesAsync(PortMapper.Pmp | PortMapper.Upnp, canc);
+                foreach ( var dev in devEnum )
+                {
+                    Log.info("Found a device: " + dev);
+                    try
+                    {
+                        Log.info("Mappings: ");
+                        var mappings = await dev.GetAllMappingsAsync();
+                        foreach ( var mapping in mappings )
+                        {
+                            Log.info("\t" + mapping);
+                        }
+                    }
+                    catch ( Exception e )
+                    {
+                        Log.error("Exception: " + e);
+                    }
+                }
+            }
+            else
+            {
+                Log.error("Bad command.");
             }
         }
     }
