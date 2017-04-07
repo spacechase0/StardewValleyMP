@@ -127,7 +127,6 @@ namespace StardewValleyMP.Vanilla
             }
             else if (Multiplayer.mode == Mode.Client)
             {
-                Log.debug("Doing client loading stage, M.c=" + Multiplayer.client + " M.c.s=" + Multiplayer.client.stage);
                 while (Multiplayer.client != null && Multiplayer.client.stage != Client.NetStage.Waiting)
                 {
                     try
