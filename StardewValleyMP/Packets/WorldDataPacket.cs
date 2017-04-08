@@ -283,7 +283,7 @@ namespace StardewValleyMP.Packets
             foreach ( GameLocation loc in mine.locations )
             {
                 foreach (NPC npc in loc.characters)
-                    if (npc.isVillager())
+                    if (npc.isVillager() && !dating.ContainsKey(npc.name))
                         dating.Add(npc.name, npc.datingFarmer);
                 if ( loc is BuildableGameLocation )
                 {
@@ -291,7 +291,7 @@ namespace StardewValleyMP.Packets
                     {
                         if (building.indoors == null) continue;
                         foreach (NPC npc in building.indoors.characters)
-                            if (npc.isVillager())
+                            if (npc.isVillager() && !dating.ContainsKey(npc.name))
                                 dating.Add(npc.name, npc.datingFarmer);
                     }
                 }
