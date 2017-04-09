@@ -1286,10 +1286,35 @@ namespace StardewValleyMP.Vanilla
                 //Log.Async("name:" + current.name + " " + current.Map);
                 try
                 {
-                    // Doesn't work for community center, but I don't see why I should implement visiting those
-                    if (current.name.Contains( '_' ) && current.Map == null)
+                    if (current.name.Contains( '_' ) && current.Map == null )
                     {
-                        current.Map = Game1.content.Load<Map>("Maps\\" + current.name.Substring(0, current.name.IndexOf('_')));
+                        if (current.name.StartsWith("CommunityCenter"))
+                        {
+                            CommunityCenter loc = (CommunityCenter)current;
+                            SFarmer farmer = Multiplayer.getFarmer(current.name.Substring(current.name.IndexOf('_') + 1));
+                            string cc = "Ruins";
+
+                            var warehouse = MultiplayerMod.instance.Helper.Reflection.GetPrivateField<bool>(loc, "warehouse");
+                            var refurbishedLoaded = MultiplayerMod.instance.Helper.Reflection.GetPrivateField<bool>(loc, "refurbishedLoaded");
+
+                            if ( farmer.mailReceived.Contains( "JojaMember" ) )
+                            {
+                                cc = "Joja";
+                                warehouse.SetValue(true);
+                                refurbishedLoaded.SetValue(true);
+                            }
+                            else if ( loc.areAllAreasComplete() && !refurbishedLoaded.GetValue() )
+                            {
+                                cc = "Refurbished";
+                                refurbishedLoaded.SetValue(true);
+                            }
+
+                            loc.map = Game1.game1.xTileContent.Load<Map>("Maps\\CommunityCenter_" + cc);
+                        }
+                        else
+                        {
+                            current.Map = Game1.content.Load<Map>("Maps\\" + current.name.Substring(0, current.name.IndexOf('_')));
+                        }
                     }
                 }
                 catch ( Exception e )

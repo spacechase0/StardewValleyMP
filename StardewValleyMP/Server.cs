@@ -206,6 +206,7 @@ namespace StardewValleyMP
 
             public string farmerXml = null;
             public SFarmer farmer = null;
+            public int farmType = -1;
 
             public IDictionary<string, GameLocation> addDuringLoading = new Dictionary<string, GameLocation>();
 

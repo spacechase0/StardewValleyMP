@@ -74,6 +74,7 @@ namespace StardewValleyMP.Packets
             client.farmerXml = Util.serialize<SFarmer>(theirs.player);
             client.farmer = theirs.player;
             client.farmer.uniqueMultiplayerID += 1 + client.id;
+            client.farmType = theirs.whichFarm;
 
             NewSaveGame.loadDataToFarmer(client.farmer);
             client.farmer.FarmerSprite.setOwner(client.farmer);
@@ -150,11 +151,11 @@ namespace StardewValleyMP.Packets
             }
 
             Log.debug("Adding: " + oldName + " -> " + loc.name + " (" + loc + ")");
-            if ( oldName != "FarmHouse" && oldName != "Cellar" )
+            /*if ( oldName != "FarmHouse" && oldName != "Cellar" )
             {
                 Log.error("READ THE BLOCK OF COMMENTS IN THE ABOVE FUNCTION");
                 return;
-            }
+            }*/
 
             bool found = false;
             for ( int i = 0; i < Game1.locations.Count; ++i )
@@ -185,13 +186,41 @@ namespace StardewValleyMP.Packets
                 // later anyways.
                 if ( oldName == "FarmHouse" )
                 {
-                    Map expr_214 = Game1.content.Load<Map>("Maps\\FarmHouse");
+                    Map expr_214 = Game1.game1.xTileContent.Load<Map>("Maps\\FarmHouse");
                     expr_214.LoadTileSheets(Game1.mapDisplayDevice);
                     Game1.locations.Add(new FarmHouse(expr_214, loc.name));
                 }
                 else if (oldName == "Cellar")
                 {
-                    Game1.locations.Add(new Cellar(Game1.content.Load<Map>("Maps\\Cellar"), loc.name));
+                    Game1.locations.Add(new Cellar(Game1.game1.xTileContent.Load<Map>("Maps\\Cellar"), loc.name));
+                }
+                else if ( Multiplayer.COOP && oldName == "Farm" )
+                {
+                    int farmType = ((Server.Client)extra).farmType;
+                    GameLocation newFarm = new Farm( Game1.game1.xTileContent.Load<Map>("Maps\\" + Farm.getMapNameFromTypeInt(farmType)), loc.name);
+                    if (farmType == 3)
+                    {
+                        for (int i = 0; i < 28; i++)
+                        {
+                            Game1.getFarm().doDailyMountainFarmUpdate();
+                        }
+                    }
+                }
+                else if (Multiplayer.COOP && oldName == "FarmCave")
+                {
+                    Game1.locations.Add(new FarmCave(Game1.game1.xTileContent.Load<Map>("Maps\\FarmCave"), loc.name));
+                }
+                else if (Multiplayer.COOP && oldName == "Greenhouse")
+                {
+                    Game1.locations.Add(new GameLocation(Game1.game1.xTileContent.Load<Map>("Maps\\Greenhouse"), loc.name));
+                }
+                else if (Multiplayer.COOP && oldName == "ArchaelogyHouse")
+                {
+                    Game1.locations.Add(new LibraryMuseum(Game1.game1.xTileContent.Load<Map>("Maps\\ArchaeologyHouse"), loc.name));
+                }
+                else if (Multiplayer.COOP && oldName == "CommunityCenter")
+                {
+                    Game1.locations.Add(new CommunityCenter(loc.name));
                 }
             }
 
