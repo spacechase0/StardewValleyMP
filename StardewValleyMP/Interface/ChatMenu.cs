@@ -73,6 +73,14 @@ namespace StardewValleyMP.Interface
                         string baseLoc = null;
                         if (Game1.player.currentLocation is StardewValley.Locations.FarmHouse) baseLoc = "FarmHouse";
                         if (Game1.player.currentLocation is StardewValley.Locations.Cellar) baseLoc = "Cellar";
+                        if (!Multiplayer.COOP)
+                        {
+                            if (Game1.player.currentLocation is StardewValley.Farm) baseLoc = "Farm";
+                            if (Game1.player.currentLocation is StardewValley.Locations.FarmCave) baseLoc = "FarmCave";
+                            if (Game1.player.currentLocation.name.StartsWith("Greenhouse")) baseLoc = "Greenhouse";
+                            if (Game1.player.currentLocation is StardewValley.Locations.LibraryMuseum) baseLoc = "ArchaelogyHouse";
+                            if (Game1.player.currentLocation is StardewValley.Locations.CommunityCenter) baseLoc = "CommunityCenter";
+                        }
 
                         if (baseLoc != null)
                         {
