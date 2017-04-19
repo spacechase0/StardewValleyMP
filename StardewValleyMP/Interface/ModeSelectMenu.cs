@@ -12,6 +12,8 @@ using StardewValleyMP.Connections;
 using System.Collections.Generic;
 using System.IO;
 using StardewValleyMP.Packets;
+using System.Net.NetworkInformation;
+using System.Net;
 
 namespace StardewValleyMP.Interface
 {
@@ -37,6 +39,8 @@ namespace StardewValleyMP.Interface
         private List< IConnection > pendingConns = new List< IConnection >();
         private Client pendingClient = null;
 
+        private string localIp, externalIp;
+
         public ModeSelectMenu(string thePath) : base(Game1.viewport.Width / 2 - (1100 + IClickableMenu.borderWidth * 2) / 2, Game1.viewport.Height / 2 - (600 + IClickableMenu.borderWidth * 2) / 2, 1100 + IClickableMenu.borderWidth * 2, 600 + IClickableMenu.borderWidth * 2, false)
         {
             path = thePath;
@@ -44,6 +48,41 @@ namespace StardewValleyMP.Interface
             {
                 friends = new FriendSelectorWidget( true, xPositionOnScreen + width / 5, 75, width / 5 * 3, 475 );
                 friends.onSelectFriend = new Action<Friend>(onFriendSelected);
+            }
+
+            try
+            {
+                NetworkInterface[] ints = NetworkInterface.GetAllNetworkInterfaces();
+                outer:
+                foreach ( var net in ints )
+                {
+                    IPInterfaceProperties ipProps = net.GetIPProperties();
+                    foreach (IPAddressInformation ip in ipProps.UnicastAddresses)
+                    {
+                        if (ip.Address.AddressFamily != System.Net.Sockets.AddressFamily.InterNetwork || IPAddress.IsLoopback(ip.Address))
+                            continue;
+
+                        localIp = ip.Address.ToString();
+                        break;
+                    }
+
+                    if (localIp != "")
+                        break;
+                }
+            }
+            catch ( Exception e )
+            {
+                Log.warn("Exception getting internal IP: " + e);
+                localIp = "n/a";
+            }
+            try
+            {
+                externalIp = new WebClient().DownloadString("http://ipinfo.io/ip").Trim();
+            }
+            catch (Exception e)
+            {
+                Log.warn("Exception getting external IP: " + e);
+                externalIp = "n/a";
             }
         }
 
@@ -428,6 +467,13 @@ namespace StardewValleyMP.Interface
                 {
                     int x = buttonX, y = buttonY1, w = buttonW, h = buttonH;
                     String str = "Start";
+
+                    Util.drawStr("Local IP: ", x, buttonY1, Color.White);
+                    Util.drawStr("External IP: ", x, buttonY1 + 35, Color.White);
+                    Util.drawStr("Port: ", x, buttonY1 + 70, Color.White);
+                    Util.drawStr(localIp, x + 200, buttonY1, Color.White);
+                    Util.drawStr(externalIp, x + 200, buttonY1 + 35, Color.White);
+                    Util.drawStr(Multiplayer.portStr, x + 200, buttonY1 + 70, Color.White);
 
                     /*Util.drawStr("Other players: ", x, buttonY1, Color.White);
                     foreach ( Server.Client client in Multiplayer.server.clients )
