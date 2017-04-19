@@ -53,7 +53,6 @@ namespace StardewValleyMP.Interface
             try
             {
                 NetworkInterface[] ints = NetworkInterface.GetAllNetworkInterfaces();
-                outer:
                 foreach ( var net in ints )
                 {
                     IPInterfaceProperties ipProps = net.GetIPProperties();
@@ -150,7 +149,7 @@ namespace StardewValleyMP.Interface
                         showingFriends = false;
                         Log.trace("Changing to network tab");
                     }
-                    else if (r2.Contains(x, y))
+                    else if (r2.Contains(x, y) && friends != null)
                     {
                         showingFriends = true;
                         Log.trace("Changing to friends tab");
