@@ -11,7 +11,6 @@ using StardewValleyMP.Platforms;
 using StardewValleyMP.Connections;
 using System.Collections.Generic;
 using System.IO;
-using StardewValleyMP.Packets;
 using System.Net.NetworkInformation;
 using System.Net;
 
@@ -19,7 +18,7 @@ namespace StardewValleyMP.Interface
 {
     public class ModeSelectMenu : IClickableMenu
     {
-        private string path;
+        public string path { get; private set; }
 
         public bool readyToLoad = false;
         public bool didModeSelect = false;
@@ -40,6 +39,19 @@ namespace StardewValleyMP.Interface
         private Client pendingClient = null;
 
         private bool showingLan = false;
+        private class LanEntry
+        {
+            public string name;
+            public IPEndPoint server;
+            public int port;
+            public LanEntry( string theName, IPEndPoint theServer, int thePort )
+            {
+                name = theName;
+                server = theServer;
+                port = thePort;
+            }
+        }
+        private List<LanEntry> lanEntries = new List< LanEntry >();
 
         private string localIp, externalIp;
 
@@ -85,6 +97,11 @@ namespace StardewValleyMP.Interface
                 Log.warn("Exception getting external IP: " + e);
                 externalIp = "n/a";
             }
+        }
+
+        ~ModeSelectMenu()
+        {
+            LanDiscovery.stop();
         }
 
         private bool justClicked = false;
@@ -164,6 +181,9 @@ namespace StardewValleyMP.Interface
                         showingFriends = false;
                         showingLan = true;
                         Log.trace("Changing to LAN tab");
+
+                        LanDiscovery.onDiscovery = new Action<string, IPEndPoint, int>(onDiscovery);
+                        LanDiscovery.startClient();
                     }
                 }
 
@@ -183,6 +203,10 @@ namespace StardewValleyMP.Interface
                     {
                         modeInit = new Thread(Multiplayer.startHost);
                         IPlatform.instance.onFriendConnected = new Action<Friend, PlatformConnection>(onFriendConnected);
+
+                        string name = Path.GetFileNameWithoutExtension(path);
+                        name = name.Substring(0, name.LastIndexOf('_'));
+                        LanDiscovery.startServer(name, int.Parse(portBox.Text));
                     }
                     else if (Multiplayer.mode == Mode.Client)
                     {
@@ -552,6 +576,21 @@ namespace StardewValleyMP.Interface
             {
                 pendingConns.Add(conn);
             }
+        }
+
+        private void onDiscovery( string name, IPEndPoint server, int port )
+        {
+            foreach ( var entry in lanEntries )
+            {
+                if ( entry.server == server && entry.port == port )
+                {
+                    Log.trace("Duplicate lan discovery");
+                    return;
+                }
+            }
+
+            Log.info("Found server on LAN: " + name + " @ " + server + ":" + port);
+            lanEntries.Add(new LanEntry(name, server, port));
         }
     }
 }
