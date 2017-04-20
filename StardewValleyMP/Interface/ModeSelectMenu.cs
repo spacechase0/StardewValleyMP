@@ -40,6 +40,9 @@ namespace StardewValleyMP.Interface
         private List< IConnection > pendingConns = new List< IConnection >();
         private Client pendingClient = null;
 
+        public bool allowFriends = MultiplayerMod.ModConfig.AllowFriends;
+        //public bool allowLan = MultiplayerMod.ModConfig.AllowLanDiscovery;
+
         private string localIp, externalIp;
 
         public ModeSelectMenu(string thePath) : base(Game1.viewport.Width / 2 - (1100 + IClickableMenu.borderWidth * 2) / 2, Game1.viewport.Height / 2 - (600 + IClickableMenu.borderWidth * 2) / 2, 1100 + IClickableMenu.borderWidth * 2, 600 + IClickableMenu.borderWidth * 2, false)
@@ -146,6 +149,14 @@ namespace StardewValleyMP.Interface
                         Log.trace("Changing to friends tab");
                     }
                 }
+                else if (Multiplayer.mode == Mode.Host)
+                {
+                    Rectangle r1 = new Rectangle(x, buttonY1 + 48, 64, 64);
+                    if ( r1.Contains( x, y ) )
+                    {
+                        allowFriends = !allowFriends;
+                    }
+                }
 
                 Multiplayer.problemStarting = false;
                 if (!showingFriends)
@@ -161,6 +172,8 @@ namespace StardewValleyMP.Interface
                     Multiplayer.portStr = portBox.Text;
                     if (Multiplayer.mode == Mode.Host)
                     {
+                        MultiplayerMod.ModConfig.AllowFriends = allowFriends;
+                        //MultiplayerMod.ModConfig.AllowLanDiscovery = allowLan;
                         modeInit = new Thread(Multiplayer.startHost);
                         IPlatform.instance.onFriendConnected = new Action<Friend, PlatformConnection>(onFriendConnected);
                     }
@@ -170,6 +183,7 @@ namespace StardewValleyMP.Interface
                         Multiplayer.ipStr = ipBox.Text;
                         modeInit = new Thread(Multiplayer.startClient);
                     }
+                    MultiplayerMod.instance.Helper.WriteConfig(MultiplayerMod.ModConfig);
                     modeInit.Start();
                     ChatMenu.chat.Clear();
                     ChatMenu.chat.Add(new ChatEntry(null, "NOTE: Chat doesn't work on the connection menu."));
@@ -343,6 +357,26 @@ namespace StardewValleyMP.Interface
                     b.DrawString(Game1.dialogueFont, "Friends", new Vector2(Game1.viewport.Width / 2 + 50 - 2, 20 - 0), (Color.Black) * 0.25f);
                     b.DrawString(Game1.dialogueFont, "Friends", new Vector2(Game1.viewport.Width / 2 + 50, 20), friends == null ? Color.Black : (showingFriends ? Color.OrangeRed : Color.SaddleBrown));
                 }
+                else if ( Multiplayer.mode == Mode.Host )
+                {
+                    Color gray = new Color(127, 127, 127);
+                    Color text = new Color(86, 22, 12);
+                    Color hover1 = Color.Wheat * 0.8f;
+                    Color hover2 = Color.DarkGoldenrod * 0.8f;
+                    hover1.A = hover2.A = 0xFF;
+
+                    String checkStr = "Allow direct friend connections";
+                    Rectangle r = new Rectangle(x, buttonY1 + 48, 64, 64);
+                    Vector2 pos = new Vector2(r.X + r.Width + 30, r.Y + (r.Height - Game1.dialogueFont.MeasureString(checkStr).Y) / 2);
+                    drawTextureBox(b, r.X, r.Y, r.Width, r.Height, r.Contains(Game1.getMousePosition()) ? hover1 : Color.White);
+                    if ( allowFriends )
+                        drawTextureBox(b, Game1.menuTexture, new Rectangle(0, 256, 60, 60), r.X + r.Width / 5, r.Y + r.Height / 5, r.Width / 8 * 5, r.Height / 8 * 5, r.Contains(Game1.getMousePosition()) ? hover2 : Color.DarkGoldenrod, 1, false);
+                    b.DrawString(Game1.dialogueFont, checkStr, pos + new Vector2( 0,  2), gray * 0.25f);
+                    b.DrawString(Game1.dialogueFont, checkStr, pos + new Vector2( 2,  0), gray * 0.25f);
+                    b.DrawString(Game1.dialogueFont, checkStr, pos + new Vector2( 0, -2), gray * 0.25f);
+                    b.DrawString(Game1.dialogueFont, checkStr, pos + new Vector2(-2,  0), gray * 0.25f);
+                    b.DrawString(Game1.dialogueFont, checkStr, pos, text);
+                }
 
                 if (!showingFriends)
                 {
@@ -514,6 +548,7 @@ namespace StardewValleyMP.Interface
 
         private void onFriendConnected(Friend friend, PlatformConnection conn)
         {
+            if (!allowFriends) return;
             Log.trace("onFriendConnected " + friend.displayName + " " + conn);
             if (modeInit != null && Multiplayer.mode == Mode.Host)
             {
