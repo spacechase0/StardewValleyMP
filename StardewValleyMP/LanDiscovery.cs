@@ -102,16 +102,14 @@ namespace StardewValleyMP
 
         public static void startClient()
         {
-            if (running) return;
+            if (!running)
+            {
+                thread = new Thread(() => runClient());
+                thread.Start();
+            }
 
-            thread = new Thread(() => runClient());
-            thread.Start();
-        }
-
-        private static void runClient()
-        {
             IPEndPoint addr = new IPEndPoint(IPAddress.Broadcast, DEFAULT_PORT_REQUEST);
-            client = new UdpClient();
+            UdpClient client = new UdpClient();
             client.Client.ExclusiveAddressUse = false;
 
             byte[] toSend = new byte[MAGIC.Length + 1];
@@ -122,7 +120,11 @@ namespace StardewValleyMP
             client.Send(toSend, toSend.Length, addr);
 
             client.Close();
-            addr = new IPEndPoint(IPAddress.Any, DEFAULT_PORT_RESPONSE);
+        }
+
+        private static void runClient()
+        {
+            IPEndPoint addr = new IPEndPoint(IPAddress.Any, DEFAULT_PORT_RESPONSE);
             client = new UdpClient();
             client.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
             client.Client.ExclusiveAddressUse = false;

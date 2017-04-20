@@ -81,6 +81,7 @@
     <Compile Include="Connections\SteamConnection.cs" />
     <Compile Include="Events.cs" />
     <Compile Include="Connections\IConnection.cs" />
+    <Compile Include="Interface\LanSelectorWidget.cs" />
     <Compile Include="Interface\FriendSelectorWidget.cs" />
     <Compile Include="LanDiscovery.cs" />
     <Compile Include="Platforms\Friend.cs" />

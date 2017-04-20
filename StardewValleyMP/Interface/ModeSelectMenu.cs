@@ -27,6 +27,7 @@ namespace StardewValleyMP.Interface
         private TextBox ipBox;
         private TextBox portBox;
         private FriendSelectorWidget friends;
+        private LanSelectorWidget lan;
         private int buttonX;
         private int buttonY1;
         private int buttonY2;
@@ -39,19 +40,6 @@ namespace StardewValleyMP.Interface
         private Client pendingClient = null;
 
         private bool showingLan = false;
-        private class LanEntry
-        {
-            public string name;
-            public IPEndPoint server;
-            public int port;
-            public LanEntry( string theName, IPEndPoint theServer, int thePort )
-            {
-                name = theName;
-                server = theServer;
-                port = thePort;
-            }
-        }
-        private List<LanEntry> lanEntries = new List< LanEntry >();
 
         private string localIp, externalIp;
 
@@ -63,6 +51,9 @@ namespace StardewValleyMP.Interface
                 friends = new FriendSelectorWidget( true, xPositionOnScreen + width / 5, 75, width / 5 * 3, 475 );
                 friends.onSelectFriend = new Action<Friend>(onFriendSelected);
             }
+
+            lan = new LanSelectorWidget(xPositionOnScreen + width / 5, 75, width / 5 * 3, 475);
+            lan.onEntrySelected = new Action<LanSelectorWidget.LanEntry>(onLanEntrySelected);
 
             try
             {
@@ -112,6 +103,10 @@ namespace StardewValleyMP.Interface
             if ( showingFriends && pendingConns.Count == 0 )
             {
                 friends.leftClick(x, y);
+            }
+            if ( showingLan )
+            {
+                lan.leftClick(x, y);
             }
 
             if (!didModeSelect)
@@ -176,14 +171,13 @@ namespace StardewValleyMP.Interface
                         showingLan = false;
                         Log.trace("Changing to friends tab");
                     }
-                    else if ( r3.Contains(x, y))
+                    else if (r3.Contains(x, y))
                     {
                         showingFriends = false;
                         showingLan = true;
                         Log.trace("Changing to LAN tab");
 
-                        LanDiscovery.onDiscovery = new Action<string, IPEndPoint, int>(onDiscovery);
-                        LanDiscovery.startClient();
+                        lan.start();
                     }
                 }
 
@@ -195,7 +189,7 @@ namespace StardewValleyMP.Interface
                 }
 
                 Rectangle r = new Rectangle(buttonX, buttonY3 + buttonH, buttonW, buttonH);
-                if (r.Contains(x, y) && !showingFriends)
+                if (r.Contains(x, y) && !showingFriends && !showingLan)
                 {
                     MultiplayerMod.ModConfig.DefaultPort = portBox.Text;
                     Multiplayer.portStr = portBox.Text;
@@ -259,6 +253,10 @@ namespace StardewValleyMP.Interface
             {
                 friends.leftRelease(x, y);
             }
+            if ( showingLan )
+            {
+                lan.leftRelease(x, y);
+            }
         }
 
         public override void receiveRightClick(int x, int y, bool playSound = true)
@@ -279,6 +277,10 @@ namespace StardewValleyMP.Interface
             if (showingFriends && pendingConns.Count == 0)
             {
                 friends.mouseScroll(dir);
+            }
+            if ( showingLan )
+            {
+                lan.mouseScroll(dir);
             }
         }
 
@@ -334,7 +336,7 @@ namespace StardewValleyMP.Interface
                 if (showingFriends && friends != null)
                     friends.update(time);
                 else if (showingLan)
-                    ;
+                    lan.update(time);
             }
         }
 
@@ -392,7 +394,7 @@ namespace StardewValleyMP.Interface
                     b.DrawString(Game1.dialogueFont, "LAN", new Vector2(Game1.viewport.Width / 4 * 3 - 100 + 2, 20 + 0), (Color.Black) * 0.25f);
                     b.DrawString(Game1.dialogueFont, "LAN", new Vector2(Game1.viewport.Width / 4 * 3 - 100 + 0, 20 - 2), (Color.Black) * 0.25f);
                     b.DrawString(Game1.dialogueFont, "LAN", new Vector2(Game1.viewport.Width / 4 * 3 - 100 - 2, 20 - 0), (Color.Black) * 0.25f);
-                    b.DrawString(Game1.dialogueFont, "LAN", new Vector2(Game1.viewport.Width / 4 * 3 - 100, 20), friends == null ? Color.Black : (showingLan ? Color.OrangeRed : Color.SaddleBrown));
+                    b.DrawString(Game1.dialogueFont, "LAN", new Vector2(Game1.viewport.Width / 4 * 3 - 100, 20), showingLan ? Color.OrangeRed : Color.SaddleBrown);
                 }
 
                 if (showingFriends)
@@ -421,6 +423,7 @@ namespace StardewValleyMP.Interface
                 }
                 else if (showingLan)
                 {
+                    lan.draw(b);
                 }
                 else
                 {
@@ -578,19 +581,17 @@ namespace StardewValleyMP.Interface
             }
         }
 
-        private void onDiscovery( string name, IPEndPoint server, int port )
+        private void onLanEntrySelected(LanSelectorWidget.LanEntry entry)
         {
-            foreach ( var entry in lanEntries )
-            {
-                if ( entry.server == server && entry.port == port )
-                {
-                    Log.trace("Duplicate lan discovery");
-                    return;
-                }
-            }
+            Log.info("Selected LAN entry: " + entry.name + " @ " + entry.server.Address + ":" + entry.port);
 
-            Log.info("Found server on LAN: " + name + " @ " + server + ":" + port);
-            lanEntries.Add(new LanEntry(name, server, port));
+            Multiplayer.portStr = portBox.Text;
+            Multiplayer.ipStr = ipBox.Text;
+            modeInit = new Thread(Multiplayer.startClient);
+            modeInit.Start();
+
+            ChatMenu.chat.Clear();
+            ChatMenu.chat.Add(new ChatEntry(null, "NOTE: Chat doesn't work on the connection menu."));
         }
     }
 }
