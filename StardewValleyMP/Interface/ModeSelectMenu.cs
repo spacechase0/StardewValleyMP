@@ -39,6 +39,8 @@ namespace StardewValleyMP.Interface
         private List< IConnection > pendingConns = new List< IConnection >();
         private Client pendingClient = null;
 
+        private bool showingLan = false;
+
         private string localIp, externalIp;
 
         public ModeSelectMenu(string thePath) : base(Game1.viewport.Width / 2 - (1100 + IClickableMenu.borderWidth * 2) / 2, Game1.viewport.Height / 2 - (600 + IClickableMenu.borderWidth * 2) / 2, 1100 + IClickableMenu.borderWidth * 2, 600 + IClickableMenu.borderWidth * 2, false)
@@ -141,23 +143,32 @@ namespace StardewValleyMP.Interface
             {
                 if (Multiplayer.mode == Mode.Client)
                 {
-                    Rectangle r1 = new Rectangle(Game1.viewport.Width / 2 - SpriteText.getWidthOfString("Network") - 50, 20, SpriteText.getWidthOfString("Network"), SpriteText.getHeightOfString("Network"));
-                    Rectangle r2 = new Rectangle(Game1.viewport.Width / 2 + 50, 20, SpriteText.getWidthOfString("Friends"), SpriteText.getHeightOfString("Friends"));
+                    Rectangle r1 = new Rectangle(Game1.viewport.Width / 4, 20, SpriteText.getWidthOfString("Network"), SpriteText.getHeightOfString("Network"));
+                    Rectangle r2 = new Rectangle(Game1.viewport.Width / 2 - 50, 20, SpriteText.getWidthOfString("Friends"), SpriteText.getHeightOfString("Friends"));
+                    Rectangle r3 = new Rectangle(Game1.viewport.Width / 4 * 3 - 100, 20, SpriteText.getWidthOfString("LAN"), SpriteText.getHeightOfString("LAN"));
 
                     if (r1.Contains(x, y))
                     {
                         showingFriends = false;
+                        showingLan = false;
                         Log.trace("Changing to network tab");
                     }
                     else if (r2.Contains(x, y) && friends != null)
                     {
                         showingFriends = true;
+                        showingLan = false;
                         Log.trace("Changing to friends tab");
+                    }
+                    else if ( r3.Contains(x, y))
+                    {
+                        showingFriends = false;
+                        showingLan = true;
+                        Log.trace("Changing to LAN tab");
                     }
                 }
 
                 Multiplayer.problemStarting = false;
-                if (!showingFriends)
+                if (!showingFriends && !showingLan)
                 {
                     if (ipBox != null) ipBox.Update();
                     if (portBox != null) portBox.Update();
@@ -296,8 +307,10 @@ namespace StardewValleyMP.Interface
             }
             else if ( modeInit == null && Multiplayer.mode == Mode.Client )
             {
-                if (friends != null)
+                if (showingFriends && friends != null)
                     friends.update(time);
+                else if (showingLan)
+                    ;
             }
         }
 
@@ -341,19 +354,51 @@ namespace StardewValleyMP.Interface
                     SpriteText.drawString(b, "Friends", Game1.viewport.Width / 2 + 50, 20,
                         999999, -1, 999999, 1, 0.88f, false, -1, "", friends == null ? 0 : (showingFriends ? 5 : -1));*/
 
-                    b.DrawString(Game1.dialogueFont, "Network", new Vector2(Game1.viewport.Width / 2 - Game1.dialogueFont.MeasureString("Network").X - 50+0, 20+2), (Color.Black)*0.25f);
-                    b.DrawString(Game1.dialogueFont, "Network", new Vector2(Game1.viewport.Width / 2 - Game1.dialogueFont.MeasureString("Network").X - 50+2, 20+0), (Color.Black) *0.25f);
-                    b.DrawString(Game1.dialogueFont, "Network", new Vector2(Game1.viewport.Width / 2 - Game1.dialogueFont.MeasureString("Network").X - 50+0, 20-2), (Color.Black) *0.25f);
-                    b.DrawString(Game1.dialogueFont, "Network", new Vector2(Game1.viewport.Width / 2 - Game1.dialogueFont.MeasureString("Network").X - 50-2, 20-0), (Color.Black) *0.25f);
-                    b.DrawString(Game1.dialogueFont, "Network", new Vector2(Game1.viewport.Width / 2 - Game1.dialogueFont.MeasureString("Network").X - 50, 20), (showingFriends ? Color.SaddleBrown : Color.OrangeRed));
-                    b.DrawString(Game1.dialogueFont, "Friends", new Vector2(Game1.viewport.Width / 2 + 50 + 0, 20 + 2), (Color.Black) * 0.25f);
-                    b.DrawString(Game1.dialogueFont, "Friends", new Vector2(Game1.viewport.Width / 2 + 50 + 2, 20 + 0), (Color.Black) * 0.25f);
-                    b.DrawString(Game1.dialogueFont, "Friends", new Vector2(Game1.viewport.Width / 2 + 50 + 0, 20 - 2), (Color.Black) * 0.25f);
-                    b.DrawString(Game1.dialogueFont, "Friends", new Vector2(Game1.viewport.Width / 2 + 50 - 2, 20 - 0), (Color.Black) * 0.25f);
-                    b.DrawString(Game1.dialogueFont, "Friends", new Vector2(Game1.viewport.Width / 2 + 50, 20), friends == null ? Color.Black : (showingFriends ? Color.OrangeRed : Color.SaddleBrown));
+                    b.DrawString(Game1.dialogueFont, "Network", new Vector2(Game1.viewport.Width / 4 +0, 20+2), (Color.Black)*0.25f);
+                    b.DrawString(Game1.dialogueFont, "Network", new Vector2(Game1.viewport.Width / 4 +2, 20+0), (Color.Black) *0.25f);
+                    b.DrawString(Game1.dialogueFont, "Network", new Vector2(Game1.viewport.Width / 4 +0, 20-2), (Color.Black) *0.25f);
+                    b.DrawString(Game1.dialogueFont, "Network", new Vector2(Game1.viewport.Width / 4 -2, 20-0), (Color.Black) *0.25f);
+                    b.DrawString(Game1.dialogueFont, "Network", new Vector2(Game1.viewport.Width / 4, 20), (!showingFriends && !showingLan ? Color.OrangeRed : Color.SaddleBrown));
+                    b.DrawString(Game1.dialogueFont, "Friends", new Vector2(Game1.viewport.Width / 2 - 50 + 0, 20 + 2), (Color.Black) * 0.25f);
+                    b.DrawString(Game1.dialogueFont, "Friends", new Vector2(Game1.viewport.Width / 2 - 50 + 2, 20 + 0), (Color.Black) * 0.25f);
+                    b.DrawString(Game1.dialogueFont, "Friends", new Vector2(Game1.viewport.Width / 2 - 50 + 0, 20 - 2), (Color.Black) * 0.25f);
+                    b.DrawString(Game1.dialogueFont, "Friends", new Vector2(Game1.viewport.Width / 2 - 50 - 2, 20 - 0), (Color.Black) * 0.25f);
+                    b.DrawString(Game1.dialogueFont, "Friends", new Vector2(Game1.viewport.Width / 2 - 50, 20), friends == null ? Color.Black : (showingFriends ? Color.OrangeRed : Color.SaddleBrown));
+                    b.DrawString(Game1.dialogueFont, "LAN", new Vector2(Game1.viewport.Width / 4 * 3 - 100 + 0, 20 + 2), (Color.Black) * 0.25f);
+                    b.DrawString(Game1.dialogueFont, "LAN", new Vector2(Game1.viewport.Width / 4 * 3 - 100 + 2, 20 + 0), (Color.Black) * 0.25f);
+                    b.DrawString(Game1.dialogueFont, "LAN", new Vector2(Game1.viewport.Width / 4 * 3 - 100 + 0, 20 - 2), (Color.Black) * 0.25f);
+                    b.DrawString(Game1.dialogueFont, "LAN", new Vector2(Game1.viewport.Width / 4 * 3 - 100 - 2, 20 - 0), (Color.Black) * 0.25f);
+                    b.DrawString(Game1.dialogueFont, "LAN", new Vector2(Game1.viewport.Width / 4 * 3 - 100, 20), friends == null ? Color.Black : (showingLan ? Color.OrangeRed : Color.SaddleBrown));
                 }
 
-                if (!showingFriends)
+                if (showingFriends)
+                {
+                    if (pendingClient == null)
+                    {
+                        if (pendingConns.Count > 0)
+                        {
+                            PlatformConnection conn = (PlatformConnection)pendingConns[0];
+                            Friend friend = conn.friend;
+
+                            int ix = xPositionOnScreen + width / 5;
+                            int iw = width / 5 * 3;
+                            int ih = 80 * 2 + 64;
+                            int iy = (Game1.viewport.Height - ih) / 2;
+
+                            IClickableMenu.drawTextureBox(b, Game1.mouseCursors, new Rectangle(384, 373, 18, 18), ix, iy, iw, ih, Color.White, (float)Game1.pixelZoom, true);
+                            ix += 32;
+                            iy += 32;
+                            b.Draw(friend.avatar, new Rectangle(ix, iy, 64, 64), Color.White);
+                            SpriteText.drawString(b, friend.displayName, ix + 88, iy + 8);
+                            SpriteText.drawString(b, "Connecting...", ix + 32, iy + 96);
+                        }
+                        else friends.draw(b);
+                    }
+                }
+                else if (showingLan)
+                {
+                }
+                else
                 {
                     Color gray = new Color(127, 127, 127);
                     Color text = new Color(86, 22, 12);
@@ -380,27 +425,6 @@ namespace StardewValleyMP.Interface
 
                     IClickableMenu.drawTextureBox(b, Game1.mouseCursors, new Rectangle(384, 373, 18, 18), x, y, w, h, new Rectangle(x, y, w, h).Contains(Game1.getOldMouseX(), Game1.getOldMouseY()) ? Color.Wheat : Color.White, (float)Game1.pixelZoom, true);
                     SpriteText.drawString(b, str, x + w / 2 - SpriteText.getWidthOfString(str) / 2, y + h / 2 - SpriteText.getHeightOfString(str) / 2);
-                }
-                else if ( pendingClient == null )
-                {
-                    if (pendingConns.Count > 0)
-                    {
-                        PlatformConnection conn = (PlatformConnection)pendingConns[0];
-                        Friend friend = conn.friend;
-
-                        int ix = xPositionOnScreen + width / 5;
-                        int iw = width / 5 * 3;
-                        int ih = 80 * 2 + 64;
-                        int iy = (Game1.viewport.Height - ih) / 2;
-
-                        IClickableMenu.drawTextureBox(b, Game1.mouseCursors, new Rectangle(384, 373, 18, 18), ix, iy, iw, ih, Color.White, (float)Game1.pixelZoom, true);
-                        ix += 32;
-                        iy += 32;
-                        b.Draw(friend.avatar, new Rectangle(ix, iy, 64, 64), Color.White);
-                        SpriteText.drawString(b, friend.displayName, ix + 88, iy + 8);
-                        SpriteText.drawString(b, "Connecting...", ix + 32, iy + 96);
-                    }
-                    else friends.draw(b);
                 }
             }
             else if (Multiplayer.problemStarting)
