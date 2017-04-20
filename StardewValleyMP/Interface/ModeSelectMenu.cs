@@ -14,6 +14,7 @@ using System.IO;
 using StardewValleyMP.Packets;
 using System.Net.NetworkInformation;
 using System.Net;
+using System.Net.Sockets;
 
 namespace StardewValleyMP.Interface
 {
@@ -52,21 +53,11 @@ namespace StardewValleyMP.Interface
 
             try
             {
-                NetworkInterface[] ints = NetworkInterface.GetAllNetworkInterfaces();
-                foreach ( var net in ints )
+                // http://stackoverflow.com/a/27376368
+                using (Socket socket = new Socket(System.Net.Sockets.AddressFamily.InterNetwork, SocketType.Dgram, 0))
                 {
-                    IPInterfaceProperties ipProps = net.GetIPProperties();
-                    foreach (IPAddressInformation ip in ipProps.UnicastAddresses)
-                    {
-                        if (ip.Address.AddressFamily != System.Net.Sockets.AddressFamily.InterNetwork || IPAddress.IsLoopback(ip.Address))
-                            continue;
-
-                        localIp = ip.Address.ToString();
-                        break;
-                    }
-
-                    if (localIp != "")
-                        break;
+                    socket.Connect("8.8.8.8", 65530);
+                    localIp = (socket.LocalEndPoint as IPEndPoint).Address.ToString();
                 }
             }
             catch ( Exception e )
