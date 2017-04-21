@@ -1,4 +1,5 @@
 ﻿using StardewValley;
+using StardewValley.Quests;
 using StardewValleyMP.Connections;
 using StardewValleyMP.Interface;
 using StardewValleyMP.Packets;
@@ -119,6 +120,11 @@ namespace StardewValleyMP
 			        });
             String xml = File.ReadAllText(worldPath);*/
             MemoryStream tmp = new MemoryStream();
+            foreach ( var quest in SaveGame.loaded.player.questLog)
+            {
+                if (quest is SlayMonsterQuest)
+                    (quest as SlayMonsterQuest).loadQuestInfo();
+            }
             SaveGame.serializer.Serialize(tmp, SaveGame.loaded);
             WorldDataPacket world = new WorldDataPacket(Encoding.UTF8.GetString(tmp.ToArray()));
 
