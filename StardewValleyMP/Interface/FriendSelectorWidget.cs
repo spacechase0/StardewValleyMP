@@ -93,7 +93,8 @@ namespace StardewValleyMP.Interface
             b.End();
             b.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, null,
                     new RasterizerState() { ScissorTestEnable = true } );
-            b.GraphicsDevice.ScissorRectangle = new Rectangle(x + 24, y + 20, scrollbarBack.Left - (x + 24), h - 36);
+            if ( friends.Count > 0 )
+                b.GraphicsDevice.ScissorRectangle = new Rectangle(x + 24, y + 20, scrollbarBack.Left - (x + 24), h - 36);
             {
                 int si = scroll / -80;
                 for (int i = Math.Max(0, si - 1); i < Math.Min(friends.Count, si + h / 80 + 1); ++i)
