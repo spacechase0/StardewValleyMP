@@ -11,7 +11,6 @@ using StardewValleyMP.Platforms;
 using StardewValleyMP.Connections;
 using System.Collections.Generic;
 using System.IO;
-using StardewValleyMP.Packets;
 using System.Net.NetworkInformation;
 using System.Net;
 using System.Net.Sockets;
@@ -20,7 +19,7 @@ namespace StardewValleyMP.Interface
 {
     public class ModeSelectMenu : IClickableMenu
     {
-        private string path;
+        public string path { get; private set; }
 
         public bool readyToLoad = false;
         public bool didModeSelect = false;
@@ -29,6 +28,7 @@ namespace StardewValleyMP.Interface
         private TextBox ipBox;
         private TextBox portBox;
         private FriendSelectorWidget friends;
+        private LanSelectorWidget lan;
         private int buttonX;
         private int buttonY1;
         private int buttonY2;
@@ -39,9 +39,11 @@ namespace StardewValleyMP.Interface
         private bool showingFriends = false;
         private List< IConnection > pendingConns = new List< IConnection >();
         private Client pendingClient = null;
-
+        
         public bool allowFriends = MultiplayerMod.ModConfig.AllowFriends;
         //public bool allowLan = MultiplayerMod.ModConfig.AllowLanDiscovery;
+
+        private bool showingLan = false;
 
         private string localIp, externalIp;
 
@@ -53,6 +55,9 @@ namespace StardewValleyMP.Interface
                 friends = new FriendSelectorWidget( true, xPositionOnScreen + width / 5, 75, width / 5 * 3, 475 );
                 friends.onSelectFriend = new Action<Friend>(onFriendSelected);
             }
+
+            lan = new LanSelectorWidget(xPositionOnScreen + width / 5, 75, width / 5 * 3, 475);
+            lan.onEntrySelected = new Action<LanSelectorWidget.LanEntry>(onLanEntrySelected);
 
             try
             {
@@ -79,6 +84,11 @@ namespace StardewValleyMP.Interface
             }
         }
 
+        ~ModeSelectMenu()
+        {
+            LanDiscovery.stop();
+        }
+
         private bool justClicked = false;
         public override void receiveLeftClick(int x, int y, bool playSound = true)
         {
@@ -87,6 +97,10 @@ namespace StardewValleyMP.Interface
             if ( showingFriends && pendingConns.Count == 0 )
             {
                 friends.leftClick(x, y);
+            }
+            if ( showingLan )
+            {
+                lan.leftClick(x, y);
             }
 
             if (!didModeSelect)
@@ -135,18 +149,29 @@ namespace StardewValleyMP.Interface
             {
                 if (Multiplayer.mode == Mode.Client)
                 {
-                    Rectangle r1 = new Rectangle(Game1.viewport.Width / 2 - SpriteText.getWidthOfString("Network") - 50, 20, SpriteText.getWidthOfString("Network"), SpriteText.getHeightOfString("Network"));
-                    Rectangle r2 = new Rectangle(Game1.viewport.Width / 2 + 50, 20, SpriteText.getWidthOfString("Friends"), SpriteText.getHeightOfString("Friends"));
+                    Rectangle r1 = new Rectangle(Game1.viewport.Width / 4, 20, SpriteText.getWidthOfString("Network"), SpriteText.getHeightOfString("Network"));
+                    Rectangle r2 = new Rectangle(Game1.viewport.Width / 2 - 50, 20, SpriteText.getWidthOfString("Friends"), SpriteText.getHeightOfString("Friends"));
+                    Rectangle r3 = new Rectangle(Game1.viewport.Width / 4 * 3 - 100, 20, SpriteText.getWidthOfString("LAN"), SpriteText.getHeightOfString("LAN"));
 
                     if (r1.Contains(x, y))
                     {
                         showingFriends = false;
+                        showingLan = false;
                         Log.trace("Changing to network tab");
                     }
                     else if (r2.Contains(x, y) && friends != null)
                     {
                         showingFriends = true;
+                        showingLan = false;
                         Log.trace("Changing to friends tab");
+                    }
+                    else if (r3.Contains(x, y))
+                    {
+                        showingFriends = false;
+                        showingLan = true;
+                        Log.trace("Changing to LAN tab");
+
+                        lan.start();
                     }
                 }
                 else if (Multiplayer.mode == Mode.Host)
@@ -159,14 +184,14 @@ namespace StardewValleyMP.Interface
                 }
 
                 Multiplayer.problemStarting = false;
-                if (!showingFriends)
+                if (!showingFriends && !showingLan)
                 {
                     if (ipBox != null) ipBox.Update();
                     if (portBox != null) portBox.Update();
                 }
 
                 Rectangle r = new Rectangle(buttonX, buttonY3 + buttonH, buttonW, buttonH);
-                if (r.Contains(x, y) && !showingFriends)
+                if (r.Contains(x, y) && !showingFriends && !showingLan)
                 {
                     MultiplayerMod.ModConfig.DefaultPort = portBox.Text;
                     Multiplayer.portStr = portBox.Text;
@@ -176,6 +201,10 @@ namespace StardewValleyMP.Interface
                         //MultiplayerMod.ModConfig.AllowLanDiscovery = allowLan;
                         modeInit = new Thread(Multiplayer.startHost);
                         IPlatform.instance.onFriendConnected = new Action<Friend, PlatformConnection>(onFriendConnected);
+
+                        string name = Path.GetFileNameWithoutExtension(path);
+                        name = name.Substring(0, name.LastIndexOf('_'));
+                        LanDiscovery.startServer(name, int.Parse(portBox.Text));
                     }
                     else if (Multiplayer.mode == Mode.Client)
                     {
@@ -229,6 +258,10 @@ namespace StardewValleyMP.Interface
             {
                 friends.leftRelease(x, y);
             }
+            if ( showingLan )
+            {
+                lan.leftRelease(x, y);
+            }
         }
 
         public override void receiveRightClick(int x, int y, bool playSound = true)
@@ -249,6 +282,10 @@ namespace StardewValleyMP.Interface
             if (showingFriends && pendingConns.Count == 0)
             {
                 friends.mouseScroll(dir);
+            }
+            if ( showingLan )
+            {
+                lan.mouseScroll(dir);
             }
         }
 
@@ -301,8 +338,10 @@ namespace StardewValleyMP.Interface
             }
             else if ( modeInit == null && Multiplayer.mode == Mode.Client )
             {
-                if (friends != null)
+                if (showingFriends && friends != null)
                     friends.update(time);
+                else if (showingLan)
+                    lan.update(time);
             }
         }
 
@@ -346,16 +385,21 @@ namespace StardewValleyMP.Interface
                     SpriteText.drawString(b, "Friends", Game1.viewport.Width / 2 + 50, 20,
                         999999, -1, 999999, 1, 0.88f, false, -1, "", friends == null ? 0 : (showingFriends ? 5 : -1));*/
 
-                    b.DrawString(Game1.dialogueFont, "Network", new Vector2(Game1.viewport.Width / 2 - Game1.dialogueFont.MeasureString("Network").X - 50+0, 20+2), (Color.Black)*0.25f);
-                    b.DrawString(Game1.dialogueFont, "Network", new Vector2(Game1.viewport.Width / 2 - Game1.dialogueFont.MeasureString("Network").X - 50+2, 20+0), (Color.Black) *0.25f);
-                    b.DrawString(Game1.dialogueFont, "Network", new Vector2(Game1.viewport.Width / 2 - Game1.dialogueFont.MeasureString("Network").X - 50+0, 20-2), (Color.Black) *0.25f);
-                    b.DrawString(Game1.dialogueFont, "Network", new Vector2(Game1.viewport.Width / 2 - Game1.dialogueFont.MeasureString("Network").X - 50-2, 20-0), (Color.Black) *0.25f);
-                    b.DrawString(Game1.dialogueFont, "Network", new Vector2(Game1.viewport.Width / 2 - Game1.dialogueFont.MeasureString("Network").X - 50, 20), (showingFriends ? Color.SaddleBrown : Color.OrangeRed));
-                    b.DrawString(Game1.dialogueFont, "Friends", new Vector2(Game1.viewport.Width / 2 + 50 + 0, 20 + 2), (Color.Black) * 0.25f);
-                    b.DrawString(Game1.dialogueFont, "Friends", new Vector2(Game1.viewport.Width / 2 + 50 + 2, 20 + 0), (Color.Black) * 0.25f);
-                    b.DrawString(Game1.dialogueFont, "Friends", new Vector2(Game1.viewport.Width / 2 + 50 + 0, 20 - 2), (Color.Black) * 0.25f);
-                    b.DrawString(Game1.dialogueFont, "Friends", new Vector2(Game1.viewport.Width / 2 + 50 - 2, 20 - 0), (Color.Black) * 0.25f);
-                    b.DrawString(Game1.dialogueFont, "Friends", new Vector2(Game1.viewport.Width / 2 + 50, 20), friends == null ? Color.Black : (showingFriends ? Color.OrangeRed : Color.SaddleBrown));
+                    b.DrawString(Game1.dialogueFont, "Network", new Vector2(Game1.viewport.Width / 4 +0, 20+2), (Color.Black)*0.25f);
+                    b.DrawString(Game1.dialogueFont, "Network", new Vector2(Game1.viewport.Width / 4 +2, 20+0), (Color.Black) *0.25f);
+                    b.DrawString(Game1.dialogueFont, "Network", new Vector2(Game1.viewport.Width / 4 +0, 20-2), (Color.Black) *0.25f);
+                    b.DrawString(Game1.dialogueFont, "Network", new Vector2(Game1.viewport.Width / 4 -2, 20-0), (Color.Black) *0.25f);
+                    b.DrawString(Game1.dialogueFont, "Network", new Vector2(Game1.viewport.Width / 4, 20), (!showingFriends && !showingLan ? Color.OrangeRed : Color.SaddleBrown));
+                    b.DrawString(Game1.dialogueFont, "Friends", new Vector2(Game1.viewport.Width / 2 - 50 + 0, 20 + 2), (Color.Black) * 0.25f);
+                    b.DrawString(Game1.dialogueFont, "Friends", new Vector2(Game1.viewport.Width / 2 - 50 + 2, 20 + 0), (Color.Black) * 0.25f);
+                    b.DrawString(Game1.dialogueFont, "Friends", new Vector2(Game1.viewport.Width / 2 - 50 + 0, 20 - 2), (Color.Black) * 0.25f);
+                    b.DrawString(Game1.dialogueFont, "Friends", new Vector2(Game1.viewport.Width / 2 - 50 - 2, 20 - 0), (Color.Black) * 0.25f);
+                    b.DrawString(Game1.dialogueFont, "Friends", new Vector2(Game1.viewport.Width / 2 - 50, 20), friends == null ? Color.Black : (showingFriends ? Color.OrangeRed : Color.SaddleBrown));
+                    b.DrawString(Game1.dialogueFont, "LAN", new Vector2(Game1.viewport.Width / 4 * 3 - 100 + 0, 20 + 2), (Color.Black) * 0.25f);
+                    b.DrawString(Game1.dialogueFont, "LAN", new Vector2(Game1.viewport.Width / 4 * 3 - 100 + 2, 20 + 0), (Color.Black) * 0.25f);
+                    b.DrawString(Game1.dialogueFont, "LAN", new Vector2(Game1.viewport.Width / 4 * 3 - 100 + 0, 20 - 2), (Color.Black) * 0.25f);
+                    b.DrawString(Game1.dialogueFont, "LAN", new Vector2(Game1.viewport.Width / 4 * 3 - 100 - 2, 20 - 0), (Color.Black) * 0.25f);
+                    b.DrawString(Game1.dialogueFont, "LAN", new Vector2(Game1.viewport.Width / 4 * 3 - 100, 20), showingLan ? Color.OrangeRed : Color.SaddleBrown);
                 }
                 else if ( Multiplayer.mode == Mode.Host )
                 {
@@ -378,7 +422,35 @@ namespace StardewValleyMP.Interface
                     b.DrawString(Game1.dialogueFont, checkStr, pos, text);
                 }
 
-                if (!showingFriends)
+                if (showingFriends)
+                {
+                    if (pendingClient == null)
+                    {
+                        if (pendingConns.Count > 0)
+                        {
+                            PlatformConnection conn = (PlatformConnection)pendingConns[0];
+                            Friend friend = conn.friend;
+
+                            int ix = xPositionOnScreen + width / 5;
+                            int iw = width / 5 * 3;
+                            int ih = 80 * 2 + 64;
+                            int iy = (Game1.viewport.Height - ih) / 2;
+
+                            IClickableMenu.drawTextureBox(b, Game1.mouseCursors, new Rectangle(384, 373, 18, 18), ix, iy, iw, ih, Color.White, (float)Game1.pixelZoom, true);
+                            ix += 32;
+                            iy += 32;
+                            b.Draw(friend.avatar, new Rectangle(ix, iy, 64, 64), Color.White);
+                            SpriteText.drawString(b, friend.displayName, ix + 88, iy + 8);
+                            SpriteText.drawString(b, "Connecting...", ix + 32, iy + 96);
+                        }
+                        else friends.draw(b);
+                    }
+                }
+                else if (showingLan)
+                {
+                    lan.draw(b);
+                }
+                else
                 {
                     Color gray = new Color(127, 127, 127);
                     Color text = new Color(86, 22, 12);
@@ -405,27 +477,6 @@ namespace StardewValleyMP.Interface
 
                     IClickableMenu.drawTextureBox(b, Game1.mouseCursors, new Rectangle(384, 373, 18, 18), x, y, w, h, new Rectangle(x, y, w, h).Contains(Game1.getOldMouseX(), Game1.getOldMouseY()) ? Color.Wheat : Color.White, (float)Game1.pixelZoom, true);
                     SpriteText.drawString(b, str, x + w / 2 - SpriteText.getWidthOfString(str) / 2, y + h / 2 - SpriteText.getHeightOfString(str) / 2);
-                }
-                else if ( pendingClient == null )
-                {
-                    if (pendingConns.Count > 0)
-                    {
-                        PlatformConnection conn = (PlatformConnection)pendingConns[0];
-                        Friend friend = conn.friend;
-
-                        int ix = xPositionOnScreen + width / 5;
-                        int iw = width / 5 * 3;
-                        int ih = 80 * 2 + 64;
-                        int iy = (Game1.viewport.Height - ih) / 2;
-
-                        IClickableMenu.drawTextureBox(b, Game1.mouseCursors, new Rectangle(384, 373, 18, 18), ix, iy, iw, ih, Color.White, (float)Game1.pixelZoom, true);
-                        ix += 32;
-                        iy += 32;
-                        b.Draw(friend.avatar, new Rectangle(ix, iy, 64, 64), Color.White);
-                        SpriteText.drawString(b, friend.displayName, ix + 88, iy + 8);
-                        SpriteText.drawString(b, "Connecting...", ix + 32, iy + 96);
-                    }
-                    else friends.draw(b);
                 }
             }
             else if (Multiplayer.problemStarting)
@@ -554,6 +605,19 @@ namespace StardewValleyMP.Interface
             {
                 pendingConns.Add(conn);
             }
+        }
+
+        private void onLanEntrySelected(LanSelectorWidget.LanEntry entry)
+        {
+            Log.info("Selected LAN entry: " + entry.name + " @ " + entry.server.Address + ":" + entry.port);
+
+            Multiplayer.portStr = portBox.Text;
+            Multiplayer.ipStr = ipBox.Text;
+            modeInit = new Thread(Multiplayer.startClient);
+            modeInit.Start();
+
+            ChatMenu.chat.Clear();
+            ChatMenu.chat.Add(new ChatEntry(null, "NOTE: Chat doesn't work on the connection menu."));
         }
     }
 }
