@@ -438,8 +438,6 @@ namespace StardewValleyMP
             // Really don't understand why it breaks without this
             // But as soon as you get to the second day, it does. Ugh.
             Game1.player.FarmerSprite.setOwner(Game1.player);
-            // Or in this case, as soon as you load the game.
-            fixDisposedFarmerTexture(Game1.player);
 
             if (Multiplayer.mode == Mode.Singleplayer) return;
 
@@ -656,50 +654,7 @@ namespace StardewValleyMP
 
             GameTime gt = new GameTime(new TimeSpan(), new TimeSpan(TimeSpan.TicksPerMillisecond * 16));
             farmer.FarmerSprite.setOwner(farmer); // Not sure why this is necessary
-            fixDisposedFarmerTexture(farmer);
             farmer.UpdateIfOtherPlayer(gt);
-        }
-
-        private static void fixDisposedFarmerTexture( SFarmer f )
-        {
-            if (f.FarmerRenderer.baseTexture.IsDisposed)
-            {
-                Log.debug("Disposed texture for player " + f.name + ", fixing");
-                int times = 0;
-            preFixDispose:
-                try
-                {
-                    var field = MultiplayerMod.instance.Helper.Reflection.GetPrivateField<LocalizedContentManager>(f, "farmerTextureManager");
-                    var ftm = field.GetValue();
-                    if (ftm != null)
-                    {
-                        ftm.Unload();
-                        ftm.Dispose();
-                    }
-                    field.SetValue(Game1.content.CreateTemporary());
-                    f.FarmerRenderer.baseTexture = f.getTexture();
-                    f.changeEyeColor(f.newEyeColor);
-                    f.changeAccessory(f.accessory);
-                    f.changeShirt(f.shirt);
-                    f.changePants(f.pantsColor);
-                    f.changeSkinColor(f.skin);
-                    f.changeHairColor(f.hairstyleColor);
-                    f.changeHairStyle(f.hair);
-                    if (f.boots != null)
-                    {
-                        f.changeShoeColor(f.boots.indexInColorSheet);
-                    }
-                }
-                catch (ObjectDisposedException e)
-                {
-                    if (++times < 5)
-                    {
-                        Log.trace("Failed, trying again");
-                        goto preFixDispose;
-                    }
-                    else Log.trace("Waiting until next frame I guess");
-                }
-            }
         }
 
         public static void draw( SpriteBatch sb )

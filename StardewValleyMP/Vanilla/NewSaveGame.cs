@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Xml;
@@ -23,6 +24,8 @@ namespace StardewValleyMP.Vanilla
 {
     public class NewSaveGame : SaveGame
     {
+        private static FieldInfo playerField = typeof(Game1).GetField("_player", System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.NonPublic);
+
         public static bool Load(string filename, bool skip = false)
         {
             if (skip) goto skipTo;
@@ -259,7 +262,7 @@ namespace StardewValleyMP.Vanilla
                 SaveGame.IsProcessing = false;
                 yield break;
             }
-            Game1.player = SaveGame.loaded.player;
+            playerField.SetValue(null, SaveGame.loaded.player);
             Game1.loadingMessage = Game1.content.LoadString("Strings\\StringsFromCSFiles:SaveGame.cs.4699", new object[0]);
             yield return 36;
             ////////////////////////////////////////
@@ -295,7 +298,7 @@ namespace StardewValleyMP.Vanilla
             {
                 Game1.ExitToTitle();
             }
-            Game1.player = oldPlayer;
+            playerField.SetValue(null, oldPlayer);
             ////////////////////////////////////////
             yield return 50;
             yield return 51;
@@ -869,7 +872,7 @@ namespace StardewValleyMP.Vanilla
                     target.items.Add(null);
                 }
             }
-            if (target.FarmerRenderer == null)
+            //if (target.FarmerRenderer == null)
             {
                 target.FarmerRenderer = new FarmerRenderer(target.getTexture());
             }
@@ -929,14 +932,14 @@ namespace StardewValleyMP.Vanilla
                     (locationFromName as FarmHouse).farmerNumberOfOwner = (current as FarmHouse).farmerNumberOfOwner;
                     //(locationFromName as FarmHouse).resetForPlayerEntry();
                     ////////////////////////////////////////
-                    SFarmer oldPlayer = Game1.player;
-                    Game1.player = findOwnerOf(current as FarmHouse);
+                    SFarmer oldPlayer = ( SFarmer ) playerField.GetValue( null );
+                    playerField.SetValue(null, findOwnerOf(current as FarmHouse));
                     try
                     {
                         (locationFromName as FarmHouse).resetForPlayerEntry();
                     }
                     catch (Exception e) { Log.error("Exception reseting " + Game1.player.name + "'s house: " + e); }
-                    Game1.player = oldPlayer;
+                    playerField.SetValue(null, oldPlayer);
                     ////////////////////////////////////////
                     foreach (Furniture furniture in (locationFromName as FarmHouse).furniture)
                     {
