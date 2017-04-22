@@ -41,7 +41,7 @@ namespace StardewValleyMP.Interface
         private Client pendingClient = null;
         
         public bool allowFriends = MultiplayerMod.ModConfig.AllowFriends;
-        //public bool allowLan = MultiplayerMod.ModConfig.AllowLanDiscovery;
+        public bool allowLan = MultiplayerMod.ModConfig.AllowLanDiscovery;
 
         private bool showingLan = false;
 
@@ -181,6 +181,11 @@ namespace StardewValleyMP.Interface
                     {
                         allowFriends = !allowFriends;
                     }
+                    r1.Y += 80;
+                    if (r1.Contains(x, y))
+                    {
+                        allowLan = !allowLan;
+                    }
                 }
 
                 Multiplayer.problemStarting = false;
@@ -198,13 +203,16 @@ namespace StardewValleyMP.Interface
                     if (Multiplayer.mode == Mode.Host)
                     {
                         MultiplayerMod.ModConfig.AllowFriends = allowFriends;
-                        //MultiplayerMod.ModConfig.AllowLanDiscovery = allowLan;
+                        MultiplayerMod.ModConfig.AllowLanDiscovery = allowLan;
                         modeInit = new Thread(Multiplayer.startHost);
                         IPlatform.instance.onFriendConnected = new Action<Friend, PlatformConnection>(onFriendConnected);
 
-                        string name = Path.GetFileNameWithoutExtension(path);
-                        name = name.Substring(0, name.LastIndexOf('_'));
-                        LanDiscovery.startServer(name, int.Parse(portBox.Text));
+                        if (allowLan)
+                        {
+                            string name = Path.GetFileNameWithoutExtension(path);
+                            name = name.Substring(0, name.LastIndexOf('_'));
+                            LanDiscovery.startServer(name, int.Parse(portBox.Text));
+                        }
                     }
                     else if (Multiplayer.mode == Mode.Client)
                     {
@@ -419,6 +427,18 @@ namespace StardewValleyMP.Interface
                     b.DrawString(Game1.dialogueFont, checkStr, pos + new Vector2( 2,  0), gray * 0.25f);
                     b.DrawString(Game1.dialogueFont, checkStr, pos + new Vector2( 0, -2), gray * 0.25f);
                     b.DrawString(Game1.dialogueFont, checkStr, pos + new Vector2(-2,  0), gray * 0.25f);
+                    b.DrawString(Game1.dialogueFont, checkStr, pos, text);
+
+                    checkStr = "Allow LAN discovery";
+                    r.Y += 80;
+                    pos.Y += 80;
+                    drawTextureBox(b, r.X, r.Y, r.Width, r.Height, r.Contains(Game1.getMousePosition()) ? hover1 : Color.White);
+                    if (allowLan)
+                        drawTextureBox(b, Game1.menuTexture, new Rectangle(0, 256, 60, 60), r.X + r.Width / 5, r.Y + r.Height / 5, r.Width / 8 * 5, r.Height / 8 * 5, r.Contains(Game1.getMousePosition()) ? hover2 : Color.DarkGoldenrod, 1, false);
+                    b.DrawString(Game1.dialogueFont, checkStr, pos + new Vector2(0, 2), gray * 0.25f);
+                    b.DrawString(Game1.dialogueFont, checkStr, pos + new Vector2(2, 0), gray * 0.25f);
+                    b.DrawString(Game1.dialogueFont, checkStr, pos + new Vector2(0, -2), gray * 0.25f);
+                    b.DrawString(Game1.dialogueFont, checkStr, pos + new Vector2(-2, 0), gray * 0.25f);
                     b.DrawString(Game1.dialogueFont, checkStr, pos, text);
                 }
 
