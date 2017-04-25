@@ -14,6 +14,7 @@ using System.IO;
 using System.Net.NetworkInformation;
 using System.Net;
 using System.Net.Sockets;
+using System.Threading.Tasks;
 
 namespace StardewValleyMP.Interface
 {
@@ -541,9 +542,13 @@ namespace StardewValleyMP.Interface
                     if ( justClicked && new Rectangle(ix, iy, iw, ih).Contains( Game1.getMouseX(), Game1.getMouseY() ) )
                     {
                         Log.trace("Accepted " + ((PlatformConnection)pendingConns[0]).friend.displayName);
-                        ((PlatformConnection)pendingConns[0]).accept();
-                        Multiplayer.server.addClient(pendingConns[0], true);
-                        pendingConns.Remove(pendingConns[0]);
+                        Task.Run(() =>
+                        {
+                            var platConn = pendingConns[0] as PlatformConnection;
+                            platConn.accept();
+                            pendingConns.Remove(platConn);
+                            Multiplayer.server.addClient(platConn, true);
+                        });
                     }
 
                     ix += iw + 40;
