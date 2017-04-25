@@ -3,6 +3,7 @@ using StardewValley;
 using StardewValley.Buildings;
 using StardewValley.Locations;
 using StardewValley.Objects;
+using StardewValley.Quests;
 using StardewValley.TerrainFeatures;
 using StardewValleyMP.Packets;
 using System;
@@ -634,6 +635,12 @@ namespace StardewValleyMP.Vanilla
 
                 yield return 100;
                 yield break;
+            }
+            
+            foreach (var quest in saveGame.player.questLog)
+            {
+                if (quest is SlayMonsterQuest)
+                    (quest as SlayMonsterQuest).loadQuestInfo();
             }
             ////////////////////////////////////////
             string str = "_STARDEWVALLEYSAVETMP";

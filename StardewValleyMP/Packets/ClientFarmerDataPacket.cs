@@ -14,6 +14,7 @@ using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using xTile;
 using SFarmer = StardewValley.Farmer;
+using StardewValley.Quests;
 
 namespace StardewValleyMP.Packets
 {
@@ -56,6 +57,12 @@ namespace StardewValleyMP.Packets
             //SFarmer old = client.farmer;
             SaveGame theirs = (SaveGame)SaveGame.serializer.Deserialize(Util.stringStream(xml));
 
+            foreach (var quest in theirs.player.questLog)
+            {
+                if (quest is SlayMonsterQuest)
+                    (quest as SlayMonsterQuest).loadQuestInfo();
+            }
+
             if (client.farmer == null)
             {
                 ChatMenu.chat.Add(new ChatEntry(null, theirs.player.name + " has connected."));
@@ -70,7 +77,7 @@ namespace StardewValleyMP.Packets
                 }
                 client.send(new ChatPacket(255, str));
             }
-
+            
             client.farmerXml = Util.serialize<SFarmer>(theirs.player);
             client.farmer = theirs.player;
             client.farmer.uniqueMultiplayerID += 1 + client.id;
