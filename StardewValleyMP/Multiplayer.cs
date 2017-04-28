@@ -174,7 +174,7 @@ namespace StardewValleyMP
                 }
             }
 
-            Log.error("WARNING: Failed to find player " + target );
+            Log.warn("WARNING: Failed to find player " + target );
             //Log.Async( Game1.player.name + " " + Game1.player.spouse + " " + Game1.player.dateStringForSaveGame);
             //Log.Async("Or is it " + SaveGame.loaded.player.name + "? " + SaveGame.loaded.player.spouse + " " + SaveGame.loaded.player.dateStringForSaveGame);
 
