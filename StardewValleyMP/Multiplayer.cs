@@ -198,8 +198,11 @@ namespace StardewValleyMP
         
         public static bool waitingOnOthers()
         {
-            if ( mode == Mode.Host )
+            if ( mode == Mode.Host && server != null )
             {
+                if (server.clients == null)
+                    return false;
+
                 bool othersReady = true;
                 foreach ( Server.Client client in server.clients )
                 {
@@ -208,7 +211,7 @@ namespace StardewValleyMP
 
                 return !othersReady;
             }
-            else if ( mode == Mode.Client )
+            else if ( mode == Mode.Client && client != null)
             {
                 return client.stage == Client.NetStage.Waiting;
             }
