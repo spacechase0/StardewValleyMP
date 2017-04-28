@@ -41,6 +41,8 @@ namespace StardewValleyMP
             {
                 a = Assembly.GetAssembly(typeof(StardewValley.Game1));
                 Util.SetStaticField(a.GetType("StardewValley.Program"), "releaseBuild", false);
+
+                Game1.options.pauseWhenOutOfFocus = false;
             }
         }
 
@@ -61,7 +63,7 @@ namespace StardewValleyMP
                 // We need our load menu to be able to do things
                 if (Game1.activeClickableMenu is TitleMenu)
                 {
-                    if (TitleMenu.subMenu != null && (TitleMenu.subMenu.GetType() == typeof(LoadGameMenu)))
+                    if (TitleMenu.subMenu is LoadGameMenu)
                     {
                         Log.debug("Found vanilla load game menu, replacing with ours.");
 
