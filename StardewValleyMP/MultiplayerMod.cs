@@ -63,6 +63,8 @@ namespace StardewValleyMP
                 {
                     if (TitleMenu.subMenu != null && (TitleMenu.subMenu.GetType() == typeof(LoadGameMenu)))
                     {
+                        Log.debug("Found vanilla load game menu, replacing with ours.");
+
                         LoadGameMenu oldLoadMenu = ( LoadGameMenu ) TitleMenu.subMenu;
                         NewLoadMenu newLoadMenu = new NewLoadMenu();
 
