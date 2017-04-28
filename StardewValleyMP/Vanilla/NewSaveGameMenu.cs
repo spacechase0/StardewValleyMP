@@ -109,6 +109,7 @@ namespace StardewValleyMP.Vanilla
                         Game1.playSound("money");
                         this.completePause = 1500;
                         this.loader = null;
+                        Game1.game1.IsSaving = false;
                     }
                 }
                 this._ellipsisDelay -= (float)time.ElapsedGameTime.TotalSeconds;
