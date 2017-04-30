@@ -5,6 +5,11 @@ namespace StardewValleyMP.Platforms
 {
     class DummyPlatform : IPlatform
     {
+        public DummyPlatform()
+        {
+            Log.info("Using dummy platform.");
+        }
+
         public override string getName()
         {
             return "";

@@ -23,7 +23,13 @@ namespace StardewValleyMP.Platforms
         {
             if ( Program.buildType == Program.build_steam )
             {
-                return new SteamPlatform();
+                string path = AppDomain.CurrentDomain.BaseDirectory;
+                if (!path.EndsWith("/"))
+                    path += "/";
+                path += "Steamworks.NET.dll";
+
+                if ( System.IO.File.Exists( path ) )
+                    return new SteamPlatform();
             }
 
             return new DummyPlatform();
