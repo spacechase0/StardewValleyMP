@@ -164,8 +164,10 @@ namespace StardewValleyMP
         // Client management
         public List<Client> clients = new List<Client>();
 
+        public int currentlyAccepting { get; private set; }
         public void addClient(IConnection socket, bool askResend = false)
         {
+            ++currentlyAccepting;
             Log.info("Got new client.");
 
             Client client = new Client(this, (byte)getPlayerCount(), socket);
@@ -187,6 +189,8 @@ namespace StardewValleyMP
             }
 
             clients.Add(client);
+            Log.trace("Finished accepting client");
+            --currentlyAccepting;
         }
 
         public int getClientCount() { return clients.Count; }
