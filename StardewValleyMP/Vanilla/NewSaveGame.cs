@@ -769,6 +769,7 @@ namespace StardewValleyMP.Vanilla
             ////////////////////////////////////////
             if (Multiplayer.mode == Mode.Host)
                 Multiplayer.server.delayUpdates = false;
+            Game1.game1.IsSaving = false;
             ////////////////////////////////////////
             yield break;
         Label1:
@@ -835,6 +836,7 @@ namespace StardewValleyMP.Vanilla
             ////////////////////////////////////////
             if (Multiplayer.mode == Mode.Host)
                 Multiplayer.server.delayUpdates = false;
+            Game1.game1.IsSaving = false;
             ////////////////////////////////////////
             yield break;
         }
