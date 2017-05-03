@@ -961,7 +961,7 @@ namespace StardewValleyMP.Vanilla
                     }
                     locationFromName.lastTouchActionLocation = Game1.player.getTileLocation();
                 }
-                if (current.name.Equals("Farm"))
+                if (current is Farm)
                 {
                     GameLocation gameLocation = Game1.getLocationFromName(current.name);
                     foreach (Building building in ((Farm)current).buildings)
@@ -1000,7 +1000,7 @@ namespace StardewValleyMP.Vanilla
                     current3.Value.initializeLightSource(current3.Key);
                     current3.Value.reloadSprite();
                 }
-                if (current2.name.Equals("Farm"))
+                if (current2 is Farm)
                 {
                     ((Farm)locationFromName3).buildings = ((Farm)current2).buildings;
                     foreach (FarmAnimal farmAnimal in ((Farm)current2).animals.Values)
@@ -1032,7 +1032,7 @@ namespace StardewValleyMP.Vanilla
                     locationFromName3.numberOfSpawnedObjectsOnMap = current2.numberOfSpawnedObjectsOnMap;
                     locationFromName3.terrainFeatures = current2.terrainFeatures;
                     locationFromName3.largeTerrainFeatures = current2.largeTerrainFeatures;
-                    if (locationFromName3.name.Equals("Farm"))
+                    if (locationFromName3 is Farm)
                     {
                         ((Farm)locationFromName3).animals = ((Farm)current2).animals;
                         (locationFromName3 as Farm).piecesOfHay = (current2 as Farm).piecesOfHay;
