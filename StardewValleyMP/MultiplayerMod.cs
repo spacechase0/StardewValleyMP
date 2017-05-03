@@ -41,8 +41,6 @@ namespace StardewValleyMP
             {
                 a = Assembly.GetAssembly(typeof(StardewValley.Game1));
                 Util.SetStaticField(a.GetType("StardewValley.Program"), "releaseBuild", false);
-
-                Game1.options.pauseWhenOutOfFocus = false;
             }
         }
 
@@ -55,6 +53,10 @@ namespace StardewValleyMP
         private static IClickableMenu prevMenu = null;
         public static void onUpdate( object sender, EventArgs args )
         {
+            if (DEBUG)
+            {
+                Game1.options.pauseWhenOutOfFocus = false;
+            }
             try
             {
                 IPlatform.instance.update();
