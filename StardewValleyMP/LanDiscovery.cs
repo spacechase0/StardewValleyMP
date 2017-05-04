@@ -29,17 +29,20 @@ namespace StardewValleyMP
 
         public static void stop()
         {
+            Log.info("LAN Discovery: Stopping");
             if (running)
             {
                 running = false;
                 client.Close();
                 thread.Join();
+                thread = null;
+                client = null;
             }
         }
 
         public static void startServer(string name, int port)
         {
-            if (running) return;
+            if (running || thread != null) return;
 
             thread = new Thread(() => runServer(name, port));
             thread.Start();
@@ -102,7 +105,7 @@ namespace StardewValleyMP
 
         public static void startClient()
         {
-            if (!running)
+            if (!running && thread == null)
             {
                 thread = new Thread(() => runClient());
                 thread.Start();
