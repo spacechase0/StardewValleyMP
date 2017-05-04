@@ -143,5 +143,10 @@ namespace StardewValleyMP.Packets
             tf.loadSprite();
             Multiplayer.locations[location].addTerrainFeature(new Vector2(posX, posY), tf);
         }
+
+        public override string ToString()
+        {
+            return base.ToString() + " " + create + " " + location + " " + posX + " " + posY + " size:" + (featureStr == null ? 0 : featureStr.Length);
+        }
     }
 }

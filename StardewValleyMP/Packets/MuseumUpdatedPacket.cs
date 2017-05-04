@@ -71,5 +71,10 @@ namespace StardewValleyMP.Packets
 
             ChatMenu.chat.Add(new ChatEntry(null, "The " + name + " has been changed" + (fName != null ? (" by " + fName) : "") + "."));
         }
+
+        public override string ToString()
+        {
+            return base.ToString() + " " + clientId + " " + name + " size:" + (artifacts == null ? 0 : artifacts.Length);
+        }
     }
 }

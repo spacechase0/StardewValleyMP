@@ -109,5 +109,10 @@ namespace StardewValleyMP.Packets
 
             target.currentLocation.farmers.Add(target);
         }
+
+        public override string ToString()
+        {
+            return base.ToString() + " " + clientId + " " + name;
+        }
     }
 }

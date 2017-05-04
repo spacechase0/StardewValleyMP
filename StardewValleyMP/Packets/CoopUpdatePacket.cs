@@ -86,5 +86,10 @@ namespace StardewValleyMP.Packets
 
             return true;
         }
+
+        public override string ToString()
+        {
+            return base.ToString() + " " + money + " " + clubCoins + " " + moneyEarned + " " + rustyKey + " " + skullKey + " " + clubCard;
+        }
     }
 }

@@ -148,5 +148,10 @@ namespace StardewValleyMP.Packets
             obj.reloadSprite();
             Multiplayer.locations[location].addObject(new Vector2(posX, posY), obj);
         }
+
+        public override string ToString()
+        {
+            return base.ToString() + " " + create + " " + location + " " + posX + " " + posY + " size:" + (objectStr == null ? 0 : objectStr.Length);
+        }
     }
 }

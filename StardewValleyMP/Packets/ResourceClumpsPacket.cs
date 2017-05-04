@@ -77,41 +77,45 @@ namespace StardewValleyMP.Packets
             LocationCache cache = Multiplayer.locations[location];
             if ( loc is Forest )
             {
-                    //only the log here, sooo.
-                    ((Forest) loc).log = null;
-                    cache.prevForestLog = null;
+                //only the log here, sooo.
+                ((Forest) loc).log = null;
+                cache.prevForestLog = null;
             }
             else if ( loc is Woods )
             {
-                    //check the stumps in the woods
-                    Woods map_woods = (Woods)loc;
-                    foreach (var clump in map_woods.stumps)
+                //check the stumps in the woods
+                Woods map_woods = (Woods)loc;
+                foreach (var clump in map_woods.stumps)
+                {
+                    if (hashVec2(clump) == hash)
                     {
-                        if (hashVec2(clump) == hash)
-                        {
-                            //we have found a removed stump! let's kill it :D
-                            map_woods.stumps.Remove(clump);
-                            cache.updateClumpsCache( map_woods.stumps );
-                            break;
-                        }
+                        //we have found a removed stump! let's kill it :D
+                        map_woods.stumps.Remove(clump);
+                        cache.updateClumpsCache( map_woods.stumps );
+                        break;
                     }
+                }
             }
             else if ( loc is Farm )
             {
-                    //check the resource clumps on the farm
-                    Farm map_farm = (Farm)loc;
-                    foreach (var clump in map_farm.resourceClumps)
+                //check the resource clumps on the farm
+                Farm map_farm = (Farm)loc;
+                foreach (var clump in map_farm.resourceClumps)
+                {
+                    if (hashVec2(clump) == hash)
                     {
-                        if (hashVec2(clump) == hash)
-                        {
-                            //we have found a removed resource clump! let's kill it :D
-                            map_farm.resourceClumps.Remove(clump);
-                            cache.updateClumpsCache(map_farm.resourceClumps);
-                            break;
-                        }
+                        //we have found a removed resource clump! let's kill it :D
+                        map_farm.resourceClumps.Remove(clump);
+                        cache.updateClumpsCache(map_farm.resourceClumps);
+                        break;
                     }
+                }
             }
         }
-
+        
+        public override string ToString()
+        {
+            return base.ToString() + " " + location + " " + hash;
+        }
     }
 }

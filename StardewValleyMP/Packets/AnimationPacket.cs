@@ -75,5 +75,10 @@ namespace StardewValleyMP.Packets
             farmer.FarmerSprite.CurrentToolIndex = tool;
                 farmer.FarmerSprite.animateOnce(anim, interval, frames);
         }
+
+        public override string ToString()
+        {
+            return base.ToString() + " " + clientId + " " + anim + " " + interval + " " + frames + " " + backwards + " " + tool;
+        }
     }
 }

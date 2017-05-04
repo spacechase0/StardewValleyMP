@@ -64,7 +64,12 @@ namespace StardewValleyMP.Packets
             SFarmer fixer = Multiplayer.getFarmer(clientId);
             string fName = (fixer != null) ? fixer.name : null;
 
-            ChatMenu.chat.Add(new ChatEntry(null, "The bridge at the " + name + " is was fixed" + (fName != null ? (" by " + fName) : "") + "."));
+            ChatMenu.chat.Add(new ChatEntry(null, "The bridge at the " + name + " was fixed" + (fName != null ? (" by " + fName) : "") + "."));
+        }
+
+        public override string ToString()
+        {
+            return base.ToString() + " " + clientId + " " + name;
         }
     }
 }

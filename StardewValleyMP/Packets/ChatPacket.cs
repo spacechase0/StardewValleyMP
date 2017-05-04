@@ -67,5 +67,10 @@ namespace StardewValleyMP.Packets
         {
             ChatMenu.chat.Add(new ChatEntry(farmer, message));
         }
+
+        public override string ToString()
+        {
+            return base.ToString() + " " + clientId + " <msg not included>";
+        }
     }
 }

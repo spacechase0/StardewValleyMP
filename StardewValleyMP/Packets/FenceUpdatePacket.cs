@@ -93,5 +93,10 @@ namespace StardewValleyMP.Packets
             loc.getMonitor< Fence >().recheck(pos);
             loc.ignoreUpdates = false;
         }
+
+        public override string ToString()
+        {
+            return base.ToString() + " " + location + " " + posX + " " + posY + " " + gatePos;
+        }
     }
 }

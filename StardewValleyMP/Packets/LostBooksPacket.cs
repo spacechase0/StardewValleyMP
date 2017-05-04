@@ -48,5 +48,10 @@ namespace StardewValleyMP.Packets
             Game1.player.archaeologyFound[102][1] = bookCount; // No idea what the second is for, but LibraryMuseum.foundArtifact increments both.
             Multiplayer.prevBooks = bookCount;
         }
+
+        public override string ToString()
+        {
+            return base.ToString() + " " + bookCount;
+        }
     }
 }

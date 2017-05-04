@@ -80,5 +80,10 @@ namespace StardewValleyMP.Packets
         {
             NPCMonitor.updateNPC(name, state);
         }
+
+        public override string ToString()
+        {
+            return base.ToString() + " " + name + " " + state;
+        }
     }
 }

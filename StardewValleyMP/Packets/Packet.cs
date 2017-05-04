@@ -46,7 +46,7 @@ namespace StardewValleyMP.Packets
         FarmAnimal,
         LatestId,
         LostBooks,
-		ResourceClumps,
+		ResourceClumps, // 40
         // Stuff...
     };
 
@@ -124,8 +124,8 @@ namespace StardewValleyMP.Packets
             packet.read(reader);
             if (MultiplayerMod.ModConfig.PacketLogging == MultiplayerConfig.PacketLogAmount.All ||
                  MultiplayerMod.ModConfig.PacketLogging == MultiplayerConfig.PacketLogAmount.Filtered &&
-                 !(packet.id == ID.MovingState || packet.id == ID.Animation || packet.id == ID.TimeSync))
-                Log.trace("<-- " + packet.id);
+                 !(packet.id == ID.MovingState || packet.id == ID.Animation || packet.id == ID.TimeSync || packet.id == ID.HeldItem))
+                Log.trace("<-- " + packet);
 
             return packet;
         }
@@ -137,8 +137,8 @@ namespace StardewValleyMP.Packets
         {
             if ( MultiplayerMod.ModConfig.PacketLogging == MultiplayerConfig.PacketLogAmount.All ||
                  MultiplayerMod.ModConfig.PacketLogging == MultiplayerConfig.PacketLogAmount.Filtered &&
-                 !( id == ID.MovingState || id == ID.Animation || id == ID.TimeSync ) )
-                Log.trace("--> " + id);
+                 !( id == ID.MovingState || id == ID.Animation || id == ID.TimeSync || packet.id == ID.HeldItem) )
+                Log.trace("--> " + this);
             // Wrapped into a memory stream in order to figure out how many data was sent.
             using (MemoryStream ms = new MemoryStream())
             {
@@ -150,6 +150,11 @@ namespace StardewValleyMP.Packets
                 s.Write(data, 0, data.Length);
                 return data.Length;
             }
+        }
+
+        public override string ToString()
+        {
+            return id.ToString();
         }
     }
 }

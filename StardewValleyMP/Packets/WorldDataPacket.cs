@@ -313,5 +313,10 @@ namespace StardewValleyMP.Packets
                 }
             }
         }
+
+        public override string ToString()
+        {
+            return base.ToString() + " size:" + (xml == null ? 0 : xml.Length);
+        }
     }
 }

@@ -65,5 +65,10 @@ namespace StardewValleyMP.Packets
         {
             Multiplayer.locations[location].updateBuilding(buildingId, state);
         }
+
+        public override string ToString()
+        {
+            return base.ToString() + " " + location + " " + buildingId + " " + state;
+        }
     }
 }

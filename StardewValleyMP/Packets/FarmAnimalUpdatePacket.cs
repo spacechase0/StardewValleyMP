@@ -64,5 +64,10 @@ namespace StardewValleyMP.Packets
         {
             NPCMonitor.updateAnimal(id, state);
         }
+
+        public override string ToString()
+        {
+            return base.ToString() + " " + id + " " + state;
+        }
     }
 }

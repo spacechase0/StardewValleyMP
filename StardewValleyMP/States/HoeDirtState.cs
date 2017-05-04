@@ -38,5 +38,10 @@ namespace StardewValleyMP.States
 
             return false;
         }
+
+        public override string ToString()
+        {
+            return base.ToString() + " " + crop + " " + cropPhase + " " + cropDayPhase + " " + cropGrown + " " + state + " " + fertilizer;
+        }
     };
 }

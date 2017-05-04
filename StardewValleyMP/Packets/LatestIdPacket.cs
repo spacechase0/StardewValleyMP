@@ -35,5 +35,10 @@ namespace StardewValleyMP.Packets
             Log.trace("Updated latest ID");
             Multiplayer.prevLatestId = MultiplayerUtility.latestID = latest;
         }
+
+        public override string ToString()
+        {
+            return base.ToString() + " " + latest;
+        }
     }
 }

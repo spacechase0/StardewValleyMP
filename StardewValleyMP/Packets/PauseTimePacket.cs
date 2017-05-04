@@ -40,5 +40,10 @@ namespace StardewValleyMP.Packets
         {
             Game1.freezeControls = Multiplayer.prevFreezeControls = pause;
         }
+
+        public override string ToString()
+        {
+            return base.ToString() + " " + pause;
+        }
     }
 }

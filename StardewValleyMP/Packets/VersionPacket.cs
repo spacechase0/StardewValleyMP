@@ -45,5 +45,10 @@ namespace StardewValleyMP.Packets
                 client.stageFailed = true;
             }
         }
+
+        public override string ToString()
+        {
+            return base.ToString() + " " + (int)version;
+        }
     }
 }

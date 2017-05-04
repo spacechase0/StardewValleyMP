@@ -75,7 +75,11 @@ namespace StardewValleyMP.Packets
             {
                 ChatMenu.chat.Add(new ChatEntry(null, farmer.name + " is now married to " + spouse + "."));
             }
+        }
 
+        public override string ToString()
+        {
+            return base.ToString() + " " + (int) clientId + " " + spouse;
         }
     }
 }

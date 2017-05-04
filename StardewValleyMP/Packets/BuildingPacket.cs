@@ -141,5 +141,10 @@ namespace StardewValleyMP.Packets
             Multiplayer.locations[location].addBuilding(b);
             b.load();
         }
+
+        public override string ToString()
+        {
+            return base.ToString() + " " + create + " " + location + " size:" + (buildingStr == null ? 0 : buildingStr.Length) + " " + buildingId;
+        }
     }
 }

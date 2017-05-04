@@ -79,5 +79,10 @@ namespace StardewValleyMP.Packets
                 }
             }
         }
+
+        public override string ToString()
+        {
+            return base.ToString() + " " + others.Count;
+        }
     }
 }

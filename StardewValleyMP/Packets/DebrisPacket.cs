@@ -221,5 +221,10 @@ namespace StardewValleyMP.Packets
             
             Multiplayer.locations[location].addDebris(deb);
         }
+
+        public override string ToString()
+        {
+            return base.ToString() + " " + create + " " + location + " " + debrisId + " " + ( create ? ( posX + " " + posY + " " + velX + " " + velY + " size:" + (itemStr == null ? 0 : itemStr.Length) + " " + type + " " + chunkType + " " + quality + " " + chunkObj + " " + chunkCount ) : "" );
+        }
     }
 }

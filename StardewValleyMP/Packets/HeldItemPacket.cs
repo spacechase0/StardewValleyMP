@@ -77,5 +77,10 @@ namespace StardewValleyMP.Packets
                 farmer.ActiveObject = ( big ? new StardewValley.Object(Vector2.Zero, index, false) : new StardewValley.Object(Vector2.Zero, index, 1));
             //farmer.CurrentToolIndex = tool;
         }
+
+        public override string ToString()
+        {
+            return base.ToString() + " " + clientId + " " + index + " " + big + " " + tool;
+        }
     }
 }

@@ -84,5 +84,10 @@ namespace StardewValleyMP.Packets
             farmer.position.X = x;
             farmer.position.Y = y;
         }
+
+        public override string ToString()
+        {
+            return base.ToString() + " " + clientId + " " + flags + " " + x + " " + y;
+        }
     }
 }

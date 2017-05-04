@@ -53,5 +53,10 @@ namespace StardewValleyMP.Packets
             farm.piecesOfHay = hay;
             Multiplayer.locations[name].prevFarmHay = hay;
         }
+
+        public override string ToString()
+        {
+            return base.ToString() + " " + name + " " + hay;
+        }
     }
 }

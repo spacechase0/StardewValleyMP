@@ -31,5 +31,10 @@ namespace StardewValleyMP.States
 
             return false;
         }
+
+        public override string ToString()
+        {
+            return base.ToString() + " " + opener;
+        }
     }
 }

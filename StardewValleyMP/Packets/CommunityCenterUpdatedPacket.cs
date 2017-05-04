@@ -160,5 +160,10 @@ namespace StardewValleyMP.Packets
                     break;
             }
         }
+
+        public override string ToString()
+        {
+            return base.ToString() + " " + clientId + " " + name + " " + reason + " size:" + (xml == null ? 0 : xml.Length) + " " + completed;
+        }
     }
 }

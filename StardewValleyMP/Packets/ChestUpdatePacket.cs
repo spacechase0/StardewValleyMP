@@ -130,5 +130,10 @@ namespace StardewValleyMP.Packets
             loc.getMonitor<Chest>().recheck(pos);
             loc.ignoreUpdates = false;
         }
+
+        public override string ToString()
+        {
+            return base.ToString() + " " + opener;
+        }
     }
 }

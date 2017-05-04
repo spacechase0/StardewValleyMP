@@ -41,5 +41,10 @@ namespace StardewValleyMP.States
 
             return false;
         }
+
+        public override string ToString()
+        {
+            return base.ToString() + " " + datingFarmer + " " + married + " " + defaultMap + " " + defaultX + " " + defaultY;
+        }
     }
 }

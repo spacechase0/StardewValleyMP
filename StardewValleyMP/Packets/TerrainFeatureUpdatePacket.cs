@@ -94,5 +94,10 @@ namespace StardewValleyMP.Packets
             loc.getMonitor<TYPE>().recheck(pos);
             loc.ignoreUpdates = false;
         }
+
+        public override string ToString()
+        {
+            return base.ToString() + " " + location + " " + posX + " " + posY + " size:" + (str == null ? 0 : str.Length);
+        }
     }
 }

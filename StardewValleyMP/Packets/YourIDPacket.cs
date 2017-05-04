@@ -33,5 +33,10 @@ namespace StardewValleyMP.Packets
         {
             client.id = clientId;
         }
+
+        public override string ToString()
+        {
+            return base.ToString() + " " + (int)clientId;
+        }
     }
 }

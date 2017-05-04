@@ -150,5 +150,10 @@ namespace StardewValleyMP.Packets
             }
             Multiplayer.locations[location].prevBinSize = farm.shippingBin.Count;
         }
+
+        public override string ToString()
+        {
+            return base.ToString() + " " + location + " " + add + " size:" + (xml == null ? 0 : xml.Length);
+        }
     }
 }
