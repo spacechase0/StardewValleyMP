@@ -137,7 +137,7 @@ namespace StardewValleyMP.Packets
         {
             if ( MultiplayerMod.ModConfig.PacketLogging == MultiplayerConfig.PacketLogAmount.All ||
                  MultiplayerMod.ModConfig.PacketLogging == MultiplayerConfig.PacketLogAmount.Filtered &&
-                 !( id == ID.MovingState || id == ID.Animation || id == ID.TimeSync || packet.id == ID.HeldItem) )
+                 !( id == ID.MovingState || id == ID.Animation || id == ID.TimeSync || id == ID.HeldItem) )
                 Log.trace("--> " + this);
             // Wrapped into a memory stream in order to figure out how many data was sent.
             using (MemoryStream ms = new MemoryStream())

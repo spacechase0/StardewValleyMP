@@ -561,12 +561,7 @@ namespace StardewValleyMP.Vanilla
             SaveGame saveGame = new SaveGame()
             {
                 player = Game1.player,
-                ////////////////////////////////////////
-                // MINE: .ToList()
-                // Not sure why this helps with all the weird bugs that come after 2-3 days in
-                // since I don't entirely understand why they happen in the first place.
-                locations = Game1.locations.ToList(),
-                ////////////////////////////////////////
+                locations = getLocationsMinusPlayerInstances(),
                 currentSeason = Game1.currentSeason,
                 samBandName = Game1.samBandName,
                 elliottBookName = Game1.elliottBookName,
@@ -1452,6 +1447,21 @@ namespace StardewValleyMP.Vanilla
                     }
                 }
             }
+        }
+
+        private static List< GameLocation > getLocationsMinusPlayerInstances()
+        {
+            var locs = Game1.locations.ToList();
+
+            foreach (var loc in Game1.locations)
+            {
+                if (loc.name.Contains('_') && Multiplayer.isPlayerUnique(loc.name.Substring(0, loc.name.IndexOf('_'))))
+                {
+                    locs.Remove(loc);
+                }
+            }
+
+            return locs;
         }
     }
 }

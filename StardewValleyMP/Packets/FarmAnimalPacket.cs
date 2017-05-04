@@ -108,7 +108,7 @@ namespace StardewValleyMP.Packets
 
         public override string ToString()
         {
-            return base.ToString() + " " + create + " " +location + " size:" + (animalStr == null ? 0 : aniamlStr.Length) + " " + animalId;
+            return base.ToString() + " " + create + " " +location + " size:" + (animalStr == null ? 0 : animalStr.Length) + " " + animalId;
         }
     }
 }
