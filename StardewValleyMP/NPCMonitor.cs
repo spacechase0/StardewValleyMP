@@ -89,12 +89,10 @@ namespace StardewValleyMP
             if ( npc == null ) return;
 
             Log.trace("Updating NPC " + name);
-            Log.trace("Dating: " + npc.datingFarmer + " -> " + state.datingFarmer);
             Log.trace("Married: " + npc.isMarried() + " -> " + state.married);
             Log.trace("Default Map: " + npc.defaultMap + " -> " + state.defaultMap);
             Log.trace("Default Pos: (" + npc.DefaultPosition.X + ", " + npc.DefaultPosition.Y + ") -> (" + state.defaultX + " , " + state.defaultY + ")");
-
-            npc.datingFarmer = state.datingFarmer;
+            
             npc.setMarried(state.married);
             npc.defaultMap = ( state.defaultMap != "" ) ? state.defaultMap : null;
             npc.DefaultPosition = new Microsoft.Xna.Framework.Vector2(state.defaultX, state.defaultY);
