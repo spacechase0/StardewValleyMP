@@ -144,6 +144,7 @@ namespace StardewValleyMP.Packets
             }
 
             client.stage = Server.Client.NetStage.WaitingForStart;
+            --server.currentlyAccepting;
         }
         
         public static void addFixedLocationToOurWorld( GameLocation loc, string oldName, object extra )
