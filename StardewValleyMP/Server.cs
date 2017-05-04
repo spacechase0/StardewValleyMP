@@ -231,8 +231,16 @@ namespace StardewValleyMP
 
             ~Client()
             {
-                socket.disconnect();
-                receiver.Join();
+                if (socket != null)
+                {
+                    socket.disconnect();
+                    socket = null;
+                }
+                if (receiver != null)
+                {
+                    receiver.Join();
+                    receiver = null;
+                }
             }
 
             //public bool tempStopUpdating = false;
