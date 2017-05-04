@@ -10,7 +10,7 @@ namespace StardewValleyMP.Packets
     {
         public int money, clubCoins;
         public uint moneyEarned;
-        public bool rustyKey, skullKey, clubCard;
+        public bool rustyKey, skullKey, clubCard, darkTalisman;
 
         public CoopUpdatePacket()
             : base(ID.CoopUpdate)
@@ -21,7 +21,7 @@ namespace StardewValleyMP.Packets
             rustyKey = Game1.player.hasRustyKey;
             skullKey = Game1.player.hasSkullKey;
             clubCard = Game1.player.hasClubCard;
-            // Should I sync dark talisman / magic ink?
+            darkTalisman = Game1.player.hasDarkTalisman;
         }
 
         protected override void read(BinaryReader reader)
@@ -32,6 +32,7 @@ namespace StardewValleyMP.Packets
             rustyKey = reader.ReadBoolean();
             skullKey = reader.ReadBoolean();
             clubCard = reader.ReadBoolean();
+            darkTalisman = reader.ReadBoolean();
         }
 
         protected override void write(BinaryWriter writer)
@@ -42,6 +43,7 @@ namespace StardewValleyMP.Packets
             writer.Write(rustyKey);
             writer.Write(skullKey);
             writer.Write(clubCard);
+            writer.Write(darkTalisman);
         }
 
         public override void process(Client client)
@@ -66,6 +68,7 @@ namespace StardewValleyMP.Packets
             Game1.player.hasRustyKey = rustyKey;
             Game1.player.hasSkullKey = skullKey;
             Game1.player.hasClubCard = clubCard;
+            Game1.player.hasDarkTalisman = darkTalisman;
             Multiplayer.prevCoopState = this;
         }
 
@@ -83,13 +86,14 @@ namespace StardewValleyMP.Packets
             if (rustyKey != other.rustyKey) return false;
             if (skullKey != other.skullKey) return false;
             if (clubCard != other.clubCard) return false;
+            if (darkTalisman != other.darkTalisman) return false;
 
             return true;
         }
 
         public override string ToString()
         {
-            return base.ToString() + " " + money + " " + clubCoins + " " + moneyEarned + " " + rustyKey + " " + skullKey + " " + clubCard;
+            return base.ToString() + " " + money + " " + clubCoins + " " + moneyEarned + " " + rustyKey + " " + skullKey + " " + clubCard + " " + darkTalisman;
         }
     }
 }

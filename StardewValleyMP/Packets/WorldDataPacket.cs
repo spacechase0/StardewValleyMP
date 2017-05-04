@@ -69,7 +69,7 @@ namespace StardewValleyMP.Packets
                 mine.player.hasRustyKey = world.player.hasRustyKey;
                 mine.player.hasSkullKey = world.player.hasSkullKey;
                 mine.player.hasClubCard = world.player.hasClubCard;
-                // Should I sync dark talisman / magic ink?
+                mine.player.hasDarkTalisman = world.player.hasDarkTalisman;
                 mine.player.dateStringForSaveGame = world.player.dateStringForSaveGame;
 
                 foreach (string mail in Multiplayer.checkMail)
