@@ -33,8 +33,10 @@ namespace StardewValleyMP
             if (running)
             {
                 running = false;
-                client.Close();
-                thread.Join();
+                if ( client != null )
+                    client.Close();
+                if ( thread != null )
+                    thread.Join();
                 thread = null;
                 client = null;
             }
@@ -50,57 +52,73 @@ namespace StardewValleyMP
 
         private static void runServer( string name, int port )
         {
-            IPEndPoint addr = new IPEndPoint(IPAddress.Any, DEFAULT_PORT_REQUEST);
-            client = new UdpClient();
-            client.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
-            client.ExclusiveAddressUse = false;
-            client.Client.Bind(addr);
-
-            UdpClient sendFrom = new UdpClient();
-
-            Log.debug("LAN Discovery: Starting to listen");
-
-            running = true;
-            while ( running )
+            try
             {
-                IPEndPoint other = null;
-                byte[] bytes = client.Receive(ref other);
-                if (bytes.Length < MAGIC.Length + 1) continue;
-                Log.debug("LAN Discovery: Received a request from " + other);
+                IPEndPoint addr = new IPEndPoint(IPAddress.Any, DEFAULT_PORT_REQUEST);
+                client = new UdpClient();
+                client.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
+                client.ExclusiveAddressUse = false;
+                client.Client.Bind(addr);
 
-                bool okay = true;
-                for ( int i = 0; i < MAGIC.Length; ++i )
+                UdpClient sendFrom = new UdpClient();
+
+                Log.debug("LAN Discovery: Starting to listen");
+
+                running = true;
+                while (running)
                 {
-                    if ( bytes[ i ] != MAGIC[ i ] )
+                    IPEndPoint other = null;
+                    byte[] bytes = client.Receive(ref other);
+                    if (bytes.Length < MAGIC.Length + 1) continue;
+                    Log.debug("LAN Discovery: Received a request from " + other);
+
+                    bool okay = true;
+                    for (int i = 0; i < MAGIC.Length; ++i)
                     {
-                        okay = false;
-                        break;
+                        if (bytes[i] != MAGIC[i])
+                        {
+                            okay = false;
+                            break;
+                        }
                     }
-                }
-                if (!okay)
-                {
-                    Log.debug("LAN Discovery: Bad magic");
-                    continue;
-                }
-                if ( bytes[ MAGIC.Length ] != Multiplayer.PROTOCOL_VERSION )
-                {
-                    Log.debug("LAN Discovery: Bad protocol version (" + (int) bytes[ MAGIC.Length ] + " vs " +  (int) Multiplayer.PROTOCOL_VERSION + ")");
-                    continue;
-                }
+                    if (!okay)
+                    {
+                        Log.debug("LAN Discovery: Bad magic");
+                        continue;
+                    }
+                    if (bytes[MAGIC.Length] != Multiplayer.PROTOCOL_VERSION)
+                    {
+                        Log.debug("LAN Discovery: Bad protocol version (" + (int)bytes[MAGIC.Length] + " vs " + (int)Multiplayer.PROTOCOL_VERSION + ")");
+                        continue;
+                    }
 
-                Log.debug("LAN Discovery: Preparing and sending response");
-                byte[] portBytes = BitConverter.GetBytes(port);
-                byte[] nameBytes = Encoding.ASCII.GetBytes(name);
-                byte[] sendBack = new byte[MAGIC.Length + portBytes.Length + nameBytes.Length];
-                Array.Copy(MAGIC, 0, sendBack, 0, MAGIC.Length);
-                Array.Copy(portBytes, 0, sendBack, MAGIC.Length, portBytes.Length);
-                Array.Copy(nameBytes, 0, sendBack, MAGIC.Length + portBytes.Length, nameBytes.Length);
+                    Log.debug("LAN Discovery: Preparing and sending response");
+                    byte[] portBytes = BitConverter.GetBytes(port);
+                    byte[] nameBytes = Encoding.ASCII.GetBytes(name);
+                    byte[] sendBack = new byte[MAGIC.Length + portBytes.Length + nameBytes.Length];
+                    Array.Copy(MAGIC, 0, sendBack, 0, MAGIC.Length);
+                    Array.Copy(portBytes, 0, sendBack, MAGIC.Length, portBytes.Length);
+                    Array.Copy(nameBytes, 0, sendBack, MAGIC.Length + portBytes.Length, nameBytes.Length);
 
-                other.Port = DEFAULT_PORT_RESPONSE;
-                sendFrom.Send(sendBack, sendBack.Length, other);
+                    other.Port = DEFAULT_PORT_RESPONSE;
+                    sendFrom.Send(sendBack, sendBack.Length, other);
+                }
             }
-
-            client.Close();
+            catch ( Exception e )
+            {
+                if (e is SocketException && (((SocketException)e).Message.IndexOf("A blocking operation was interrupted") != -1 ||
+                                              ((SocketException)e).Message.IndexOf("WSACancelBlockingCall") != -1))
+                    return;
+                Log.error("Exception during LAN discovery: " + e);
+            }
+            finally
+            {
+                if (client != null)
+                {
+                    client.Close();
+                    client = null;
+                }
+            }
         }
 
         public static void startClient()
@@ -127,43 +145,61 @@ namespace StardewValleyMP
 
         private static void runClient()
         {
-            IPEndPoint addr = new IPEndPoint(IPAddress.Any, DEFAULT_PORT_RESPONSE);
-            client = new UdpClient();
-            client.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
-            client.Client.ExclusiveAddressUse = false;
-            client.Client.Bind(addr);
-            
-            running = true;
-            while (running)
+            try
             {
-                IPEndPoint other = null;
-                byte[] bytes = client.Receive(ref other);
-                if (bytes.Length < MAGIC.Length + 5) continue;
-                Log.debug("LAN Discovery: Received a response from " + other);
+                IPEndPoint addr = new IPEndPoint(IPAddress.Any, DEFAULT_PORT_RESPONSE);
+                client = new UdpClient();
+                client.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
+                client.Client.ExclusiveAddressUse = false;
+                client.Client.Bind(addr);
 
-                bool okay = true;
-                for (int i = 0; i < MAGIC.Length; ++i)
+                running = true;
+                while (running)
                 {
-                    if (bytes[i] != MAGIC[i])
+                    IPEndPoint other = null;
+                    byte[] bytes = client.Receive(ref other);
+                    if (bytes.Length < MAGIC.Length + 5) continue;
+                    Log.debug("LAN Discovery: Received a response from " + other);
+
+                    bool okay = true;
+                    for (int i = 0; i < MAGIC.Length; ++i)
                     {
-                        okay = false;
-                        break;
+                        if (bytes[i] != MAGIC[i])
+                        {
+                            okay = false;
+                            break;
+                        }
                     }
-                }
-                if (!okay)
-                {
-                    Log.debug("LAN Discovery: Bad magic");
-                    continue;
-                }
+                    if (!okay)
+                    {
+                        Log.debug("LAN Discovery: Bad magic");
+                        continue;
+                    }
 
-                Log.debug("LAN Discovery: Valid LAN discovery found.");
-                
-                byte[] nameBytes = new byte[bytes.Length - MAGIC.Length - 4];
-                Array.Copy(bytes, MAGIC.Length + 4, nameBytes, 0, nameBytes.Length);
-                int port = BitConverter.ToInt16(bytes, MAGIC.Length);
-                string name = Encoding.ASCII.GetString(nameBytes);
-                if (onDiscovery != null)
-                    onDiscovery.Invoke(name, other, port);
+                    Log.debug("LAN Discovery: Valid LAN discovery found.");
+
+                    byte[] nameBytes = new byte[bytes.Length - MAGIC.Length - 4];
+                    Array.Copy(bytes, MAGIC.Length + 4, nameBytes, 0, nameBytes.Length);
+                    int port = BitConverter.ToInt16(bytes, MAGIC.Length);
+                    string name = Encoding.ASCII.GetString(nameBytes);
+                    if (onDiscovery != null)
+                        onDiscovery.Invoke(name, other, port);
+                }
+            }
+            catch (Exception e)
+            {
+                if (e is SocketException && (((SocketException)e).Message.IndexOf("A blocking operation was interrupted") != -1 ||
+                                              ((SocketException)e).Message.IndexOf("WSACancelBlockingCall") != -1))
+                    return;
+                Log.error("Exception during LAN discovery: " + e);
+            }
+            finally
+            {
+                if ( client != null )
+                {
+                    client.Close();
+                    client = null;
+                }
             }
         }
     }
