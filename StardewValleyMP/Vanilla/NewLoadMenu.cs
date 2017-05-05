@@ -63,6 +63,7 @@ namespace StardewValleyMP.Vanilla
         private bool deleting;
 
         public Task<List<SFarmer>> _initTask;
+        public Task<List<SFarmer>> _initTaskMonoDebug;
 
         private Task _deleteTask;
 
@@ -129,11 +130,65 @@ namespace StardewValleyMP.Vanilla
                     rightNeighborID = (i < 2 ? 800 : 801)
                 });
             }
+            if (Util.UsingMono)
+            {
+                Log.debug("Mono, doing alternate loading test?");
+                this._initTaskMonoDebug = new Task<List<SFarmer>>((Func<List<SFarmer>>)(() =>
+                {
+                    Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
+                    Log.debug("Task started");
+                    return FindSaveGames();
+                }));
+                this._initTaskMonoDebug.Start();
+                Log.debug("Started it");
+            }
             if (Game1.options.snappyMenus && Game1.options.gamepadControls)
             {
                 base.populateClickableComponentList();
                 this.snapToDefaultClickableComponent();
             }
+        }
+
+        private static List<SFarmer> FindSaveGames()
+        {
+            List<SFarmer> farmerList = new List<SFarmer>();
+            string str = Path.Combine(Path.Combine(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "StardewValley"), "Saves"));
+            Log.debug("Checking for save dir");
+            if (Directory.Exists(str))
+            {
+                Log.debug("It existed, good");
+                foreach (string directory in Directory.GetDirectories(str))
+                {
+                    string path = Path.Combine(str, directory, "SaveGameInfo");
+                    Log.debug("Found a dir in saves: " + path);
+                    SFarmer target = (SFarmer)null;
+                    try
+                    {
+                        using (FileStream fileStream = File.Open(path, FileMode.Open))
+                        {
+                            Log.debug("Loading farmer from save");
+                            target = (SFarmer)SaveGame.farmerSerializer.Deserialize((Stream)fileStream);
+                            Log.debug("(Load step 2)");
+                            SaveGame.loadDataToFarmer(target);
+                            target.favoriteThing = ((IEnumerable<string>)directory.Split(Path.DirectorySeparatorChar)).Last<string>();
+                            farmerList.Add(target);
+                            fileStream.Close();
+                            Log.debug("Loaded farmer from save");
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Log.debug("There was an exception: " + ex);
+                        if (target != null)
+                            target.unload();
+                        Log.debug("Unloaded 'target'");
+                    }
+                }
+            }
+            else Log.debug("No save dir?");
+            farmerList.Sort();
+            Log.debug("Sorted saved farmers");
+            return farmerList;
         }
 
         public override void receiveGamePadButton(Buttons b)
@@ -445,10 +500,31 @@ namespace StardewValleyMP.Vanilla
         public override void update(GameTime time)
         {
             base.update(time);
+            //if ( Util.UsingMono )
+            {
+                if (this._initTaskMonoDebug != null)
+                {
+                    if (this._initTaskMonoDebug.IsCanceled || this._initTaskMonoDebug.IsCompleted || this._initTaskMonoDebug.IsFaulted)
+                    {
+                        Log.trace("Mono-test debug save listing task status: " + _initTaskMonoDebug.IsCanceled + " " + _initTaskMonoDebug.IsCompleted + " " + _initTaskMonoDebug.IsFaulted);
+                        if (this._initTaskMonoDebug.IsCompleted)
+                        {
+                            var r = _initTaskMonoDebug.Result;
+                            Log.trace("The list: " + r.Count);
+                            foreach ( var f in r )
+                            {
+                                Log.trace("\t" + f + " " + f.name + " " + f.favoriteThing);
+                            }
+                        }
+                        this._initTaskMonoDebug = null;
+                    }
+                }
+            }
             if (this._initTask != null)
             {
                 if (this._initTask.IsCanceled || this._initTask.IsCompleted || this._initTask.IsFaulted)
                 {
+                    Log.trace("Save listing task status: " + _initTask.IsCanceled + " " + _initTask.IsCompleted + " " + _initTask.IsFaulted);
                     if (this._initTask.IsCompleted)
                     {
                         foreach (SFarmer saveGame in this.saveGames)

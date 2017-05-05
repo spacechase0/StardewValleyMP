@@ -74,6 +74,7 @@ namespace StardewValleyMP
 
                         IPrivateField< object > task = instance.Helper.Reflection.GetPrivateField< object >(oldLoadMenu, "_initTask");
                         newLoadMenu._initTask = (Task<List<SFarmer>>)task.GetValue();
+                        Log.debug("Stole the save listing task, set it to: " + task);
 
                         TitleMenu.subMenu = newLoadMenu;
                     }
