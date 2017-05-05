@@ -4,7 +4,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{E1CBD6A1-F9D8-4FAA-9D5D-BB1E49682FE6}</ProjectGuid>
+    <ProjectGuid>{F28843B1-B7D5-4FA1-976D-ED40908167E3}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>StardewValleyMP</RootNamespace>
