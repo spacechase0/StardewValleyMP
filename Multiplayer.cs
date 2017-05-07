@@ -429,13 +429,11 @@ namespace StardewValleyMP
                 problemStarting = true;
             }
         }
-
-        private static bool didNewDay = false;
+        
         public static bool prevFreezeControls = false;
         public static bool sentNextDayPacket = false;
         public static long prevLatestId;
-
-        private static int prevDuhu, prevHul, prevLul;
+        
         public static void update()
         {
             // Really don't understand why it breaks without this
@@ -462,7 +460,6 @@ namespace StardewValleyMP
 
             if (Game1.newDay)
             {
-                didNewDay = true;
                 Game1.freezeControls = prevFreezeControls = true;
                 Game1.player.CanMove = false;
                 if ( !sentNextDayPacket )
@@ -517,6 +514,7 @@ namespace StardewValleyMP
                             Game1.freezeControls = prevFreezeControls = false;
                             Game1.newDay = false;
                             Game1.fadeToBlackAlpha = 0;
+                            Game1.player.CanMove = true;
                             client.stage = Client.NetStage.Playing;
                         }
                     }
