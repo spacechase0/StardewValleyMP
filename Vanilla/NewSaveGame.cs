@@ -557,6 +557,8 @@ namespace StardewValleyMP.Vanilla
                 Multiplayer.server.delayUpdates = true;
             ////////////////////////////////////////
 
+            Log.trace("Starting saving...");
+
             yield return 1;
             SaveGame saveGame = new SaveGame()
             {
@@ -605,6 +607,7 @@ namespace StardewValleyMP.Vanilla
             saveGame.currentSongIndex = Game1.currentSongIndex;
             saveGame.weatherForTomorrow = Game1.weatherForTomorrow;
             ////////////////////////////////////////
+            Log.trace("Moved save data to a SaveGame object.");
             //if ( saveToLoaded )
             if (skipToFile) Multiplayer.locations.Clear();
             if (skipToFile) NPCMonitor.reset();
@@ -642,6 +645,7 @@ namespace StardewValleyMP.Vanilla
                 if (quest is SlayMonsterQuest)
                     (quest as SlayMonsterQuest).loadQuestInfo();
             }
+            Log.trace("Doing the real saving.");
             ////////////////////////////////////////
             string str = "_STARDEWVALLEYSAVETMP";
             string name = Game1.player.Name;
@@ -702,7 +706,14 @@ namespace StardewValleyMP.Vanilla
             using (XmlWriter xmlWriter = XmlWriter.Create(stream, xmlWriterSetting))
             {
                 xmlWriter.WriteStartDocument();
-                SaveGame.serializer.Serialize(xmlWriter, saveGame);
+                try
+                {
+                    SaveGame.serializer.Serialize(xmlWriter, saveGame);
+                }
+                catch ( Exception e )
+                {
+                    Log.error("Exception while serializing: " + e);
+                }
                 xmlWriter.WriteEndDocument();
                 xmlWriter.Flush();
             }
