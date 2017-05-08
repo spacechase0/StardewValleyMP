@@ -994,7 +994,15 @@ namespace StardewValleyMP.Vanilla
                     current2.characters[i].currentLocation = locationFromName3;
                     if (i < current2.characters.Count)
                     {
-                        current2.characters[i].reloadSprite();
+                        try
+                        {
+                            current2.characters[i].reloadSprite();
+                        }
+                        catch ( Exception e )
+                        {
+                            Log.warn("Exception reloading a character: " + e);
+                            Log.debug(current2.characters[i].name + " " + Game1.currentSeason + " " + current2.characters[i].Dialogue);
+                        }
                     }
                 }
                 foreach (TerrainFeature terrainFeature in current2.terrainFeatures.Values)

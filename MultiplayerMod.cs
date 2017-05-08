@@ -37,11 +37,43 @@ namespace StardewValleyMP
             LocationEvents.CurrentLocationChanged += onCurrentLocationChange;
             ControlEvents.KeyboardChanged += onKeyboardChange;
 
+            Helper.ConsoleCommands.Add("player_unstuck", "...", unstuckCommand);
+            Helper.ConsoleCommands.Add("player_sleep", "...", sleepCommand);
+            Helper.ConsoleCommands.Add("player_unsleep", "...", unsleepCommand);
+
             if (DEBUG)
             {
                 a = Assembly.GetAssembly(typeof(StardewValley.Game1));
                 Util.SetStaticField(a.GetType("StardewValley.Program"), "releaseBuild", false);
             }
+        }
+
+        private static void unstuckCommand( string cmd, string[] args )
+        {
+            Game1.player.canMove = true;
+            Game1.freezeControls = false;
+            Game1.pauseTime = 0;
+            Game1.fadeToBlack = false;
+            Game1.player.freezePause = 0;
+            Log.info("Done unstucking.");
+        }
+
+        private static void sleepCommand(string cmd, string[] args)
+        {
+            Game1.NewDay(0.0f);
+            Log.info("Done sleeping.");
+        }
+
+        private static void unsleepCommand(string cmd, string[] args)
+        {
+            Log.warn("THE SERVER WILL STILL THINK YOU ARE ASLEEP");
+            Game1.player.canMove = true;
+            Game1.freezeControls = false;
+            Game1.pauseTime = 0;
+            Game1.fadeToBlack = false;
+            Game1.player.freezePause = 0;
+            Game1.newDay = false;
+            Log.info("Done unsleeping.");
         }
 
         public static void loadContent( object sender, EventArgs args )
