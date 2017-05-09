@@ -66,28 +66,29 @@ namespace StardewValleyMP.Interface
                 if (Multiplayer.mode != Mode.Singleplayer)
                     Multiplayer.sendFunc(new ChatPacket(Multiplayer.getMyId(), typing));
 
-                if (MultiplayerMod.DEBUG)
+                if ( typing.StartsWith( "/mp" ) && Multiplayer.mode == Mode.Singleplayer )
                 {
-                    if (typing.StartsWith("/instance ") && typing.Length > 10 )
+                    Game1.activeClickableMenu = new ModeSelectMenu();
+                }
+                else if (MultiplayerMod.DEBUG && typing.StartsWith("/instance ") && typing.Length > 10)
+                {
+                    string baseLoc = null;
+                    if (Game1.player.currentLocation is StardewValley.Locations.FarmHouse) baseLoc = "FarmHouse";
+                    if (Game1.player.currentLocation is StardewValley.Locations.Cellar) baseLoc = "Cellar";
+                    if (!Multiplayer.COOP)
                     {
-                        string baseLoc = null;
-                        if (Game1.player.currentLocation is StardewValley.Locations.FarmHouse) baseLoc = "FarmHouse";
-                        if (Game1.player.currentLocation is StardewValley.Locations.Cellar) baseLoc = "Cellar";
-                        if (!Multiplayer.COOP)
-                        {
-                            if (Game1.player.currentLocation is StardewValley.Farm) baseLoc = "Farm";
-                            if (Game1.player.currentLocation is StardewValley.Locations.FarmCave) baseLoc = "FarmCave";
-                            if (Game1.player.currentLocation.name.StartsWith("Greenhouse")) baseLoc = "Greenhouse";
-                            if (Game1.player.currentLocation is StardewValley.Locations.LibraryMuseum) baseLoc = "ArchaelogyHouse";
-                            if (Game1.player.currentLocation is StardewValley.Locations.CommunityCenter) baseLoc = "CommunityCenter";
-                        }
+                        if (Game1.player.currentLocation is StardewValley.Farm) baseLoc = "Farm";
+                        if (Game1.player.currentLocation is StardewValley.Locations.FarmCave) baseLoc = "FarmCave";
+                        if (Game1.player.currentLocation.name.StartsWith("Greenhouse")) baseLoc = "Greenhouse";
+                        if (Game1.player.currentLocation is StardewValley.Locations.LibraryMuseum) baseLoc = "ArchaelogyHouse";
+                        if (Game1.player.currentLocation is StardewValley.Locations.CommunityCenter) baseLoc = "CommunityCenter";
+                    }
 
-                        if (baseLoc != null)
-                        {
-                            Log.debug("Looking for " + baseLoc + "_" + typing.Substring(10));
-                            if (Game1.getLocationFromName(baseLoc + "_" + typing.Substring(10)) != null)
-                                Game1.warpFarmer(baseLoc + "_" + typing.Substring(10), (int)Game1.player.position.X / Game1.tileSize, (int)Game1.player.position.Y / Game1.tileSize, false);
-                        }
+                    if (baseLoc != null)
+                    {
+                        Log.debug("Looking for " + baseLoc + "_" + typing.Substring(10));
+                        if (Game1.getLocationFromName(baseLoc + "_" + typing.Substring(10)) != null)
+                            Game1.warpFarmer(baseLoc + "_" + typing.Substring(10), (int)Game1.player.position.X / Game1.tileSize, (int)Game1.player.position.Y / Game1.tileSize, false);
                     }
                 }
 
