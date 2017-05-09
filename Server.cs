@@ -41,14 +41,6 @@ namespace StardewValleyMP
 
             if (Multiplayer.lobby) return;
 
-            if ( clients.Count == 0 )
-            {
-                ChatMenu.chat.Add(new ChatEntry(null, "No more clients."));
-                Multiplayer.mode = Mode.Singleplayer;
-                Multiplayer.server = null;
-                return;
-            }
-
             if (playing && Game1.player != null)
             {
                 Multiplayer.doMyPlayerUpdates(0);
