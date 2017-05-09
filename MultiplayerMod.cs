@@ -33,6 +33,8 @@ namespace StardewValleyMP
             Util.WHITE_1X1 = new Texture2D(Game1.graphics.GraphicsDevice, 1, 1);
             Util.WHITE_1X1.SetData(new Color[] { Color.White });
 
+            GameEvents.UpdateTick += onUpdate;
+
             makeUsLast();
 
             Helper.ConsoleCommands.Add("player_unstuck", "...", unstuckCommand);
@@ -80,6 +82,7 @@ namespace StardewValleyMP
         {
             if ( firstUpdate )
             {
+                GameEvents.UpdateTick -= onUpdate;
                 GameEvents.UpdateTick += onUpdate;
                 GraphicsEvents.OnPreRenderHudEvent += onPreDraw;
                 LocationEvents.CurrentLocationChanged += onCurrentLocationChange;
@@ -183,6 +186,7 @@ namespace StardewValleyMP
 
         private void makeUsLast()
         {
+            // We want to be last so that everybody removes their stuff already in 'beforeSave'
             var mods = Helper.Reflection.GetPrivateValue<List<IMod>>(Helper.ModRegistry, "Mods");
             mods.Remove(this);
             mods.Add(this);

@@ -352,6 +352,8 @@ namespace StardewValleyMP.Interface
 
         public override void draw(SpriteBatch b)
         {
+            drawBackground(b);
+
             if (!didModeSelect)
             {
                 int x = xPositionOnScreen + width / 4;
@@ -606,6 +608,7 @@ namespace StardewValleyMP.Interface
             base.draw(b);
 
             ChatMenu.drawChat(false);
+            drawMouse(b);
         }
 
         private void onFriendSelected(Friend friend)
