@@ -35,7 +35,6 @@ namespace StardewValleyMP.Packets
         {
             Log.debug("Ready to start next day");
             client.stage = Client.NetStage.Playing;
-            client.tempStopUpdating = true;
         }
 
         public override void process(Server server, Server.Client client)

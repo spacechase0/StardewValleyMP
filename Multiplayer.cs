@@ -325,7 +325,6 @@ namespace StardewValleyMP
 
         public static  String ipStr = "127.0.0.1";
         public static  String portStr = DEFAULT_PORT;
-        public static  TcpListener listener = null;
 
         public static bool lobby = true;
         public static bool problemStarting = false;
@@ -334,45 +333,8 @@ namespace StardewValleyMP
             mode = Mode.Host;
             problemStarting = false;
 
-            try
-            {
-                int port = Int32.Parse(portStr);
-                // http://stackoverflow.com/questions/1777629/how-to-listen-on-multiple-ip-addresses
-                listener = Util.UsingMono ? new TcpListener( IPAddress.Any, port ) : TcpListener.Create(port);
-                listener.Start();
-
-                client = null;
-                server = new Server();
-
-                while ( Multiplayer.mode == Mode.Host)
-                {
-                    Log.info("Waiting for connection...");
-                    TcpClient socket = listener.AcceptTcpClient();
-                    socket.NoDelay = true;
-                    server.addClient(new NetworkConnection(socket));
-                }
-
-            }
-            catch (Exception e)
-            {
-                if (e is SocketException && ( ( ( SocketException ) e ).Message.IndexOf( "A blocking operation was interrupted" ) != -1 ||
-                                              ( ( SocketException ) e ).Message.IndexOf( "WSACancelBlockingCall" ) != -1 ) )
-                    return;
-
-                Log.error("Exception while listening: " + e);
-                ChatMenu.chat.Add(new ChatEntry(null, "Exception while listening for clients: "));
-                ChatMenu.chat.Add(new ChatEntry(null, e.Message));
-                ChatMenu.chat.Add(new ChatEntry(null, "Check your log file for more details."));
-                problemStarting = true;
-            }
-            finally
-            {
-                if ( listener != null )
-                {
-                    listener.Stop();
-                    listener = null;
-                }
-            }
+            client = null;
+            server = new Server();
         }
 
         public static void startClient()
@@ -573,36 +535,6 @@ namespace StardewValleyMP
             farmer.UpdateIfOtherPlayer(gt);
         }
 
-        public static void draw( SpriteBatch sb )
-        {
-            /*
-            sb.End();
-            sb.Begin(SpriteSortMode.FrontToBack, BlendState.AlphaBlend, SamplerState.PointClamp, null, null);
-
-            if (Multiplayer.mode == Mode.Host)
-            {
-                if (server.clients == null) return;
-                foreach (Server.Client client in server.clients)
-                {
-                    // Handled in GameLocation, since LocationPacket adds them to the farmers
-                    // Better that way because they are sorted properly instead of showing on top of buildings and such
-                    //client.farmer.draw(sb);
-                }
-            }
-            else if (Multiplayer.mode == Mode.Client)
-            {
-                if (client.others == null) return;
-                foreach ( KeyValuePair< byte, SFarmer > other in client.others )
-                {
-                    //other.Value.draw(sb);
-                }
-            }
-
-            sb.End();
-            sb.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, null, null);
-            */
-        }
-
         public static bool goingToFestival = false;
         public static void locationChange( GameLocation oldLoc, GameLocation newLoc )
         {
@@ -687,10 +619,6 @@ namespace StardewValleyMP
         public static bool hadDancePartner = false;
         public static string prevSpouse = null;
         public static int prevBooks = 0;
-		private static bool rcInit = false;
-        private static bool rcLastLogState = true;
-        private static List<int> rcLastWoodsState = new List<int>();
-        private static List<int> rcLastFarmState = new List<int>();
 		
         public static void doMyPlayerUpdates(byte id)
         {

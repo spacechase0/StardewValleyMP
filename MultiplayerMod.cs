@@ -116,10 +116,6 @@ namespace StardewValleyMP
                 if (Game1.spriteBatch == null) return;
 
                 ChatMenu.drawChat(true);
-
-                if (Multiplayer.mode == Mode.Singleplayer) return;
-
-                if (Multiplayer.mode != Mode.Singleplayer) Multiplayer.draw( Game1.spriteBatch );
             }
             catch ( Exception e )
             {

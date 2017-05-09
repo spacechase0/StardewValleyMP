@@ -28,8 +28,6 @@ namespace StardewValleyMP
 
         public Dictionary< byte, SFarmer > others = new Dictionary< byte, SFarmer >();
 
-        public bool tempStopUpdating = false;
-
         public Client( IConnection theConn )
         {
             conn = theConn;
@@ -72,8 +70,7 @@ namespace StardewValleyMP
                 Multiplayer.client = null;
                 return;
             }
-
-            if (tempStopUpdating) return;
+            
             if (stage != NetStage.Waiting)
             {
                 processDelayedPackets();
@@ -92,9 +89,7 @@ namespace StardewValleyMP
                     bool success = toReceive.TryTake(out packet);
                     if (!success) continue;
 
-                    if (stage == NetStage.Waiting && packet.id != ID.NextDay && packet.id != ID.Chat /*&& packet.id != ID.WorldData*/)
-                        packetDelay.Enqueue(packet);
-                    else packet.process(this);
+                    packet.process(this);
                 }
             }
             catch ( Exception e )

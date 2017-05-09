@@ -79,6 +79,7 @@
     <Compile Include="Connections\IConnection.cs" />
     <Compile Include="Interface\LanSelectorWidget.cs" />
     <Compile Include="Interface\FriendSelectorWidget.cs" />
+    <Compile Include="Interface\PendingConnectionMenu.cs" />
     <Compile Include="LanDiscovery.cs" />
     <Compile Include="Platforms\Friend.cs" />
     <Compile Include="Platforms\SteamPlatform.cs" />
@@ -151,6 +152,9 @@
   <ItemGroup>
     <None Include="manifest.json" />
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="ServerConnectionInterface.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\Pathoschild.Stardew.ModBuildConfig.1.5.0\build\Pathoschild.Stardew.ModBuildConfig.targets" Condition="Exists('..\packages\Pathoschild.Stardew.ModBuildConfig.1.5.0\build\Pathoschild.Stardew.ModBuildConfig.targets')" />

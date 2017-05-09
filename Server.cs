@@ -1,12 +1,15 @@
-﻿using StardewValley;
+﻿using StardewModdingAPI;
+using StardewValley;
 using StardewValley.Quests;
 using StardewValleyMP.Connections;
 using StardewValleyMP.Interface;
 using StardewValleyMP.Packets;
+using StardewValleyMP.Platforms;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
+using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading;
@@ -18,17 +21,18 @@ namespace StardewValleyMP
     public class Server
     {
         public bool playing = false;
-        public bool delayUpdates = false;
+        public ServerConnectionInterface connections;
 
         public Server()
         {
             Multiplayer.sendFunc = broadcast;
+            connections = new ServerConnectionInterface(this);
         }
 
         private DateTime lastTimeSync;
         public void update()
         {
-            for (int i = 0; !delayUpdates && i < clients.Count; ++i )
+            for (int i = 0; i < clients.Count; ++i )
             {
                 clients[i].update();
                 if ( !clients[ i ].connected() )
@@ -45,25 +49,12 @@ namespace StardewValleyMP
             {
                 Multiplayer.doMyPlayerUpdates(0);
 
-                if ((DateTime.Now - lastTimeSync).TotalMilliseconds >= 10000 /*&& Game1.timeOfDay % 100 == 0*/) // 10 seconds? Sure, why not
+                if ((DateTime.Now - lastTimeSync).TotalMilliseconds >= 10000) // 10 seconds? Sure, why not
                 {
                     broadcast(new TimeSyncPacket());
                     lastTimeSync = DateTime.Now;
                 }
-            }/*
-            else if ( !playing && Game1.player != null )
-            {
-                bool othersReady = true;
-                foreach ( Server.Client client in clients )
-                {
-                    othersReady = othersReady && ( client.stage == Client.NetStage.WaitingForStart );
-                }
-
-                if ( othersReady )
-                {
-                    playing = true;
-                }
-            }*/
+            }
         }
 
         public void broadcast(Packet packet) { broadcast( packet, -1 ); } // Can't use default parameter because of passing as Action
@@ -74,82 +65,6 @@ namespace StardewValleyMP
                 if (client.id == except) continue;
                 client.send(packet);
             }
-        }
-
-        public void getPlayerInfo()
-        {
-            Log.debug("Getting information on the clients.");
-            /*foreach ( Client client in clients )
-            {
-                client.send(new YourIDPacket(client.id));
-            }*/
-
-            // Wait for responses
-            foreach ( Client client in clients )
-            {
-                while ( client.stage != Client.NetStage.WaitingForStart )
-                {
-                    client.update();
-                    Thread.Sleep(10);
-                }
-            }
-        }
-
-        public void broadcastInfo()
-        {
-            Log.debug("Broadcasting world info.");
-
-            // World data packet is the same for everyone, so go ahead and prepare it
-
-            /*String saveFile = SaveGame.loaded.player.Name + "_" + SaveGame.loaded.uniqueIDForThisGame;
-            string worldPath = Path.Combine(new string[]
-			        {
-				        Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
-				        "StardewValley",
-				        "Saves",
-				        saveFile,
-				        saveFile
-			        });
-            String xml = File.ReadAllText(worldPath);*/
-            MemoryStream tmp = new MemoryStream();
-            foreach ( var quest in SaveGame.loaded.player.questLog)
-            {
-                if (quest is SlayMonsterQuest)
-                    (quest as SlayMonsterQuest).loadQuestInfo();
-            }
-            SaveGame.serializer.Serialize(tmp, SaveGame.loaded);
-            WorldDataPacket world = new WorldDataPacket(Encoding.UTF8.GetString(tmp.ToArray()));
-
-            foreach ( Client client in clients )
-            {
-                // Send other farmers first
-                OtherFarmerDataPacket others = new OtherFarmerDataPacket();
-
-                /*string savePath = Path.Combine(new string[]
-			    {
-				    Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
-				    "StardewValley",
-				    "Saves",
-				    saveFile,
-				    "SaveGameInfo"
-			    });
-                String myXml = File.ReadAllText(savePath);*/
-                others.others.Add(0, Util.serialize<SFarmer>(SaveGame.loaded.player));
-
-                foreach ( Client other in clients )
-                {
-                    if (client == other) continue;
-                    others.others.Add(other.id, other.farmerXml );
-                }
-                client.send(others);
-
-                // Send world info
-                client.send(world);
-
-                client.stage = Client.NetStage.Playing;
-            }
-
-            lastTimeSync = DateTime.Now;
         }
 
         // Non-game stuff
@@ -234,16 +149,6 @@ namespace StardewValleyMP
                 }
             }
 
-            //public bool tempStopUpdating = false;
-            private Queue<Packet> packetDelay = new Queue<Packet>();
-            public void processDelayedPackets()
-            {
-                while (packetDelay.Count > 0)
-                {
-                    packetDelay.Dequeue().process(server, this);
-                }
-            }
-
             public bool connected()
             {
                 return (socket != null);
@@ -263,9 +168,6 @@ namespace StardewValleyMP
                     return;
                 }
 
-                //if (tempStopUpdating) return;
-                if (stage != NetStage.WaitingForStart) processDelayedPackets();
-
                 try
                 {
                     while (toReceive.Count > 0)
@@ -274,11 +176,7 @@ namespace StardewValleyMP
                         bool success = toReceive.TryTake(out packet);
                         if (!success) continue;
 
-                        if (server.playing && stage == NetStage.WaitingForStart)
-                        {
-                            packetDelay.Enqueue(packet);
-                        }
-                        else packet.process(server, this);
+                        packet.process(server, this);
                     }
                 }
                 catch ( Exception e )
