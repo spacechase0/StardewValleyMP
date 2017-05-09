@@ -2,7 +2,6 @@
 using StardewValley.Buildings;
 using StardewValley.Characters;
 using StardewValley.Locations;
-using StardewValleyMP.Vanilla;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -156,7 +155,6 @@ namespace StardewValleyMP.Packets
                 if (theirLoc is FarmHouse)
                 {
                     Log.debug("FarmHouse: " + theirLoc.name);
-                    NewSaveGame.FarmHouse_setMapForUpgradeLevel(theirLoc as FarmHouse);
                 }
             }
             /*

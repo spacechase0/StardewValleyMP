@@ -7,7 +7,6 @@ using StardewValley;
 using StardewValley.Menus;
 using StardewValleyMP.Interface;
 using StardewValleyMP.Platforms;
-using StardewValleyMP.Vanilla;
 using Steamworks;
 using System;
 using System.Collections.Generic;
@@ -31,11 +30,10 @@ namespace StardewValleyMP
             Log.info("Loading Config");
             ModConfig = Helper.ReadConfig<MultiplayerConfig>();
 
-            GameEvents.LoadContent += loadContent;
-            GameEvents.UpdateTick += onUpdate;
-            GraphicsEvents.OnPreRenderHudEvent += onPreDraw;      
-            LocationEvents.CurrentLocationChanged += onCurrentLocationChange;
-            ControlEvents.KeyboardChanged += onKeyboardChange;
+            Util.WHITE_1X1 = new Texture2D(Game1.graphics.GraphicsDevice, 1, 1);
+            Util.WHITE_1X1.SetData(new Color[] { Color.White });
+
+            makeUsLast();
 
             Helper.ConsoleCommands.Add("player_unstuck", "...", unstuckCommand);
             Helper.ConsoleCommands.Add("player_sleep", "...", sleepCommand);
@@ -75,16 +73,24 @@ namespace StardewValleyMP
             Game1.newDay = false;
             Log.info("Done unsleeping.");
         }
-
-        public static void loadContent( object sender, EventArgs args )
-        {
-            Util.WHITE_1X1 = new Texture2D(Game1.graphics.GraphicsDevice, 1, 1);
-            Util.WHITE_1X1.SetData(new Color[] { Color.White });
-        }
-
+        
         private static IClickableMenu prevMenu = null;
+        private static bool firstUpdate = true;
         public static void onUpdate( object sender, EventArgs args )
         {
+            if ( firstUpdate )
+            {
+                GameEvents.UpdateTick += onUpdate;
+                GraphicsEvents.OnPreRenderHudEvent += onPreDraw;
+                LocationEvents.CurrentLocationChanged += onCurrentLocationChange;
+                ControlEvents.KeyboardChanged += onKeyboardChange;
+                SaveEvents.AfterLoad += afterLoad;
+                SaveEvents.BeforeSave += beforeSave;
+                SaveEvents.AfterSave += afterSave;
+
+                firstUpdate = false;
+            }
+
             if (DEBUG)
             {
                 Game1.options.pauseWhenOutOfFocus = false;
@@ -93,25 +99,6 @@ namespace StardewValleyMP
             {
                 IPlatform.instance.update();
                 Multiplayer.update();
-
-                // We need our load menu to be able to do things
-                if (Game1.activeClickableMenu is TitleMenu)
-                {
-                    if (TitleMenu.subMenu is LoadGameMenu)
-                    {
-                        Log.debug("Found vanilla load game menu, replacing with ours.");
-
-                        LoadGameMenu oldLoadMenu = ( LoadGameMenu ) TitleMenu.subMenu;
-                        NewLoadMenu newLoadMenu = new NewLoadMenu();
-
-                        IPrivateField< object > task = instance.Helper.Reflection.GetPrivateField< object >(oldLoadMenu, "_initTask");
-                        newLoadMenu._initTask = (Task<List<SFarmer>>)task.GetValue();
-                        Log.debug("Stole the save listing task, set it to: " + task);
-
-                        TitleMenu.subMenu = newLoadMenu;
-                    }
-                }
-                prevMenu = Game1.activeClickableMenu;
             }
             catch ( Exception e )
             {
@@ -179,6 +166,26 @@ namespace StardewValleyMP
             {
                 Log.error("Exception during keyboard change: " + e);
             }
+        }
+
+        public static void afterLoad(object sender, EventArgs args)
+        {
+            Game1.activeClickableMenu = new ModeSelectMenu();
+        }
+
+        public static void beforeSave(object sender, EventArgs args)
+        {
+        }
+
+        public static void afterSave(object sender, EventArgs args)
+        {
+        }
+
+        private void makeUsLast()
+        {
+            var mods = Helper.Reflection.GetPrivateValue<List<IMod>>(Helper.ModRegistry, "Mods");
+            mods.Remove(this);
+            mods.Add(this);
         }
     }
 }

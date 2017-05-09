@@ -9,7 +9,6 @@ using StardewValley.Locations;
 using StardewValley.Characters;
 using StardewModdingAPI;
 using StardewValleyMP.Interface;
-using StardewValleyMP.Vanilla;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using xTile;
@@ -69,7 +68,7 @@ namespace StardewValleyMP.Packets
                 server.broadcast(new ChatPacket(255, theirs.player.name + " has connected."), client.id);
 
                 String str = "Currently playing: ";
-                str += NewLoadMenu.pendingSelected.name;
+                str += Game1.player;
                 foreach ( Server.Client other in server.clients )
                 {
                     if (other == client || other.farmer == null) continue;
@@ -82,44 +81,12 @@ namespace StardewValleyMP.Packets
             client.farmer = theirs.player;
             client.farmer.uniqueMultiplayerID += 1 + client.id;
             client.farmType = theirs.whichFarm;
-
-            NewSaveGame.loadDataToFarmer(client.farmer);
+            
             client.farmer.FarmerSprite.setOwner(client.farmer);
             Game1.player.FarmerSprite.setOwner(Game1.player);
 
             //if(!server.playing)
             //if (server.playing) client.farmer = old;
-
-            // About second-day-sleeping crashes:
-            // So just adding the location directly puts the raw deserialized one into the game.
-            // The raw deserialized one doesn't have the tiles and stuff loaded. Just the game data.
-            // I think this is why vanilla copies data over in loadDataToLocations instead of using
-            // the loaded objects directly. Why not just postpone loading until later, I don't know.
-            //
-            // So, when the second day begins, otherFarmer.currentLocation was still set to the
-            // previous day's farm house[*]. On day two, the 'good' one[**] was removed, so when they go
-            // back in, the bad one is used. Basically, I need to make them all the 'good' one.
-            // For now, I'm just going to reload the needed data for this client's farmhouse.
-            // I'll figure out how to do it 'properly' later. Maybe. (My mind is muddled today.)
-            // 
-            // [*] Looking at addFixedLocationToOurWorld now you'll see that this isn't the case.
-            // I added the part about fixing SFarmer.currentLocation as I was going through this 
-            // thought process. So things will break more obviously if something like this happens
-            // again.
-            //
-            // [**] The first day's farmhouse is okay because in loadDataToLocations, (called in
-            // NewSaveGame.getLoadEnumerator), the map is reloaded from FarmHouse_setMapForUpgradeLevel. 
-            // If CO-OP weren't on, worse things would happen, because things besides the farm house
-            // would need loading (see Multiplayer.isPlayerUnique). The client doesn't have this
-            // issue because they do the whole loading process each day anyways.
-            //
-            // Of course, the whole second-day-crash doesn't happen when I test it on localhost. Hence
-            // why this was so annoying. And probably why I documented all this.
-            foreach (GameLocation theirLoc in theirs.locations)
-            {
-                if ( theirLoc.name == "FarmHouse" )
-                    NewSaveGame.FarmHouse_setMapForUpgradeLevel( theirLoc as FarmHouse );
-            }
 
             fixPetDuplicates(theirs);
             

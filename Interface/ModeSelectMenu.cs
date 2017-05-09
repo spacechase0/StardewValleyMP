@@ -3,7 +3,6 @@ using System.Threading;
 using StardewValley;
 using StardewValley.BellsAndWhistles;
 using StardewValley.Menus;
-using StardewValleyMP.Vanilla;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using SFarmer = StardewValley.Farmer;
@@ -15,13 +14,12 @@ using System.Net.NetworkInformation;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading.Tasks;
+using StardewModdingAPI;
 
 namespace StardewValleyMP.Interface
 {
     public class ModeSelectMenu : IClickableMenu
     {
-        public string path { get; private set; }
-
         public bool readyToLoad = false;
         public bool didModeSelect = false;
         private Thread modeInit;
@@ -48,9 +46,8 @@ namespace StardewValleyMP.Interface
 
         private string localIp, externalIp;
 
-        public ModeSelectMenu(string thePath) : base(Game1.viewport.Width / 2 - (1100 + IClickableMenu.borderWidth * 2) / 2, Game1.viewport.Height / 2 - (600 + IClickableMenu.borderWidth * 2) / 2, 1100 + IClickableMenu.borderWidth * 2, 600 + IClickableMenu.borderWidth * 2, false)
+        public ModeSelectMenu() : base(Game1.viewport.Width / 2 - (1100 + IClickableMenu.borderWidth * 2) / 2, Game1.viewport.Height / 2 - (600 + IClickableMenu.borderWidth * 2) / 2, 1100 + IClickableMenu.borderWidth * 2, 600 + IClickableMenu.borderWidth * 2, false)
         {
-            path = thePath;
             if ( IPlatform.instance.getFriends().Count > 0 )
             {
                 friends = new FriendSelectorWidget( true, xPositionOnScreen + width / 5, 75, width / 5 * 3, 475 );
@@ -210,7 +207,7 @@ namespace StardewValleyMP.Interface
 
                         if (allowLan)
                         {
-                            string name = Path.GetFileNameWithoutExtension(path);
+                            string name = Path.GetFileNameWithoutExtension(Constants.CurrentSavePath);
                             name = name.Substring(0, name.LastIndexOf('_'));
                             LanDiscovery.startServer(name, int.Parse(portBox.Text));
                         }
@@ -338,7 +335,6 @@ namespace StardewValleyMP.Interface
                 if (pendingClient != null)
                     Multiplayer.client = pendingClient;
                 Multiplayer.lobby = false;
-                NewSaveGame.Load(path);
                 Game1.exitActiveMenu();
             }
             else if ( Multiplayer.mode == Mode.Client && modeInit != null && modeInit.ThreadState != ThreadState.Running )

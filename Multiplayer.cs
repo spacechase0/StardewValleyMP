@@ -7,7 +7,6 @@ using StardewValley.Menus;
 using StardewValleyMP.Connections;
 using StardewValleyMP.Interface;
 using StardewValleyMP.Packets;
-using StardewValleyMP.Vanilla;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -17,24 +16,6 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using SFarmer = StardewValley.Farmer;
-
-/*
-farmer pos
-	anim
-	movement
-	warp
-object change
-switch held
-tool action
-game clock
-building change
-debris pickup
-player intro
-debris create
-npc behavior
-npc move
-check action
- * */
 
 namespace StardewValleyMP
 {
@@ -48,7 +29,7 @@ namespace StardewValleyMP
     class Multiplayer
     {
         public const string DEFAULT_PORT = "24644";
-        public const byte PROTOCOL_VERSION = 3;
+        public const byte PROTOCOL_VERSION = 4;
         public static bool COOP { get { return MultiplayerMod.ModConfig.Coop; } }
 
         public static Mode mode = Mode.Singleplayer;
@@ -224,7 +205,7 @@ namespace StardewValleyMP
         {
             if (loc == null) return loc;
 
-            SFarmer me = NewLoadMenu.pendingSelected;
+            SFarmer me = Game1.player;
             if (SaveGame.loaded != null && SaveGame.loaded.player != null)
                 me = SaveGame.loaded.player;
             if (me == null && Game1.player != null)
@@ -472,51 +453,6 @@ namespace StardewValleyMP
                     else if ( mode == Mode.Client )
                     {
                         client.stage = Client.NetStage.Waiting;
-
-                        try
-                        {
-                            SaveGame oldLoaded = SaveGame.loaded;
-                            var it = NewSaveGame.Save(true);
-                            while (it.Current < 100)
-                            {
-                                it.MoveNext();
-                                Thread.Sleep(5);
-                            }
-
-                            foreach ( GameLocation loc in SaveGame.loaded.locations )
-                            {
-                                List<NPC> toRemove = new List<NPC>();
-                                foreach ( NPC npc in loc.characters )
-                                {
-                                    if ( npc is StardewValley.Monsters.RockGolem || npc is StardewValley.Monsters.Bat )
-                                    {
-                                        toRemove.Add(npc);
-                                    }
-                                }
-                                foreach ( NPC npc in toRemove )
-                                {
-                                    loc.characters.Remove(npc);
-                                }
-                            }
-
-                            MemoryStream tmp = new MemoryStream();
-                            SaveGame.serializer.Serialize(tmp, SaveGame.loaded);
-                            sendFunc(new NextDayPacket());
-                            sendFunc(new ClientFarmerDataPacket(Encoding.UTF8.GetString(tmp.ToArray())));
-                            //SaveGame.loaded = oldLoaded;
-                        }
-                        catch ( Exception e )
-                        {
-                            Log.error("Exception transitioning to next day: " + e);
-                            ChatMenu.chat.Add(new ChatEntry(null, "Something went wrong transitioning days."));
-                            ChatMenu.chat.Add(new ChatEntry(null, "Report this bug, providing the full log file."));
-                            ChatMenu.chat.Add(new ChatEntry(null, "You might be stuck in bed now. Attempting to unstuck you, more stuff might go wrong though."));
-                            Game1.freezeControls = prevFreezeControls = false;
-                            Game1.newDay = false;
-                            Game1.fadeToBlackAlpha = 0;
-                            Game1.player.CanMove = true;
-                            client.stage = Client.NetStage.Playing;
-                        }
                     }
                     sentNextDayPacket = true;
                 }
@@ -527,22 +463,6 @@ namespace StardewValleyMP
                 }
             }
             else sentNextDayPacket = false;
-
-            // We want people to wait for everyone
-            //Log.Async("menu:"+Game1.activeClickableMenu);
-            if (Game1.activeClickableMenu is SaveGameMenu && Game1.activeClickableMenu.GetType() != typeof( NewSaveGameMenu ) )
-            {
-                Game1.activeClickableMenu = new NewSaveGameMenu();
-            }
-            else if ( Game1.activeClickableMenu is ShippingMenu )
-            {
-                //Log.Async("Savegame:" + Util.GetInstanceField(typeof(ShippingMenu), Game1.activeClickableMenu, "saveGameMenu"));
-                SaveGameMenu menu = ( SaveGameMenu ) Util.GetInstanceField(typeof(ShippingMenu), Game1.activeClickableMenu, "saveGameMenu");
-                if (menu != null && menu.GetType() != typeof(NewSaveGameMenu))
-                {
-                    Util.SetInstanceField(typeof(ShippingMenu), Game1.activeClickableMenu, "saveGameMenu", new NewSaveGameMenu());
-                }
-            }
 
             if (Game1.currentLocation != null && Game1.currentLocation.currentEvent != null)
                 Events.fix();
