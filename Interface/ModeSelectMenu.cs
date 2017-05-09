@@ -22,7 +22,6 @@ namespace StardewValleyMP.Interface
     {
         public bool readyToLoad = false;
         public bool didModeSelect = false;
-        private Thread modeInit;
 
         private TextBox ipBox;
         private TextBox portBox;
@@ -44,8 +43,6 @@ namespace StardewValleyMP.Interface
 
         private bool showingLan = false;
 
-        private string localIp, externalIp;
-
         public ModeSelectMenu() : base(Game1.viewport.Width / 2 - (1100 + IClickableMenu.borderWidth * 2) / 2, Game1.viewport.Height / 2 - (600 + IClickableMenu.borderWidth * 2) / 2, 1100 + IClickableMenu.borderWidth * 2, 600 + IClickableMenu.borderWidth * 2, false)
         {
             if ( IPlatform.instance.getFriends().Count > 0 )
@@ -56,38 +53,8 @@ namespace StardewValleyMP.Interface
 
             lan = new LanSelectorWidget(xPositionOnScreen + width / 5, 75, width / 5 * 3, 475);
             lan.onEntrySelected = new Action<LanSelectorWidget.LanEntry>(onLanEntrySelected);
-
-            try
-            {
-                // http://stackoverflow.com/a/27376368
-                using (Socket socket = new Socket(System.Net.Sockets.AddressFamily.InterNetwork, SocketType.Dgram, 0))
-                {
-                    socket.Connect("8.8.8.8", 65530);
-                    localIp = (socket.LocalEndPoint as IPEndPoint).Address.ToString();
-                }
-            }
-            catch ( Exception e )
-            {
-                Log.warn("Exception getting internal IP: " + e);
-                localIp = "n/a";
-            }
-            try
-            {
-                externalIp = new WebClient().DownloadString("http://ipinfo.io/ip").Trim();
-            }
-            catch (Exception e)
-            {
-                Log.warn("Exception getting external IP: " + e);
-                externalIp = "n/a";
-            }
         }
-
-        ~ModeSelectMenu()
-        {
-            LanDiscovery.stop();
-        }
-
-        private bool justClicked = false;
+        
         public override void receiveLeftClick(int x, int y, bool playSound = true)
         {
             if (pendingClient != null) return;
@@ -143,7 +110,7 @@ namespace StardewValleyMP.Interface
                     portBox.Text = MultiplayerMod.ModConfig.DefaultPort;
                 }
             }
-            else if (modeInit == null)
+            else
             {
                 if (Multiplayer.mode == Mode.Client)
                 {
@@ -209,27 +176,11 @@ namespace StardewValleyMP.Interface
                     {
                         MultiplayerMod.ModConfig.DefaultIP = ipBox.Text;
                         Multiplayer.ipStr = ipBox.Text;
-                        modeInit = new Thread(Multiplayer.startClient);
+                        Multiplayer.startClient();
+                        ChatMenu.chat.Add(new ChatEntry(null, "NOTE: Chat doesn't work on the connection menu."));
                     }
                     MultiplayerMod.instance.Helper.WriteConfig(MultiplayerMod.ModConfig);
-                    if ( modeInit != null )
-                        modeInit.Start();
-                    ChatMenu.chat.Clear();
-                    ChatMenu.chat.Add(new ChatEntry(null, "NOTE: Chat doesn't work on the connection menu."));
-                }
-            }
-            else if (Multiplayer.problemStarting)
-            {
-                Rectangle r = new Rectangle(buttonX, buttonY3, buttonW, buttonH);
-                if (r.Contains(x, y))
-                {
-                    Multiplayer.client = null;
-                    Multiplayer.server = null;
-                    readyToLoad = false;
-
-                    didModeSelect = false;
-                    modeInit = null;
-                    Multiplayer.problemStarting = false;
+                    Game1.exitActiveMenu();
                 }
             }
         }
@@ -314,11 +265,7 @@ namespace StardewValleyMP.Interface
                 Multiplayer.lobby = false;
                 Game1.exitActiveMenu();
             }
-            else if ( Multiplayer.mode == Mode.Client && modeInit != null && modeInit.ThreadState != ThreadState.Running )
-            {
-                readyToLoad = true;
-            }
-            else if ( modeInit == null && Multiplayer.mode == Mode.Client )
+            else if ( Multiplayer.mode == Mode.Client )
             {
                 if (showingFriends && friends != null)
                     friends.update(time);
@@ -356,7 +303,7 @@ namespace StardewValleyMP.Interface
                 IClickableMenu.drawTextureBox(b, Game1.mouseCursors, new Rectangle(384, 373, 18, 18), x, y, w, h, new Rectangle(x, y, w, h).Contains(Game1.getOldMouseX(), Game1.getOldMouseY()) ? Color.Wheat : Color.White, (float)Game1.pixelZoom, true);
                 SpriteText.drawString(b, "Client", x + w / 2 - SpriteText.getWidthOfString("Client") / 2, y + h / 2 - SpriteText.getHeightOfString("Client") / 2);
             }
-            else if (modeInit == null)
+            else
             {
                 int x = buttonX, y = buttonY3 + buttonH, w = buttonW, h = buttonH;
                 String str = (Multiplayer.mode == Mode.Host ? "Listen" : "Connect");
@@ -475,68 +422,6 @@ namespace StardewValleyMP.Interface
                     SpriteText.drawString(b, str, x + w / 2 - SpriteText.getWidthOfString(str) / 2, y + h / 2 - SpriteText.getHeightOfString(str) / 2);
                 }
             }
-            else if (Multiplayer.problemStarting)
-            {
-                int x = buttonX, y = buttonY1, w = buttonW, h = buttonH;
-                String str = "Error";
-                SpriteText.drawString(b, str, x + w / 2 - SpriteText.getWidthOfString(str) / 2, y + h / 2 - SpriteText.getHeightOfString(str) / 2);
-
-                y = buttonY2;
-                //
-
-                y = buttonY3;
-                str = "Back";
-                IClickableMenu.drawTextureBox(b, Game1.mouseCursors, new Rectangle(384, 373, 18, 18), x, y, w, h, new Rectangle(x, y, w, h).Contains(Game1.getOldMouseX(), Game1.getOldMouseY()) ? Color.Wheat : Color.White, (float)Game1.pixelZoom, true);
-                SpriteText.drawString(b, str, x + w / 2 - SpriteText.getWidthOfString(str) / 2, y + h / 2 - SpriteText.getHeightOfString(str) / 2);
-            }
-            else if (Multiplayer.server != null)
-            {
-                if (pendingConns.Count > 0)
-                {
-                }
-                else
-                {
-                    int x = buttonX, y = buttonY1, w = buttonW, h = buttonH;
-                    String str = "Start";
-
-                    Util.drawStr("Local IP: ", x, buttonY1, Color.White);
-                    Util.drawStr("External IP: ", x, buttonY1 + 35, Color.White);
-                    Util.drawStr("Port: ", x, buttonY1 + 70, Color.White);
-                    Util.drawStr(localIp, x + 200, buttonY1, Color.White);
-                    Util.drawStr(externalIp, x + 200, buttonY1 + 35, Color.White);
-                    Util.drawStr(Multiplayer.portStr, x + 200, buttonY1 + 70, Color.White);
-
-                    /*Util.drawStr("Other players: ", x, buttonY1, Color.White);
-                    foreach ( Server.Client client in Multiplayer.server.clients )
-                    {
-                        String str_ = "<Client " + ( int )( client.id ) + ">";
-                        if ( client.farmer != null )
-                            str_ = client.farmer.name;
-
-                        y += 30;
-                        Util.drawStr(str_, x + 25, y, Color.White);
-                    }*/
-
-                    y = buttonY3;
-                    IClickableMenu.drawTextureBox(b, Game1.mouseCursors, new Rectangle(384, 373, 18, 18), x, y, w, h, new Rectangle(x, y, w, h).Contains(Game1.getOldMouseX(), Game1.getOldMouseY()) ? Color.Wheat : Color.White, (float)Game1.pixelZoom, true);
-                    SpriteText.drawString(b, str, x + w / 2 - SpriteText.getWidthOfString(str) / 2, y + h / 2 - SpriteText.getHeightOfString(str) / 2);
-                }
-            }
-            else if (Multiplayer.client != null)
-            {
-                int x = buttonX, y = buttonY1, w = buttonW, h = buttonH;
-
-                /*Util.drawStr("Other players: ", x, buttonY1, Color.White);
-                foreach (KeyValuePair< byte, SFarmer > other in Multiplayer.client.others)
-                {
-                    String str_ = "<Client " + (int)(other.Key) + ">";
-                    if (other.Value != null)
-                        str_ = other.Value.name;
-
-                    y += 30;
-                    Util.drawStr(str_, x + 25, y, Color.White);
-                }*/
-            }
 
             base.draw(b);
 
@@ -547,7 +432,7 @@ namespace StardewValleyMP.Interface
         private void onFriendSelected(Friend friend)
         {
             Log.trace("onFriendSelected " + friend.displayName);
-            if (modeInit == null && Multiplayer.mode == Mode.Client)
+            if (Multiplayer.client == null && Multiplayer.mode == Mode.Client)
             {
                 IConnection conn = IPlatform.instance.connectToFriend(friend);
                 pendingClient = new Client(conn);
@@ -560,11 +445,7 @@ namespace StardewValleyMP.Interface
 
             Multiplayer.portStr = portBox.Text;
             Multiplayer.ipStr = ipBox.Text;
-            modeInit = new Thread(Multiplayer.startClient);
-            modeInit.Start();
-
-            ChatMenu.chat.Clear();
-            ChatMenu.chat.Add(new ChatEntry(null, "NOTE: Chat doesn't work on the connection menu."));
+            Multiplayer.startClient();
         }
     }
 }

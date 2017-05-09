@@ -7,6 +7,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
+using System.Net;
+using System.Net.Sockets;
 using System.Reflection;
 using System.Text;
 using System.Windows.Forms;
@@ -22,6 +24,36 @@ namespace StardewValleyMP
         }
 
         public static Texture2D WHITE_1X1;
+
+        public static string getLocalIp()
+        {
+            try
+            {
+                // http://stackoverflow.com/a/27376368
+                using (Socket socket = new Socket(System.Net.Sockets.AddressFamily.InterNetwork, SocketType.Dgram, 0))
+                {
+                    socket.Connect("8.8.8.8", 65530);
+                    return (socket.LocalEndPoint as IPEndPoint).Address.ToString();
+                }
+            }
+            catch (Exception e)
+            {
+                Log.warn("Exception getting internal IP: " + e);
+                return null;
+            }
+        }
+        public static string getExternalIp()
+        {
+            try
+            {
+                return new WebClient().DownloadString("http://ipinfo.io/ip").Trim();
+            }
+            catch (Exception e)
+            {
+                Log.warn("Exception getting external IP: " + e);
+                return null;
+            }
+        }
 
         public static void drawStr(string str, float x, float y, Color col, float alpha = 1, bool smallFont = true)
         {
@@ -47,51 +79,6 @@ namespace StardewValleyMP
             b.DrawString(font, str, new Vector2((float)(x + Game1.tileSize / 4), (float)(y + Game1.tileSize / 4 + 4)) + new Vector2(0f, 2f), inverted * alpha * 0.8f);
             b.DrawString(font, str, new Vector2((float)(x + Game1.tileSize / 4), (float)(y + Game1.tileSize / 4 + 4)) + new Vector2(0f, -2f), inverted * alpha * 0.8f);
             b.DrawString(font, str, new Vector2((float)(x + Game1.tileSize / 4), (float)(y + Game1.tileSize / 4 + 4)), col * 0.9f * alpha);
-        }
-
-        // http://stackoverflow.com/a/17546909
-        public static bool stringDialog( string title, ref string input )
-        {
-            System.Drawing.Size size = new System.Drawing.Size(200, 70);
-            Form inputBox = new Form();
-
-            inputBox.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
-            inputBox.ClientSize = size;
-            inputBox.Text = title;
-
-            System.Windows.Forms.TextBox textBox = new TextBox();
-            textBox.Size = new System.Drawing.Size(size.Width - 10, 23);
-            textBox.Location = new System.Drawing.Point(5, 5);
-            textBox.Text = input;
-            inputBox.Controls.Add(textBox);
-
-            Button okButton = new Button();
-            okButton.DialogResult = System.Windows.Forms.DialogResult.OK;
-            okButton.Name = "okButton";
-            okButton.Size = new System.Drawing.Size(75, 23);
-            okButton.Text = "&OK";
-            okButton.Location = new System.Drawing.Point(size.Width - 80 - 80, 39);
-            inputBox.Controls.Add(okButton);
-
-            Button cancelButton = new Button();
-            cancelButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            cancelButton.Name = "cancelButton";
-            cancelButton.Size = new System.Drawing.Size(75, 23);
-            cancelButton.Text = "&Cancel";
-            cancelButton.Location = new System.Drawing.Point(size.Width - 80, 39);
-            inputBox.Controls.Add(cancelButton);
-
-            inputBox.AcceptButton = okButton;
-            inputBox.CancelButton = cancelButton;
-
-            DialogResult result = inputBox.ShowDialog();
-            input = textBox.Text;
-            return ( result == DialogResult.OK );
-        }
-        
-        public static bool yesNoDialog( string title, string text )
-        {
-            return (MessageBox.Show(title, text, MessageBoxButtons.YesNo) == DialogResult.Yes);
         }
 
         // http://stackoverflow.com/a/22456034

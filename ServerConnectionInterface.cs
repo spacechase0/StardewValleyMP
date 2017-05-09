@@ -43,6 +43,10 @@ namespace StardewValleyMP
             {
                 IPlatform.instance.onFriendConnected = new Action<Friend, PlatformConnection>(onFriendConnected);
             }
+
+            ChatMenu.chat.Add(new ChatEntry(null, "Local IP: " + Util.getLocalIp() ?? "n/a"));
+            ChatMenu.chat.Add(new ChatEntry(null, "External IP: " + Util.getExternalIp() ?? "n/a"));
+            ChatMenu.chat.Add(new ChatEntry(null, "Port IP: " + port));
         }
 
         private static TcpListener listener = null;

@@ -13,6 +13,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 using SFarmer = StardewValley.Farmer;
 
 namespace StardewValleyMP
@@ -77,26 +78,30 @@ namespace StardewValleyMP
             ++currentlyAccepting;
             Log.info("Got new client.");
 
-            Client client = new Client(this, (byte)getPlayerCount(), socket);
-            if ( askResend )
-                client.send(new VersionPacket());
-
-            client.update();
-            while (client.stage == Client.NetStage.VerifyingVersion)
+            Task.Run(
+            () =>
             {
-                if (client.stageFailed)
+                Client client = new Client(this, (byte)getPlayerCount(), socket);
+                if (askResend)
+                    client.send(new VersionPacket());
+
+                client.update();
+                while (client.stage == Client.NetStage.VerifyingVersion)
                 {
-                    Log.info("\tBad protocol version.");
-                    return;
+                    if (client.stageFailed)
+                    {
+                        Log.info("\tBad protocol version.");
+                        return;
+                    }
+
+                    Thread.Sleep(10);
+                    client.update();
+
                 }
 
-                Thread.Sleep(10);
-                client.update();
-
-            }
-
-            clients.Add(client);
-            Log.trace("Finished accepting client");
+                clients.Add(client);
+                Log.trace("Finished accepting client");
+            } );
         }
 
         public int getClientCount() { return clients.Count; }

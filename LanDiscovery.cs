@@ -35,9 +35,6 @@ namespace StardewValleyMP
                 running = false;
                 if ( client != null )
                     client.Close();
-                if ( thread != null )
-                    thread.Join();
-                thread = null;
                 client = null;
             }
         }
