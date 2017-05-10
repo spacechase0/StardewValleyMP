@@ -35,7 +35,7 @@ namespace StardewValleyMP
 
             GameEvents.UpdateTick += onUpdate;
 
-            makeUsLast();
+            //makeUsLast();
 
             Helper.ConsoleCommands.Add("player_unstuck", "...", unstuckCommand);
             Helper.ConsoleCommands.Add("player_sleep", "...", sleepCommand);
