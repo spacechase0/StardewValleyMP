@@ -516,6 +516,16 @@ namespace StardewValleyMP.Vanilla
                                 Log.trace("\t" + f + " " + f.name + " " + f.favoriteThing);
                             }
                         }
+
+                        if ( _initTask != null )
+                        {
+                            _initTask.Wait();
+                            _initTask = null;
+                        }
+                        if ( saveGames.Count == 0 )
+                        {
+                            this.saveGames.AddRange(this._initTaskMonoDebug.Result);
+                        }
                         this._initTaskMonoDebug = null;
                     }
                 }
