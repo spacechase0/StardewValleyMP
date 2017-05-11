@@ -276,10 +276,81 @@ namespace StardewValleyMP.Vanilla
             Task task2 = new Task(() => {
                 try
                 {
-                    /*SaveGame.*/
-                    loadDataToLocations(SaveGame.loaded.locations);
+                    Log.debug("Status of loaded locations (pre):");
+                    foreach ( var loc in SaveGame.loaded.locations )
+                    {
+                        if ( loc is CommunityCenter )
+                        {
+                            var cc = loc as CommunityCenter;
+                            Log.debug("CC (" + loc.name + "): ");
+                            foreach (var v in cc.areasComplete)
+                            {
+                                Log.debug("\tac: " + v);
+                            }
+                            foreach (var v in cc.bundleRewards)
+                            {
+                                Log.debug("\tbr: " + v.Key + " " + v.Value);
+                            }
+                            foreach (var v in cc.bundles)
+                            {
+                                Log.debug("\tb: " + v.Key + " " + v.Value);
+                            }
+                            Log.debug("\ts: " + cc.numberOfStarsOnPlaque);
+                        }
+                        else if ( loc is Beach )
+                        {
+                            Log.debug("Beach (" + loc.name + "): " + (loc as Beach).bridgeFixed);
+                        }
+                        else if ( loc is LibraryMuseum )
+                        {
+                            var m = loc as LibraryMuseum;
+                            Log.debug("Musuem (" + loc.name + "): ");
+                            foreach ( var v in m.museumPieces )
+                            {
+                                Log.debug("\tmp: " + v.Key + " " + v.Value);
+                            }
+                        }
+                    }
+
+                    /*SaveGame.*/loadDataToLocations(SaveGame.loaded.locations);
 
                     Game1.getLocationFromName("FarmHouse").resetForPlayerEntry();
+
+                    Log.debug("Status of loaded locations (post):");
+                    foreach (var loc in Game1.locations)
+                    {
+                        if (loc is CommunityCenter)
+                        {
+                            var cc = loc as CommunityCenter;
+                            Log.debug("CC (" + loc.name + "): ");
+                            foreach (var v in cc.areasComplete)
+                            {
+                                Log.debug("\tac: " + v);
+                            }
+                            foreach (var v in cc.bundleRewards)
+                            {
+                                Log.debug("\tbr: " + v.Key + " " + v.Value);
+                            }
+                            foreach (var v in cc.bundles)
+                            {
+                                Log.debug("\tb: " + v.Key + " " + v.Value);
+                            }
+                            Log.debug("\ts: " + cc.numberOfStarsOnPlaque);
+                        }
+                        else if (loc is Beach)
+                        {
+                            Log.debug("Beach (" + loc.name + "): " + (loc as Beach).bridgeFixed);
+                        }
+                        else if (loc is LibraryMuseum)
+                        {
+                            var m = loc as LibraryMuseum;
+                            Log.debug("Musuem (" + loc.name + "): ");
+                            foreach (var v in m.museumPieces)
+                            {
+                                Log.debug("\tmp: " + v.Key + " " + v.Value);
+                            }
+                        }
+                    }
                 }
                 catch (Exception e)
                 {
@@ -708,6 +779,77 @@ namespace StardewValleyMP.Vanilla
                 xmlWriter.WriteStartDocument();
                 try
                 {
+                    Log.debug("Status of saved locations (savegame):");
+                    foreach (var loc in SaveGame.loaded.locations)
+                    {
+                        if (loc is CommunityCenter)
+                        {
+                            var cc = loc as CommunityCenter;
+                            Log.debug("CC (" + loc.name + "): ");
+                            foreach (var v in cc.areasComplete)
+                            {
+                                Log.debug("\tac: " + v);
+                            }
+                            foreach (var v in cc.bundleRewards)
+                            {
+                                Log.debug("\tbr: " + v.Key + " " + v.Value);
+                            }
+                            foreach (var v in cc.bundles)
+                            {
+                                Log.debug("\tb: " + v.Key + " " + v.Value);
+                            }
+                            Log.debug("\ts: " + cc.numberOfStarsOnPlaque);
+                        }
+                        else if (loc is Beach)
+                        {
+                            Log.debug("Beach (" + loc.name + "): " + (loc as Beach).bridgeFixed);
+                        }
+                        else if (loc is LibraryMuseum)
+                        {
+                            var m = loc as LibraryMuseum;
+                            Log.debug("Musuem (" + loc.name + "): ");
+                            foreach (var v in m.museumPieces)
+                            {
+                                Log.debug("\tmp: " + v.Key + " " + v.Value);
+                            }
+                        }
+                    }
+                    Log.debug("Status of loaded locations (game):");
+                    foreach (var loc in Game1.locations)
+                    {
+                        if (loc is CommunityCenter)
+                        {
+                            var cc = loc as CommunityCenter;
+                            Log.debug("CC (" + loc.name + "): ");
+                            foreach (var v in cc.areasComplete)
+                            {
+                                Log.debug("\tac: " + v);
+                            }
+                            foreach (var v in cc.bundleRewards)
+                            {
+                                Log.debug("\tbr: " + v.Key + " " + v.Value);
+                            }
+                            foreach (var v in cc.bundles)
+                            {
+                                Log.debug("\tb: " + v.Key + " " + v.Value);
+                            }
+                            Log.debug("\ts: " + cc.numberOfStarsOnPlaque);
+                        }
+                        else if (loc is Beach)
+                        {
+                            Log.debug("Beach (" + loc.name + "): " + (loc as Beach).bridgeFixed);
+                        }
+                        else if (loc is LibraryMuseum)
+                        {
+                            var m = loc as LibraryMuseum;
+                            Log.debug("Musuem (" + loc.name + "): ");
+                            foreach (var v in m.museumPieces)
+                            {
+                                Log.debug("\tmp: " + v.Key + " " + v.Value);
+                            }
+                        }
+                    }
+
                     SaveGame.serializer.Serialize(xmlWriter, saveGame);
                 }
                 catch ( Exception e )
