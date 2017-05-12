@@ -39,12 +39,12 @@ namespace StardewValleyMP.Packets
             int len = reader.ReadInt32();
             byte[] data = reader.ReadBytes(len);
 
-            xml = Encoding.UTF8.GetString(Util.Decompress(data));
+            xml = Encoding.UTF8.GetString(MultiplayerMod.ModConfig.Compress ? Util.Decompress(data) : data);
         }
 
         protected override void write(BinaryWriter writer)
         {
-            byte[] data = Util.Compress(Encoding.UTF8.GetBytes(xml));
+            byte[] data = MultiplayerMod.ModConfig.Compress ? Util.Compress(Encoding.UTF8.GetBytes(xml)) : Encoding.ASCII.GetBytes( xml );
 
             writer.Write(data.Length);
             writer.Write(data, 0, data.Length);

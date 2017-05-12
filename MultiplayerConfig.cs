@@ -15,6 +15,7 @@
         public bool AllowLanDiscovery { get; set; } = true;
         public bool Debug { get; set; } = false;
         public bool Coop { get; set; } = true;
+        public bool Compress { get; set; } = true;
         public PacketLogAmount PacketLogging { get; set; } = PacketLogAmount.Filtered;
     }
 }
