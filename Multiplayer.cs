@@ -421,7 +421,14 @@ namespace StardewValleyMP
                 int port = Int32.Parse(portStr);
                 
                 TcpClient socket = new TcpClient(AddressFamily.InterNetworkV6);
-                socket.Client.DualMode = true;
+                try
+                {
+                    socket.Client.DualMode = true;
+                }
+                catch ( Exception e )
+                {
+                    Log.warn("Exception setting socket to dual-mode. Looks like Mono messed up again. " + e);
+                }
                 socket.Connect(ip, port);
                 socket.NoDelay = true;
                 ChatMenu.chat.Add(new ChatEntry(null, "Connection established."));
