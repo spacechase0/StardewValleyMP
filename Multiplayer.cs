@@ -350,6 +350,11 @@ namespace StardewValleyMP
         public static  String ipStr = "127.0.0.1";
         public static  String portStr = DEFAULT_PORT;
         public static  TcpListener listener = null;
+        
+        private static TcpListener makeRealTcpListener( int port )
+        {
+            return TcpListener.Create(port);
+        }
 
         public static bool lobby = true;
         public static bool problemStarting = false;
@@ -362,7 +367,11 @@ namespace StardewValleyMP
             {
                 int port = Int32.Parse(portStr);
                 // http://stackoverflow.com/questions/1777629/how-to-listen-on-multiple-ip-addresses
-                listener = Util.UsingMono ? new TcpListener( IPAddress.Any, port ) : TcpListener.Create(port);
+                listener = null;
+                if (Util.UsingMono)
+                    listener = new TcpListener(IPAddress.Any, port);
+                else
+                    listener = makeRealTcpListener( port );
                 listener.Start();
 
                 client = null;
