@@ -30,7 +30,7 @@ namespace StardewValleyMP
     {
         public const string DEFAULT_PORT = "24644";
         public const byte PROTOCOL_VERSION = 4;
-        public static bool COOP { get { return MultiplayerMod.ModConfig.Coop; } }
+        public static bool COOP { get { return Mod.Config.Coop; } }
 
         public static Mode mode = Mode.Singleplayer;
 

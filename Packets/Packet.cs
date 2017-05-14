@@ -122,8 +122,8 @@ namespace StardewValleyMP.Packets
             }
             //Log.Async("Got packet " + type);
             packet.read(reader);
-            if (MultiplayerMod.ModConfig.PacketLogging == MultiplayerConfig.PacketLogAmount.All ||
-                 MultiplayerMod.ModConfig.PacketLogging == MultiplayerConfig.PacketLogAmount.Filtered &&
+            if (Mod.Config.PacketLogging == Configuration.PacketLogAmount.All ||
+                 Mod.Config.PacketLogging == Configuration.PacketLogAmount.Filtered &&
                  !(packet.id == ID.MovingState || packet.id == ID.Animation || packet.id == ID.TimeSync || packet.id == ID.HeldItem))
                 Log.trace("<-- " + packet);
 
@@ -135,8 +135,8 @@ namespace StardewValleyMP.Packets
         /// </summary>
         public int writeTo( Stream s )
         {
-            if ( MultiplayerMod.ModConfig.PacketLogging == MultiplayerConfig.PacketLogAmount.All ||
-                 MultiplayerMod.ModConfig.PacketLogging == MultiplayerConfig.PacketLogAmount.Filtered &&
+            if ( Mod.Config.PacketLogging == Configuration.PacketLogAmount.All ||
+                 Mod.Config.PacketLogging == Configuration.PacketLogAmount.Filtered &&
                  !( id == ID.MovingState || id == ID.Animation || id == ID.TimeSync || id == ID.HeldItem) )
                 Log.trace("--> " + this);
             // Wrapped into a memory stream in order to figure out how many data was sent.

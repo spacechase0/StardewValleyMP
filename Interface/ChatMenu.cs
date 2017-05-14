@@ -70,7 +70,7 @@ namespace StardewValleyMP.Interface
                 {
                     Game1.activeClickableMenu = new ModeSelectMenu();
                 }
-                else if (MultiplayerMod.DEBUG && typing.StartsWith("/instance ") && typing.Length > 10)
+                else if (Mod.DEBUG && typing.StartsWith("/instance ") && typing.Length > 10)
                 {
                     string baseLoc = null;
                     if (Game1.player.currentLocation is StardewValley.Locations.FarmHouse) baseLoc = "FarmHouse";

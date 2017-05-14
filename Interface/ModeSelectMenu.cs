@@ -38,8 +38,8 @@ namespace StardewValleyMP.Interface
         private List< IConnection > pendingConns = new List< IConnection >();
         private Client pendingClient = null;
         
-        public bool allowFriends = MultiplayerMod.ModConfig.AllowFriends;
-        public bool allowLan = MultiplayerMod.ModConfig.AllowLanDiscovery;
+        public bool allowFriends = Mod.Config.AllowFriends;
+        public bool allowLan = Mod.Config.AllowLanDiscovery;
 
         private bool showingLan = false;
 
@@ -89,7 +89,7 @@ namespace StardewValleyMP.Interface
                     portBox.Width *= 3;
                     portBox.X = buttonX + buttonW / 2 - (SpriteText.getWidthOfString("IP Address:") + portBox.Width + 20) / 2 + SpriteText.getWidthOfString("IP Address:") + 20;
                     portBox.Y = buttonY2 + buttonH / 2 - portBox.Height / 2;
-                    portBox.Text = MultiplayerMod.ModConfig.DefaultPort;
+                    portBox.Text = Mod.Config.DefaultPort;
                 }
                 r.Y = buttonY3;
                 if (r.Contains(x, y))
@@ -101,13 +101,13 @@ namespace StardewValleyMP.Interface
                     ipBox.Width *= 3;
                     ipBox.X = buttonX + buttonW / 2 - (SpriteText.getWidthOfString("IP Address:") + ipBox.Width + 20) / 2 + SpriteText.getWidthOfString("IP Address:") + 20;
                     ipBox.Y = buttonY1 + buttonH / 2 - ipBox.Height / 2;
-                    ipBox.Text = MultiplayerMod.ModConfig.DefaultIP;
+                    ipBox.Text = Mod.Config.DefaultIP;
 
                     portBox = new TextBox(Game1.content.Load<Texture2D>("LooseSprites\\textBox"), null, Game1.smallFont, Game1.textColor);
                     portBox.Width *= 3;
                     portBox.X = buttonX + buttonW / 2 - (SpriteText.getWidthOfString("IP Address:") + portBox.Width + 20) / 2 + SpriteText.getWidthOfString("IP Address:") + 20;
                     portBox.Y = buttonY2 + buttonH / 2 - portBox.Height / 2;
-                    portBox.Text = MultiplayerMod.ModConfig.DefaultPort;
+                    portBox.Text = Mod.Config.DefaultPort;
                 }
             }
             else
@@ -163,23 +163,23 @@ namespace StardewValleyMP.Interface
                 Rectangle r = new Rectangle(buttonX, buttonY3 + buttonH, buttonW, buttonH);
                 if (r.Contains(x, y) && !showingFriends && !showingLan)
                 {
-                    MultiplayerMod.ModConfig.DefaultPort = portBox.Text;
+                    Mod.Config.DefaultPort = portBox.Text;
                     Multiplayer.portStr = portBox.Text;
                     if (Multiplayer.mode == Mode.Host)
                     {
-                        MultiplayerMod.ModConfig.AllowFriends = allowFriends;
-                        MultiplayerMod.ModConfig.AllowLanDiscovery = allowLan;
+                        Mod.Config.AllowFriends = allowFriends;
+                        Mod.Config.AllowLanDiscovery = allowLan;
                         Multiplayer.startHost();
                         Multiplayer.server.connections.startListening(int.Parse(portBox.Text), allowLan, allowFriends);
                     }
                     else if (Multiplayer.mode == Mode.Client)
                     {
-                        MultiplayerMod.ModConfig.DefaultIP = ipBox.Text;
+                        Mod.Config.DefaultIP = ipBox.Text;
                         Multiplayer.ipStr = ipBox.Text;
                         Multiplayer.startClient();
                         ChatMenu.chat.Add(new ChatEntry(null, "NOTE: Chat doesn't work on the connection menu."));
                     }
-                    MultiplayerMod.instance.Helper.WriteConfig(MultiplayerMod.ModConfig);
+                    Mod.instance.Helper.WriteConfig(Mod.Config);
                     Game1.exitActiveMenu();
                 }
             }

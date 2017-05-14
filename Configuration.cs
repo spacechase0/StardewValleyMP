@@ -1,6 +1,6 @@
 ﻿namespace StardewValleyMP
 {
-    public class MultiplayerConfig
+    public class Configuration
     {
         public enum PacketLogAmount
         {

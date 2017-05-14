@@ -16,19 +16,19 @@ using SFarmer = StardewValley.Farmer;
 
 namespace StardewValleyMP
 {
-    public class MultiplayerMod : Mod
+    public class Mod : StardewModdingAPI.Mod
     {
-        public static bool DEBUG { get { return ModConfig.Debug; } }
+        public static bool DEBUG { get { return Config.Debug; } }
 
-        public static MultiplayerMod instance;
-        public static MultiplayerConfig ModConfig { get; private set; }
+        public static Mod instance;
+        public static Configuration Config { get; private set; }
         public static Assembly a;
         public override void Entry(IModHelper helper)
         {
             instance = this;
 
             Log.info("Loading Config");
-            ModConfig = Helper.ReadConfig<MultiplayerConfig>();
+            Config = Helper.ReadConfig<Configuration>();
 
             Util.WHITE_1X1 = new Texture2D(Game1.graphics.GraphicsDevice, 1, 1);
             Util.WHITE_1X1.SetData(new Color[] { Color.White });
