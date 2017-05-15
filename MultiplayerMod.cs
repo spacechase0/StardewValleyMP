@@ -101,6 +101,8 @@ namespace StardewValleyMP
                     {
                         Log.debug("Found vanilla load game menu, replacing with ours.");
 
+                        Multiplayer.lobby = true;
+
                         LoadGameMenu oldLoadMenu = ( LoadGameMenu ) TitleMenu.subMenu;
                         NewLoadMenu newLoadMenu = new NewLoadMenu();
 
