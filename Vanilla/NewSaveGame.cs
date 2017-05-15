@@ -1054,7 +1054,7 @@ namespace StardewValleyMP.Vanilla
             }
             catch ( Exception e )
             {
-                Log.warn("Exception setting a farmer (" + target.Name + ") up. What a surprise. " + e);
+                Log.warn("Exception setting a farmer (" + target.Name + ") up. " + e);
             }
             target.Stamina = farmer.Stamina;
             target.health = farmer.health;
