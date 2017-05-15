@@ -560,8 +560,6 @@ namespace StardewValleyMP.Interface
                         Log.trace("Declined " + ((PlatformConnection)pendingConns[0]).friend.displayName);
                         pendingConns.Remove(pendingConns[0]);
                     }
-
-                    justClicked = false;
                 }
                 else
                 {
@@ -610,6 +608,8 @@ namespace StardewValleyMP.Interface
             base.draw(b);
 
             ChatMenu.drawChat(false);
+
+            justClicked = false;
         }
 
         private void onFriendSelected(Friend friend)
