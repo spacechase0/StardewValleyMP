@@ -1038,16 +1038,23 @@ namespace StardewValleyMP.Vanilla
             {
                 target.FarmerRenderer = new FarmerRenderer(target.getTexture());
             }
-            target.changeGender(farmer.isMale);
-            target.changeAccessory(farmer.accessory);
-            target.changeShirt(farmer.shirt);
-            target.changePants(farmer.pantsColor);
-            target.changeSkinColor(farmer.skin);
-            target.changeHairColor(farmer.hairstyleColor);
-            target.changeHairStyle(farmer.hair);
-            if (target.boots != null)
+            try
             {
-                target.changeShoeColor(farmer.boots.indexInColorSheet);
+                target.changeGender(farmer.isMale);
+                target.changeAccessory(farmer.accessory);
+                target.changeShirt(farmer.shirt);
+                target.changePants(farmer.pantsColor);
+                target.changeSkinColor(farmer.skin);
+                target.changeHairColor(farmer.hairstyleColor);
+                target.changeHairStyle(farmer.hair);
+                if (target.boots != null)
+                {
+                    target.changeShoeColor(farmer.boots.indexInColorSheet);
+                }
+            }
+            catch ( Exception e )
+            {
+                Log.warn("Exception setting a farmer (" + target.Name + ") up. What a surprise. " + e);
             }
             target.Stamina = farmer.Stamina;
             target.health = farmer.health;
