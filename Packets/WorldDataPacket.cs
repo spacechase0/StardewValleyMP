@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using xTile;
 
 namespace StardewValleyMP.Packets
 {
@@ -157,6 +158,30 @@ namespace StardewValleyMP.Packets
                 {
                     Log.debug("FarmHouse: " + theirLoc.name);
                     NewSaveGame.FarmHouse_setMapForUpgradeLevel(theirLoc as FarmHouse);
+                }
+                else if (theirLoc is Cellar)
+                {
+                    theirLoc.map = Game1.game1.xTileContent.Load<Map>("Maps\\Cellar");
+                }
+                else if (!Multiplayer.COOP && theirLoc is Farm)
+                {
+                    theirLoc.Map = Game1.game1.xTileContent.Load<Map>("Maps\\" + Farm.getMapNameFromTypeInt(world.whichFarm));
+                }
+                else if (!Multiplayer.COOP && theirLoc is FarmCave)
+                {
+                    theirLoc.Map = Game1.game1.xTileContent.Load<Map>("Maps\\FarmCave");
+                }
+                else if (!Multiplayer.COOP && ( theirLoc.name == "Greenhouse" || theirLoc.name.StartsWith( "Greenhouse_" ) ) )
+                {
+                    theirLoc.Map = Game1.game1.xTileContent.Load<Map>("Maps\\Greenhouse");
+                }
+                else if (!Multiplayer.COOP && theirLoc is LibraryMuseum)
+                {
+                    theirLoc.Map = Game1.game1.xTileContent.Load<Map>("Maps\\ArchaeologyHouse");
+                }
+                else if (!Multiplayer.COOP && theirLoc is CommunityCenter)
+                {
+                    theirLoc.Map = Game1.game1.xTileContent.Load<Map>("Maps\\CommunityCenter_Ruins");
                 }
             }
             /*

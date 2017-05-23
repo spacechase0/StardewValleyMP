@@ -450,6 +450,25 @@ namespace StardewValleyMP
         public static bool prevFreezeControls = false;
         public static bool sentNextDayPacket = false;
         public static long prevLatestId;
+
+        public static void onBeforeSave()
+        {
+            Log.trace("Before save");
+            if (Game1.activeClickableMenu is SaveGameMenu && Game1.activeClickableMenu.GetType() != typeof(NewSaveGameMenu))
+            {
+                Log.debug("Replacing save game menu");
+                Game1.activeClickableMenu = new NewSaveGameMenu();
+            }
+            else if (Game1.activeClickableMenu is ShippingMenu)
+            {
+                Log.debug("Savegame:" + Util.GetInstanceField(typeof(ShippingMenu), Game1.activeClickableMenu, "saveGameMenu"));
+                SaveGameMenu menu = (SaveGameMenu)Util.GetInstanceField(typeof(ShippingMenu), Game1.activeClickableMenu, "saveGameMenu");
+                if (menu != null && menu.GetType() != typeof(NewSaveGameMenu))
+                {
+                    Util.SetInstanceField(typeof(ShippingMenu), Game1.activeClickableMenu, "saveGameMenu", new NewSaveGameMenu());
+                }
+            }
+        }
         
         public static void update()
         {
@@ -547,19 +566,6 @@ namespace StardewValleyMP
 
             // We want people to wait for everyone
             //Log.Async("menu:"+Game1.activeClickableMenu);
-            if (Game1.activeClickableMenu is SaveGameMenu && Game1.activeClickableMenu.GetType() != typeof( NewSaveGameMenu ) )
-            {
-                Game1.activeClickableMenu = new NewSaveGameMenu();
-            }
-            else if ( Game1.activeClickableMenu is ShippingMenu )
-            {
-                //Log.Async("Savegame:" + Util.GetInstanceField(typeof(ShippingMenu), Game1.activeClickableMenu, "saveGameMenu"));
-                SaveGameMenu menu = ( SaveGameMenu ) Util.GetInstanceField(typeof(ShippingMenu), Game1.activeClickableMenu, "saveGameMenu");
-                if (menu != null && menu.GetType() != typeof(NewSaveGameMenu))
-                {
-                    Util.SetInstanceField(typeof(ShippingMenu), Game1.activeClickableMenu, "saveGameMenu", new NewSaveGameMenu());
-                }
-            }
 
             if (Game1.currentLocation != null && Game1.currentLocation.currentEvent != null)
                 Events.fix();

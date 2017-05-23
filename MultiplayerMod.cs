@@ -36,6 +36,7 @@ namespace StardewValleyMP
             GraphicsEvents.OnPreRenderHudEvent += onPreDraw;      
             LocationEvents.CurrentLocationChanged += onCurrentLocationChange;
             ControlEvents.KeyboardChanged += onKeyboardChange;
+            SaveEvents.BeforeSave += onBeforeSave;
 
             Helper.ConsoleCommands.Add("player_unstuck", "...", unstuckCommand);
             Helper.ConsoleCommands.Add("player_sleep", "...", sleepCommand);
@@ -181,6 +182,11 @@ namespace StardewValleyMP
             {
                 Log.error("Exception during keyboard change: " + e);
             }
+        }
+
+        public static void onBeforeSave( object sender, EventArgs args )
+        {
+            Multiplayer.onBeforeSave();
         }
     }
 }

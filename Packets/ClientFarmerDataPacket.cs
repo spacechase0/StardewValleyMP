@@ -206,13 +206,7 @@ namespace StardewValleyMP.Packets
                 {
                     int farmType = ((Server.Client)extra).farmType;
                     GameLocation newFarm = new Farm( Game1.game1.xTileContent.Load<Map>("Maps\\" + Farm.getMapNameFromTypeInt(farmType)), loc.name);
-                    if (farmType == 3)
-                    {
-                        for (int i = 0; i < 28; i++)
-                        {
-                            Game1.getFarm().doDailyMountainFarmUpdate();
-                        }
-                    }
+                    Game1.locations.Add(newFarm);
                 }
                 else if (!Multiplayer.COOP && oldName == "FarmCave")
                 {
@@ -252,7 +246,38 @@ namespace StardewValleyMP.Packets
             {
                 // This doesn't need the shenanigans the one in Game1.locations needs.
                 // Read the comments above for explanation.
-                SaveGame.loaded.locations.Add(loc);
+                if (oldName == "FarmHouse")
+                {
+                    Map expr_214 = Game1.game1.xTileContent.Load<Map>("Maps\\FarmHouse");
+                    expr_214.LoadTileSheets(Game1.mapDisplayDevice);
+                    SaveGame.loaded.locations.Add(new FarmHouse(expr_214, loc.name));
+                }
+                else if (oldName == "Cellar")
+                {
+                    SaveGame.loaded.locations.Add(new Cellar(Game1.game1.xTileContent.Load<Map>("Maps\\Cellar"), loc.name));
+                }
+                else if (!Multiplayer.COOP && oldName == "Farm")
+                {
+                    int farmType = ((Server.Client)extra).farmType;
+                    GameLocation newFarm = new Farm(Game1.game1.xTileContent.Load<Map>("Maps\\" + Farm.getMapNameFromTypeInt(farmType)), loc.name);
+                    SaveGame.loaded.locations.Add(newFarm);
+                }
+                else if (!Multiplayer.COOP && oldName == "FarmCave")
+                {
+                    SaveGame.loaded.locations.Add(new FarmCave(Game1.game1.xTileContent.Load<Map>("Maps\\FarmCave"), loc.name));
+                }
+                else if (!Multiplayer.COOP && oldName == "Greenhouse")
+                {
+                    SaveGame.loaded.locations.Add(new GameLocation(Game1.game1.xTileContent.Load<Map>("Maps\\Greenhouse"), loc.name));
+                }
+                else if (!Multiplayer.COOP && oldName == "ArchaelogyHouse")
+                {
+                    SaveGame.loaded.locations.Add(new LibraryMuseum(Game1.game1.xTileContent.Load<Map>("Maps\\ArchaeologyHouse"), loc.name));
+                }
+                else if (!Multiplayer.COOP && oldName == "CommunityCenter")
+                {
+                    SaveGame.loaded.locations.Add(new CommunityCenter(loc.name));
+                }
             }
         }
         

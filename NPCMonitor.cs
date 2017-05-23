@@ -1,5 +1,6 @@
 ﻿using StardewValley;
 using StardewValley.Buildings;
+using StardewValley.Characters;
 using StardewValley.Locations;
 using StardewValleyMP.Packets;
 using StardewValleyMP.States;
@@ -268,7 +269,7 @@ namespace StardewValleyMP
         {
             foreach (NPC npc in loc.characters)
             {
-                if (npc.name == "Junimo" || npc.name == "Green Slime" || npc.name == "Frost Helly" || npc.IsMonster) continue;
+                if (npc.name == "Junimo" || npc.name == "Green Slime" || npc.name == "Frost Helly" || npc.IsMonster || npc is Child) continue;
                 if ( npc.isMarried() && npc.name != Game1.player.spouse )
                 {
                     continue;
