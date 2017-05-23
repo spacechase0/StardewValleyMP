@@ -459,14 +459,29 @@ namespace StardewValleyMP
                 Log.debug("Replacing save game menu");
                 Game1.activeClickableMenu = new NewSaveGameMenu();
             }
-            else if (Game1.activeClickableMenu is ShippingMenu)
+            else if (Game1.activeClickableMenu is ShippingMenu && Game1.activeClickableMenu.GetType() != typeof(NewShippingMenu))
             {
-                Log.debug("Savegame:" + Util.GetInstanceField(typeof(ShippingMenu), Game1.activeClickableMenu, "saveGameMenu"));
-                SaveGameMenu menu = (SaveGameMenu)Util.GetInstanceField(typeof(ShippingMenu), Game1.activeClickableMenu, "saveGameMenu");
-                if (menu != null && menu.GetType() != typeof(NewSaveGameMenu))
-                {
-                    Util.SetInstanceField(typeof(ShippingMenu), Game1.activeClickableMenu, "saveGameMenu", new NewSaveGameMenu());
-                }
+                Log.debug("Replacing shipping menu");
+
+                // The fifth element of categoryItems is a total of everything else.
+                List<Item> allItems = ((List<List<Item>>)Util.GetInstanceField(typeof(ShippingMenu), Game1.activeClickableMenu, "categoryItems"))[ 5 ];
+                Log.trace("Shipped items: " + allItems.Count);
+                foreach (var item in allItems)
+                    ;// Log.trace("\t" + item + " " + ( item == null ? "" : ( item.Stack + " " + item.Name + " " + item.parentSheetIndex )));
+
+                // A bunch of important things get changed in the ShippingMenu constructor.
+                // We kinda don't want to sell things twice though.
+                var oldMoney = Game1.player.money;
+                var oldShippedItems = Game1.stats.itemsShipped;
+                var oldShippedCrops = Game1.stats.CropsShipped;
+                var oldShipped = new SerializableDictionary<int, int>();
+                foreach (var entry in Game1.player.basicShipped)
+                    oldShipped.Add(entry.Key, entry.Value);
+                Game1.activeClickableMenu = new NewShippingMenu( allItems );
+                Game1.player.money = oldMoney;
+                Game1.stats.itemsShipped = oldShippedItems;
+                Game1.stats.CropsShipped = oldShippedCrops;
+                Game1.player.basicShipped = oldShipped;
             }
         }
         
