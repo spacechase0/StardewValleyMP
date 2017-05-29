@@ -217,6 +217,8 @@ namespace StardewValleyMP
             public SFarmer farmer = null;
             public int farmType = -1;
 
+            public bool sentId = false;
+
             public IDictionary<string, GameLocation> addDuringLoading = new Dictionary<string, GameLocation>();
 
             public Client(Server theServer, byte theId, IConnection theSocket)

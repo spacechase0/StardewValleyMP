@@ -29,19 +29,26 @@ namespace StardewValleyMP.Packets
 
         public override void process( Server server, Server.Client client )
         {
+            Log.trace("Got version packet");
             if (client.stage != Server.Client.NetStage.VerifyingVersion)
             {
                 Log.debug("Got version packet at wrong stage");
-                return;
+                //return;
             }
 
             if (version == Multiplayer.PROTOCOL_VERSION)
             {
                 client.stage = Server.Client.NetStage.WaitingForFarmerInfo;
-                client.send(new YourIDPacket(client.id));
+                if (!client.sentId)
+                {
+                    Log.trace("Sending ID packet " + client.id);
+                    client.send(new YourIDPacket(client.id));
+                    client.sentId = true;
+                }
             }
             else
             {
+                Log.trace("Bad version from client " + client.id);
                 client.stageFailed = true;
             }
         }

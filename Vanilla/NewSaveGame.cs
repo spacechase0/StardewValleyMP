@@ -682,12 +682,12 @@ namespace StardewValleyMP.Vanilla
             //if ( saveToLoaded )
             if (skipToFile) Multiplayer.locations.Clear();
             if (skipToFile) NPCMonitor.reset();
+            SaveGame.loaded = saveGame;
             if (Multiplayer.mode == Mode.Host)
             {
                 Log.info("Broadcasting on save.");
                 try
                 {
-                    SaveGame.loaded = saveGame;
                     Multiplayer.server.broadcastInfo();
                     Multiplayer.server.broadcast(new NextDayPacket());
                 }
@@ -697,10 +697,6 @@ namespace StardewValleyMP.Vanilla
                 }
                 //yield return 100;
                 //yield break;
-            }
-            else if (Multiplayer.mode == Mode.Client)
-            {
-                SaveGame.loaded = saveGame;
             }
             if (skipToFile)
             {
