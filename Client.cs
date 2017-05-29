@@ -133,39 +133,33 @@ namespace StardewValleyMP
                 Log.Async("Exception sending " + packet + " to server: " + e);
             }
 #endif
-#if NETWORKING_BENCHMARK
-            int bytes = packet.writeTo(stream);
-            Interlocked.Add(ref Multiplayer.clientToServerBytesTransferred, bytes);
-            Log.Async("Sent packet " + packet + " ( " + bytes + " bytes)");
-#else
-            packet.writeTo(conn.getStream());
+            try
+            {
+                packet.writeTo(conn.getStream());
+            }
+            catch ( Exception e )
+            {
+                Log.error("Exception sending: " + e);
+            }
 #endif
         }
 
         private void receiveAndQueue()
         {
-            try
+            while (conn.isConnected())
             {
-                while (conn.isConnected())
+                try
                 {
                     Packet packet = Packet.readFrom(conn.getStream());
                     toReceive.Add(packet);
-
-#if NETWORKING_BENCHMARK
-                    using (MemoryStream tmpMs = new MemoryStream())
-                    {
-                        int bytes = packet.writeTo(tmpMs);
-                        Interlocked.Add(ref Multiplayer.serverToClientBytesTransferred, bytes);
-                        Log.Async("Received packet " + packet + " ( " + bytes + " bytes)");
-                    }
-#endif
                 }
-            }
-            catch (Exception e)
-            {
-                Log.error("Exception while receiving: " + e);
-                Multiplayer.mode = Mode.Singleplayer;
-                Multiplayer.client = null;
+                catch ( Exception e )
+                {
+                    Log.error("Exception while receiving: " + e);
+                    Multiplayer.mode = Mode.Singleplayer;
+                    conn.disconnect();
+                    Multiplayer.client = null;
+                }
             }
         }
     }

@@ -330,8 +330,16 @@ namespace StardewValleyMP
                 {
                     while (connected())
                     {
-                        Packet packet = Packet.readFrom(socket.getStream());
-                        toReceive.Add(packet);
+                        try
+                        {
+                            Packet packet = Packet.readFrom(socket.getStream());
+                            toReceive.Add(packet);
+                        }
+                        catch ( Exception e )
+                        {
+                            Log.error("Exception while receiving: " + e);
+                            socket.disconnect();
+                        }
 
 #if NETWORKING_BENCHMARK
                         using (MemoryStream tmpMs = new MemoryStream())
@@ -345,7 +353,6 @@ namespace StardewValleyMP
                 }
                 catch ( Exception e )
                 {
-                    Log.error("Exception while receiving: " + e);
                 }
             }
         }
