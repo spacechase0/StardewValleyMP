@@ -171,8 +171,13 @@ namespace StardewValleyMP
             Log.info("Got new client.");
 
             Client client = new Client(this, (byte)getPlayerCount(), socket);
-            if ( askResend )
-                client.send(new VersionPacket());
+            if (askResend)
+            {
+                var oldChan = (socket as SteamConnection).channel;
+                (socket as SteamConnection).channel = 0;
+                client.send(new VersionPacket((byte)oldChan));
+                (socket as SteamConnection).channel = oldChan;
+            }
 
             client.update();
             while (client.stage == Client.NetStage.VerifyingVersion)

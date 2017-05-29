@@ -50,6 +50,8 @@ namespace StardewValleyMP.Connections
                 byte[] tmp = new byte[size];
                 CSteamID id = new CSteamID();
                 SteamNetworking.ReadP2PPacket(tmp, size, out size, out id, conn.channel);
+                if (id.m_SteamID != conn.friend.id)
+                    continue;
                 incoming.Write(tmp, 0, (int)size);
             }
             incoming.Position = oldPos;

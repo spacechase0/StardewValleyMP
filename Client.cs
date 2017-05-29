@@ -20,7 +20,7 @@ namespace StardewValleyMP
             Playing,
         }
 
-        private IConnection conn;
+        internal IConnection conn;
         private Thread receiver;
         private BlockingCollection<Packet> toReceive = new BlockingCollection<Packet>(new ConcurrentQueue<Packet>());
         public byte id = 255;
@@ -141,7 +141,6 @@ namespace StardewValleyMP
             {
                 Log.error("Exception sending: " + e);
             }
-#endif
         }
 
         private void receiveAndQueue()

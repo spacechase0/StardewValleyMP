@@ -5,6 +5,7 @@ using StardewValley;
 using Microsoft.Xna.Framework.Graphics;
 using StardewValleyMP.Connections;
 using System.Text;
+using System.Threading;
 
 namespace StardewValleyMP.Platforms
 {
@@ -54,6 +55,7 @@ namespace StardewValleyMP.Platforms
                 IPlatform.instance = new DummyPlatform();
                 return;
             }
+
             SteamAPI.RunCallbacks();
         }
 

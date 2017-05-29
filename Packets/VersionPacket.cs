@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using StardewValleyMP.Connections;
+using System.IO;
 
 namespace StardewValleyMP.Packets
 {
@@ -10,6 +11,11 @@ namespace StardewValleyMP.Packets
 
         public VersionPacket() : base( ID.Version )
         {
+        }
+
+        public VersionPacket( byte channel) : base(ID.Version)
+        {
+            version = channel;
         }
 
         protected override void read(BinaryReader reader)
@@ -24,6 +30,7 @@ namespace StardewValleyMP.Packets
 
         public override void process( Client client )
         {
+            (client.conn as SteamConnection).channel = version;
             client.send(new VersionPacket());
         }
 
