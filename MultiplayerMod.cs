@@ -28,10 +28,12 @@ namespace StardewValleyMP
         {
             instance = this;
 
+            Util.WHITE_1X1 = new Texture2D(Game1.graphics.GraphicsDevice, 1, 1);
+            Util.WHITE_1X1.SetData(new Color[] { Color.White });
+
             Log.info("Loading Config");
             ModConfig = Helper.ReadConfig<MultiplayerConfig>();
-
-            GameEvents.LoadContent += loadContent;
+            
             GameEvents.UpdateTick += onUpdate;
             GraphicsEvents.OnPreRenderHudEvent += onPreDraw;      
             LocationEvents.CurrentLocationChanged += onCurrentLocationChange;
@@ -75,12 +77,6 @@ namespace StardewValleyMP
             Game1.player.freezePause = 0;
             Game1.newDay = false;
             Log.info("Done unsleeping.");
-        }
-
-        public static void loadContent( object sender, EventArgs args )
-        {
-            Util.WHITE_1X1 = new Texture2D(Game1.graphics.GraphicsDevice, 1, 1);
-            Util.WHITE_1X1.SetData(new Color[] { Color.White });
         }
 
         private static IClickableMenu prevMenu = null;
