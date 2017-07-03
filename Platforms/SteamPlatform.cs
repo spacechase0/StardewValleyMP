@@ -14,6 +14,7 @@ namespace StardewValleyMP.Platforms
         private static bool initSuccess = false;
         private static Dictionary<int, Texture2D> avatars = new Dictionary< int, Texture2D >();
         private static Dictionary<ulong, IConnection> conns = new Dictionary<ulong, IConnection>();
+        private Thread connUpdate;
 
         public SteamPlatform()
         {
@@ -32,6 +33,9 @@ namespace StardewValleyMP.Platforms
             overlayCallback = Callback<GameOverlayActivated_t>.Create(onOverlay);
             sessReqCallback = Callback<P2PSessionRequest_t>.Create(onP2PSessionRequest);
             sessConnFailCallback = Callback<P2PSessionConnectFail_t>.Create(onP2PConnectionFail);
+
+            connUpdate = new Thread(() => { Log.debug("Starting steam listen thread.");  while (true) { SteamStream.update(); } } );
+            connUpdate.Start();
         }
 
         ~SteamPlatform()
@@ -41,6 +45,9 @@ namespace StardewValleyMP.Platforms
                 entry.Value.Dispose();
             }
             avatars.Clear();
+
+            if ( connUpdate != null )
+                connUpdate.Abort();
         }
 
         public override string getName()

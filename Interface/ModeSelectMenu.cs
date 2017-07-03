@@ -636,8 +636,7 @@ namespace StardewValleyMP.Interface
         {
             Log.info("Selected LAN entry: " + entry.name + " @ " + entry.server.Address + ":" + entry.port);
 
-            Multiplayer.portStr = portBox.Text;
-            Multiplayer.ipStr = ipBox.Text;
+            Multiplayer.lanOverride = entry;
             modeInit = new Thread(Multiplayer.startClient);
             modeInit.Start();
 

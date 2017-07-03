@@ -7,14 +7,12 @@ namespace StardewValleyMP.Connections
 {
     public class SteamConnection : PlatformConnection
     {
-        internal int channel;
         private Stream stream;
 
         // Ugh, wish I could just do friend SteamPlatform; or something
         internal SteamConnection( Friend theFriend, bool alreadyConnected = false )
         :   base( theFriend, alreadyConnected )
         {
-            channel = channelCounter++;
             stream = new SteamStream(this);
         }
 
@@ -43,7 +41,5 @@ namespace StardewValleyMP.Connections
         {
             return stream;
         }
-
-        private static int channelCounter = 0;
     }
 }

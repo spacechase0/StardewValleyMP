@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Net.NetworkInformation;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading;
@@ -60,8 +61,6 @@ namespace StardewValleyMP
                 client.ExclusiveAddressUse = false;
                 client.Client.Bind(addr);
 
-                UdpClient sendFrom = new UdpClient();
-
                 Log.debug("LAN Discovery: Starting to listen");
 
                 running = true;
@@ -101,7 +100,9 @@ namespace StardewValleyMP
                     Array.Copy(nameBytes, 0, sendBack, MAGIC.Length + portBytes.Length, nameBytes.Length);
 
                     other.Port = DEFAULT_PORT_RESPONSE;
-                    sendFrom.Send(sendBack, sendBack.Length, other);
+                    UdpClient sendFrom = new UdpClient();
+                    sendFrom.Send(sendBack, sendBack.Length, new IPEndPoint(IPAddress.Parse("10.0.2.15"), DEFAULT_PORT_RESPONSE));
+                    sendFrom.Close();
                 }
             }
             catch ( Exception e )
@@ -129,18 +130,42 @@ namespace StardewValleyMP
                 thread.Start();
             }
 
-            IPEndPoint addr = new IPEndPoint(IPAddress.Broadcast, DEFAULT_PORT_REQUEST);
-            UdpClient client = new UdpClient();
-            client.Client.ExclusiveAddressUse = false;
+            // https://stackoverflow.com/a/436898
+            foreach (var ni in NetworkInterface.GetAllNetworkInterfaces())
+            {
+                if (!ni.SupportsMulticast)
+                    continue;
 
-            byte[] toSend = new byte[MAGIC.Length + 1];
-            Array.Copy(MAGIC, 0, toSend, 0, MAGIC.Length);
-            toSend[MAGIC.Length] = Multiplayer.PROTOCOL_VERSION;
+                foreach (var ua in ni.GetIPProperties().UnicastAddresses)
+                {
+                    UdpClient client = null;
+                    try
+                    {
+                        Log.trace("Doing " + ni.Name + " " + ni.Id + " " + ua.Address);
+                        IPEndPoint addr = new IPEndPoint(IPAddress.Broadcast, DEFAULT_PORT_REQUEST);
+                        client = new UdpClient();
+                        client.Client.ExclusiveAddressUse = false;
+                        client.Client.Bind(new IPEndPoint(ua.Address, DEFAULT_PORT_REQUEST));
+                        //client.JoinMulticastGroup(IPAddress.Parse("255.1.2.3"), ua.Address);
 
-            Log.debug("LAN Discovery: Broadcasting request");
-            client.Send(toSend, toSend.Length, addr);
+                        byte[] toSend = new byte[MAGIC.Length + 1];
+                        Array.Copy(MAGIC, 0, toSend, 0, MAGIC.Length);
+                        toSend[MAGIC.Length] = Multiplayer.PROTOCOL_VERSION;
 
-            client.Close();
+                        Log.debug("LAN Discovery: Broadcasting request");
+                        client.Send(toSend, toSend.Length, addr);
+                    }
+                    catch ( Exception e )
+                    {
+                        Log.trace("Exception: " + e);
+                    }
+                    finally
+                    {
+                        if ( client != null )
+                            client.Close();
+                    }
+                }
+            }
         }
 
         private static void runClient()

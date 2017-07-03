@@ -16,6 +16,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading;
+using static StardewValleyMP.Interface.LanSelectorWidget;
 using SFarmer = StardewValley.Farmer;
 
 /*
@@ -347,6 +348,7 @@ namespace StardewValleyMP
             }
         }
 
+        public static LanEntry lanOverride;
         public static  String ipStr = "127.0.0.1";
         public static  String portStr = DEFAULT_PORT;
         public static  TcpListener listener = null;
@@ -430,7 +432,13 @@ namespace StardewValleyMP
                 {
                     Log.warn("Exception setting socket to dual-mode. Looks like Mono messed up again. " + e);
                 }
-                socket.Connect(ip, port);
+                if (lanOverride == null)
+                    socket.Connect(ip, port);
+                else
+                {
+                    lanOverride.server.Port = lanOverride.port;
+                    socket.Connect(lanOverride.server);
+                }
                 socket.NoDelay = true;
                 ChatMenu.chat.Add(new ChatEntry(null, "Connection established."));
 

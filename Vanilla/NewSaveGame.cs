@@ -42,8 +42,10 @@ namespace StardewValleyMP.Vanilla
         public static IEnumerator<int> getLoadEnumerator(string file, bool skip = false)
         {
             ////////////////////////////////////////
+            /*
             while (Multiplayer.mode == Mode.Host && Multiplayer.server.currentlyAccepting > 0)
                 yield return 0;
+            */
             ////////////////////////////////////////
 
             Console.WriteLine("getLoadEnumerator('{0}')", file);
