@@ -24,6 +24,9 @@ namespace StardewValleyMP
         public static MultiplayerMod instance;
         public static MultiplayerConfig ModConfig { get; private set; }
         public static Assembly a;
+
+        /// <summary>The mod entry point, called after the mod is first loaded.</summary>
+        /// <param name="helper">Provides simplified APIs for writing mods.</param>
         public override void Entry(IModHelper helper)
         {
             instance = this;
@@ -33,12 +36,12 @@ namespace StardewValleyMP
 
             Log.info("Loading Config");
             ModConfig = Helper.ReadConfig<MultiplayerConfig>();
-            
-            GameEvents.UpdateTick += onUpdate;
-            GraphicsEvents.OnPreRenderHudEvent += onPreDraw;      
-            LocationEvents.CurrentLocationChanged += onCurrentLocationChange;
-            ControlEvents.KeyboardChanged += onKeyboardChange;
-            SaveEvents.BeforeSave += onBeforeSave;
+
+            helper.Events.GameLoop.UpdateTicked += OnUpdateTicked;
+            helper.Events.Display.RenderingHud += OnRenderingHud;
+            helper.Events.Player.Warped += OnWarped;
+            helper.Events.Input.ButtonPressed += OnButtonPressed;
+            helper.Events.GameLoop.Saving += OnSaving;
 
             Helper.ConsoleCommands.Add("player_unstuck", "...", unstuckCommand);
             Helper.ConsoleCommands.Add("player_sleep", "...", sleepCommand);
@@ -80,7 +83,11 @@ namespace StardewValleyMP
         }
 
         private static IClickableMenu prevMenu = null;
-        public static void onUpdate( object sender, EventArgs args )
+
+        /// <summary>Raised after the game state is updated (≈60 times per second).</summary>
+        /// <param name="sender">The event sender.</param>
+        /// <param name="e">The event arguments.</param>
+        public static void OnUpdateTicked( object sender, UpdateTickedEventArgs e )
         {
             if (DEBUG)
             {
@@ -103,7 +110,7 @@ namespace StardewValleyMP
                         LoadGameMenu oldLoadMenu = ( LoadGameMenu ) TitleMenu.subMenu;
                         NewLoadMenu newLoadMenu = new NewLoadMenu();
 
-                        IPrivateField< object > task = instance.Helper.Reflection.GetPrivateField< object >(oldLoadMenu, "_initTask");
+                        IReflectedField< object > task = instance.Helper.Reflection.GetField< object >(oldLoadMenu, "_initTask");
                         newLoadMenu._initTask = (Task<List<SFarmer>>)task.GetValue();
                         Log.debug("Stole the save listing task, set it to: " + task);
 
@@ -112,13 +119,16 @@ namespace StardewValleyMP
                 }
                 prevMenu = Game1.activeClickableMenu;
             }
-            catch ( Exception e )
+            catch ( Exception ex )
             {
-                Log.error("Exception during update: " + e);
+                Log.error("Exception during update: " + ex);
             }
         }
 
-        public static void onPreDraw( object sender, EventArgs args )
+        /// <summary>Raised before drawing the HUD (item toolbar, clock, etc) to the screen. The vanilla HUD may be hidden at this point (e.g. because a menu is open).</summary>
+        /// <param name="sender">The event sender.</param>
+        /// <param name="e">The event arguments.</param>
+        public static void OnRenderingHud( object sender, RenderingHudEventArgs e )
         {
             try
             {
@@ -130,39 +140,41 @@ namespace StardewValleyMP
 
                 if (Multiplayer.mode != Mode.Singleplayer) Multiplayer.draw( Game1.spriteBatch );
             }
-            catch ( Exception e )
+            catch ( Exception ex )
             {
-                Log.error("Exception during predraw: " + e);
+                Log.error("Exception during predraw: " + ex);
             }
         }
 
-        public static void onCurrentLocationChange( object sender, EventArgs args )
+        /// <summary>Raised after a player warps to a new location.</summary>
+        /// <param name="sender">The event sender.</param>
+        /// <param name="e">The event arguments.</param>
+        public static void OnWarped( object sender, WarpedEventArgs e )
         {
             try
             {
                 if (Multiplayer.mode == Mode.Singleplayer) return;
 
-                Multiplayer.locationChange((args as EventArgsCurrentLocationChanged).PriorLocation, (args as EventArgsCurrentLocationChanged).NewLocation);
+                Multiplayer.locationChange(e.OldLocation, e.NewLocation);
             }
-            catch ( Exception e )
+            catch ( Exception ex )
             {
-                Log.error("Exception during location change: " + e);
+                Log.error("Exception during location change: " + ex);
             }
         }
 
-        public static void onKeyboardChange(object sender, EventArgs args )
+        /// <summary>Raised after the player presses a button on the keyboard, controller, or mouse.</summary>
+        /// <param name="sender">The event sender.</param>
+        /// <param name="e">The event arguments.</param>
+        public static void OnButtonPressed(object sender, ButtonPressedEventArgs e )
         {
             try
             {
                 //if (Multiplayer.mode == Mode.Singleplayer) return;
 
-                EventArgsKeyboardStateChanged args_ = ( EventArgsKeyboardStateChanged ) args;
-                KeyboardState old = args_.PriorState;
-                KeyboardState curr = args_.NewState;
-
                 if ( Game1.gameMode == 3 && Game1.activeClickableMenu == null && prevMenu == null &&
                      //Game1.keyboardDispatcher == null && Game1.keyboardDispatcher.Subscriber == null &&
-                     curr.IsKeyDown(Keys.Enter) && !old.IsKeyDown( Keys.Enter ) )
+                     e.Button == SButton.Enter)
                 {
                     if (Game1.isEating && Game1.player.itemToEat != null && Game1.player.itemToEat.parentSheetIndex == 434 /* stardrop */)
                     {
@@ -174,13 +186,16 @@ namespace StardewValleyMP
                     }
                 }
             }
-            catch ( Exception e )
+            catch ( Exception ex )
             {
-                Log.error("Exception during keyboard change: " + e);
+                Log.error("Exception during keyboard change: " + ex);
             }
         }
 
-        public static void onBeforeSave( object sender, EventArgs args )
+        /// <summary>Raised before the game begins writes data to the save file (except the initial save creation).</summary>
+        /// <param name="sender">The event sender.</param>
+        /// <param name="e">The event arguments.</param>
+        public static void OnSaving( object sender, EventArgs e )
         {
             Multiplayer.onBeforeSave();
         }
