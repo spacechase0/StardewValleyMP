@@ -1,14 +1,10 @@
 {
   "Name": "Makeshift Multiplayer",
   "Author": "spacechase0",
-  "Version": {
-    "MajorVersion": 0,
-    "MinorVersion": 3,
-    "PatchVersion": 6,
-    "Build": ""
-  },
+  "Version": "0.3.6",
   "Description": "Multiplayer test",
   "UniqueID": "spacechase0.StardewValleyMP",
-  "PerSaveConfigs": false,
-  "EntryDll": "StardewValleyMP.dll"
+  "EntryDll": "StardewValleyMP.dll",
+  "MinimumApiVersion": "2.9.0",
+  "UpdateKeys": [ "Nexus:501" ]
 }
